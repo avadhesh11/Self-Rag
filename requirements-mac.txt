@@ -1,0 +1,9 @@
+# Apple-silicon run path: llama.cpp over Metal, plus the HF CLI used to
+# download a GGUF conversion of the checkpoint.
+#
+# vLLM is deliberately NOT here -- it ships Linux+NVIDIA builds only and
+# has no macOS wheel at all, which is the metadata error pip raises if you
+# try to install it on a Mac.
+-r requirements.txt
+llama-cpp-python
+huggingface-hub[cli]

@@ -1,0 +1,12 @@
+MEMORY.md
+test.md
+cmds.md
+
+data
+index
+.venv
+models
+.DS_Store
+
+__pycache__/
+*.py[cod]

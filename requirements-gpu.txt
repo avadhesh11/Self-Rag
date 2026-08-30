@@ -1,0 +1,10 @@
+# NVIDIA / Linux run path: vLLM loads the HF checkpoint directly
+# (~14GB+ VRAM for the 7B model in fp16).
+#
+# vLLM pins its own torch/transformers versions; install these on your GPU
+# machine, not necessarily the same box you build the index on. Never
+# install this file on macOS -- vLLM has no macOS builds.
+-r requirements.txt
+vllm
+transformers
+torch

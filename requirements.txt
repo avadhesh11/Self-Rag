@@ -1,0 +1,8 @@
+# --- Retriever side (CPU-only, works in any environment) ---
+# Install this everywhere. The generator backend is a separate file:
+#   requirements-mac.txt   -> llama.cpp over Metal (Apple silicon, default)
+#   requirements-gpu.txt   -> vLLM (Linux + NVIDIA GPU only)
+pypdf
+sentence-transformers
+faiss-cpu
+numpy
