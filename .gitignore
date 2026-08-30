@@ -3,7 +3,9 @@ test.md
 cmds.md
 
 data
-index
+/index/faiss.index
+/index/corpus.jsonl
+/index/meta.json
 .venv
 models
 .DS_Store
