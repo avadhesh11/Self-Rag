@@ -1,0 +1,41 @@
+﻿[
+  {
+    "category": "in_knowledge",
+    "description": "Answer is directly present in the document.",
+    "questions": [
+      "How large is the Amazon rainforest?",
+      "What percentage of Earth'\''s oxygen does the Amazon produce?",
+      "How many species of birds live in the Amazon rainforest?",
+      "What is the main river that flows through the Amazon rainforest?"
+    ]
+  },
+  {
+    "category": "multi_chunk",
+    "description": "Answering requires synthesising information from multiple retrieved passages.",
+    "questions": [
+      "What are the main threats to the Amazon rainforest and what are their effects?",
+      "Describe the biodiversity of the Amazon rainforest in terms of both plant and animal species.",
+      "How does the Amazon rainforest influence global climate and local weather patterns?"
+    ]
+  },
+  {
+    "category": "out_of_knowledge",
+    "description": "Answer is NOT present in the knowledge base. Tests hallucination / abstention behaviour.",
+    "questions": [
+      "What is the capital of Australia?",
+      "Who won the FIFA World Cup in 2022?",
+      "What is the boiling point of water in Kelvin?",
+      "Who wrote the novel 1984?"
+    ]
+  },
+  {
+    "category": "no_retrieval",
+    "description": "Questions that do not require external retrieval (factual trivia, arithmetic, etc.). Self-RAG may skip retrieval; Normal RAG always retrieves.",
+    "questions": [
+      "What is 2 + 2?",
+      "Write a short poem about the rainforest.",
+      "What is the square root of 144?",
+      "Translate '\''hello'\'' into Spanish."
+    ]
+  }
+]

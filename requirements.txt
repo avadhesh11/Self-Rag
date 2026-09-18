@@ -6,3 +6,7 @@ pypdf
 sentence-transformers
 faiss-cpu
 numpy
+
+# --- Normal RAG (Gemini, works on any OS) ---
+google-genai
+python-dotenv
