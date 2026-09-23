@@ -30,6 +30,20 @@ DEFAULT_EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 _SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+(?=[A-Z0-9])")
 
 
+def clean_pdf_text(text: str) -> str:
+    """Clean common PDF extraction and OCR ligature/hyphenation artifacts.
+    E.g. 'SELF -RAG' -> 'SELF-RAG', 'Gen- eration' -> 'Generation'.
+    """
+    if not text:
+        return text
+    # Fix broken hyphenation with spaces (e.g. 'SELF -RAG' or 'SELF - RAG')
+    cleaned = re.sub(r"(\b[A-Za-z0-9]+)\s+-\s*([A-Za-z0-9]+)", r"\1-\2", text)
+    # Fix hyphenated words split across line breaks like 'Gen- eration' -> 'Generation'
+    cleaned = re.sub(r"(\b[A-Za-z]+)-\s+([a-z]+)", r"\1\2", cleaned)
+    # Collapse multiple whitespace characters
+    return " ".join(cleaned.split())
+
+
 def extract_paragraphs(pdf_path: str) -> list[dict]:
     """Pull text per page and split into sentence-level units.
 
@@ -44,7 +58,7 @@ def extract_paragraphs(pdf_path: str) -> list[dict]:
     paragraphs = []
     for page_num, page in enumerate(reader.pages, start=1):
         text = page.extract_text() or ""
-        flat = " ".join(text.split())  # collapse all whitespace/newlines
+        flat = clean_pdf_text(text)
         if not flat:
             continue
         sentences = _SENTENCE_SPLIT_RE.split(flat)
@@ -55,8 +69,32 @@ def extract_paragraphs(pdf_path: str) -> list[dict]:
     return paragraphs
 
 
-def merge_to_target_size(paragraphs: list[dict], target_words: int = 40) -> list[dict]:
-    """Merge short consecutive paragraphs (same page) up to ~target_words."""
+def _get_overlap_buffer(sentences: list[str], overlap_target: int) -> tuple[list[str], int]:
+    """Extract trailing sentences from a chunk to seed the next overlapping chunk."""
+    if overlap_target <= 0 or not sentences:
+        return [], 0
+    overlap_sents = []
+    words = 0
+    for s in reversed(sentences):
+        w = len(s.split())
+        if words > 0 and (words + w > overlap_target * 1.5):
+            break
+        overlap_sents.append(s)
+        words += w
+        if words >= overlap_target:
+            break
+    overlap_sents.reverse()
+    # Guard against retaining the entire chunk (which would cause an infinite loop)
+    if len(overlap_sents) >= len(sentences):
+        overlap_sents = overlap_sents[1:]
+        words = sum(len(s.split()) for s in overlap_sents)
+    return overlap_sents, words
+
+
+def merge_to_target_size(paragraphs: list[dict], target_words: int = 120,
+                         overlap_words: int = 30) -> list[dict]:
+    """Merge short consecutive sentences (same page) up to ~target_words,
+    optionally retaining ~overlap_words as context for the next chunk."""
     chunks = []
     buf_text, buf_page, buf_words = [], None, 0
 
@@ -66,21 +104,28 @@ def merge_to_target_size(paragraphs: list[dict], target_words: int = 40) -> list
 
     for para in paragraphs:
         words = len(para["text"].split())
+        # If adding this sentence exceeds target size by too much, or page boundary changes:
         if buf_text and (buf_words + words > target_words * 1.5 or para["page"] != buf_page):
             flush()
-            buf_text, buf_page, buf_words = [], None, 0
+            if para["page"] == buf_page:
+                buf_text, buf_words = _get_overlap_buffer(buf_text, overlap_words)
+            else:
+                buf_text, buf_page, buf_words = [], None, 0
+
         buf_text.append(para["text"])
         buf_page = para["page"] if buf_page is None else buf_page
         buf_words += words
+
         if buf_words >= target_words:
             flush()
-            buf_text, buf_page, buf_words = [], None, 0
+            buf_text, buf_words = _get_overlap_buffer(buf_text, overlap_words)
+
     flush()
     return chunks
 
 
 def build_index(pdf_path: str, out_dir: str, embed_model_name: str = DEFAULT_EMBED_MODEL,
-                 target_words: int = 40):
+                 target_words: int = 120, overlap_words: int = 30):
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -88,8 +133,8 @@ def build_index(pdf_path: str, out_dir: str, embed_model_name: str = DEFAULT_EMB
     paragraphs = extract_paragraphs(pdf_path)
     print(f"      -> {len(paragraphs)} raw sentences")
 
-    print("[2/4] Merging into passage-sized chunks ...")
-    chunks = merge_to_target_size(paragraphs, target_words=target_words)
+    print(f"[2/4] Merging into passage-sized chunks (target={target_words}w, overlap={overlap_words}w) ...")
+    chunks = merge_to_target_size(paragraphs, target_words=target_words, overlap_words=overlap_words)
     for i, c in enumerate(chunks):
         c["chunk_id"] = i
     print(f"      -> {len(chunks)} passages")
@@ -110,7 +155,12 @@ def build_index(pdf_path: str, out_dir: str, embed_model_name: str = DEFAULT_EMB
         for c in chunks:
             f.write(json.dumps(c) + "\n")
     with open(out_dir / "meta.json", "w") as f:
-        json.dump({"embed_model": embed_model_name, "num_chunks": len(chunks)}, f, indent=2)
+        json.dump({
+            "embed_model": embed_model_name,
+            "num_chunks": len(chunks),
+            "target_words": target_words,
+            "overlap_words": overlap_words,
+        }, f, indent=2)
 
     print(f"Done. Wrote {out_dir/'faiss.index'} and {out_dir/'corpus.jsonl'}")
 
@@ -120,7 +170,9 @@ if __name__ == "__main__":
     ap.add_argument("--pdf", required=True, help="Path to source PDF")
     ap.add_argument("--out", default="index", help="Output directory for index files")
     ap.add_argument("--embed-model", default=DEFAULT_EMBED_MODEL)
-    ap.add_argument("--target-words", type=int, default=40,
-                     help="Approx. words per passage before merging stops")
+    ap.add_argument("--target-words", type=int, default=120,
+                    help="Approx. words per passage before merging stops (default 120)")
+    ap.add_argument("--overlap-words", type=int, default=30,
+                    help="Approx. words to overlap between consecutive passages (default 30)")
     args = ap.parse_args()
-    build_index(args.pdf, args.out, args.embed_model, args.target_words)
+    build_index(args.pdf, args.out, args.embed_model, args.target_words, args.overlap_words)

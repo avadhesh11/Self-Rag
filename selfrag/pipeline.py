@@ -19,6 +19,7 @@ multi-segment generation is a natural next feature to add on top.
 """
 from dataclasses import dataclass, field
 
+from .query_normalizer import normalize_query
 from .reflection_tokens import (
     RETRIEVE_NO,
     RETRIEVE_YES,
@@ -29,6 +30,27 @@ from .reflection_tokens import (
     ISREL_TOKENS,
     ISSUP_TOKENS,
 )
+
+
+_REFUSAL_PHRASES = (
+    "i'm sorry",
+    "i am sorry",
+    "not sure what you are asking",
+    "not sure what you are referring to",
+    "not familiar with the term",
+    "provide more context or clarify",
+    "don't have any information",
+    "do not have any information",
+)
+
+
+def _is_refusal(text: str) -> bool:
+    lower = text.lower()
+    return any(phrase in lower for phrase in _REFUSAL_PHRASES)
+
+
+def _all_candidates_refuse(candidates: list["Candidate"]) -> bool:
+    return bool(candidates) and all(_is_refusal(c.answer_text) for c in candidates)
 
 
 @dataclass
@@ -53,6 +75,7 @@ class SelfRAGResult:
     selected: Candidate | None
     final_answer: str
     decision: str | None = None  # [Retrieval] / [No Retrieval], or None
+    normalized_query: str | None = None
 
 
 def _decide_retrieve(generator, query: str) -> tuple[bool, str | None]:
@@ -91,17 +114,30 @@ def _score_candidate(passage: dict, raw_text: str) -> Candidate:
 
 
 def self_rag_answer(query: str, generator, retriever, k: int = 5) -> SelfRAGResult:
-    should_retrieve, decision = _decide_retrieve(generator, query)
+    # Normalize the query: decouple search terms from the generation instruction
+    search_query, instruction = normalize_query(query)
+
+    should_retrieve, decision = _decide_retrieve(generator, instruction)
     if not should_retrieve:
-        raw = generator.generate(query, paragraph=None)
+        raw = generator.generate(instruction, paragraph=None)
         answer = strip_reflection_tokens(raw)
         return SelfRAGResult(query=query, retrieved=False, candidates=[],
-                              selected=None, final_answer=answer, decision=decision)
+                              selected=None, final_answer=answer, decision=decision,
+                              normalized_query=instruction)
 
-    passages = retriever.search(query, k=k)
-    raw_outputs = generator.generate_batch(query, [p["text"] for p in passages])
+    passages = retriever.search(search_query, k=k)
+    raw_outputs = generator.generate_batch(instruction, [p["text"] for p in passages])
 
     candidates = [_score_candidate(p, raw) for p, raw in zip(passages, raw_outputs)]
+
+    # Refusal fallback: if every candidate generated a refusal/clarification response
+    # ("I'm sorry, but I'm not sure..."), re-prompt with an explicit extraction directive.
+    if _all_candidates_refuse(candidates) and passages:
+        fallback_inst = f"Summarize the key facts about {search_query} stated in the passage:"
+        fallback_outputs = generator.generate_batch(fallback_inst, [p["text"] for p in passages])
+        fallback_candidates = [_score_candidate(p, raw) for p, raw in zip(passages, fallback_outputs)]
+        if any(c.issup != "[No support / Contradictory]" for c in fallback_candidates):
+            candidates = fallback_candidates
 
     # Discard candidates whose passage the model itself judged irrelevant,
     # UNLESS every candidate was judged irrelevant (then fall back to the
@@ -112,4 +148,4 @@ def self_rag_answer(query: str, generator, retriever, k: int = 5) -> SelfRAGResu
     best = max(pool, key=lambda c: c.score)
     return SelfRAGResult(query=query, retrieved=True, candidates=candidates,
                           selected=best, final_answer=best.answer_text,
-                          decision=decision)
+                          decision=decision, normalized_query=instruction)

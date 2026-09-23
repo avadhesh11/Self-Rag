@@ -17,7 +17,7 @@ load_dotenv()  # loads .env from the project root (or any parent)
 
 # Default Gemini model to use. Can be overridden via GEMINI_MODEL env var.
 # Valid values: "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro", etc.
-DEFAULT_GEMINI_MODEL = "gemini-3.5-flash"
+DEFAULT_GEMINI_MODEL = "gemini-3.5-flash-lite"
 
 # Retry settings for transient API errors (503 overloaded, 429 rate-limited).
 _MAX_RETRIES = 3
@@ -73,7 +73,7 @@ class GeminiGenerator:
 
         prompt = (
             "You are a helpful assistant. "
-            "Answer the question using ONLY the context passages provided below. "
+            "Answer the question using  the context passages provided below. "
             "If the answer is not contained in the context, say so clearly.\n\n"
             f"Context:\n{context_block}\n\n"
             f"Question: {query}\n\n"
