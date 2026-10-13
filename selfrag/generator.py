@@ -22,6 +22,8 @@ the reflection tokens it emits are no longer meaningful.
 """
 import os
 
+from .reflection_tokens import RETRIEVE_YES
+
 MODEL_NAME = "selfrag/selfrag_llama2_7b"
 
 # Local GGUF default: download with
@@ -39,11 +41,23 @@ TOP_P = 1.0
 MAX_TOKENS = 150
 
 
-def format_prompt(instruction: str, paragraph: str | None = None) -> str:
-    """Exact template from the official model card."""
-    prompt = f"### Instruction:\n{instruction}\n\n### Response:\n"
+def format_prompt(instruction: str, paragraph: str | None = None,
+                  history: str = "") -> str:
+    """Exact template from the official model card, extended with `history`
+    for multi-segment generation: everything the model has produced after
+    "### Response:" so far (the paper's (x, y<t) context). When a paragraph
+    is attached the history must already end with the [Retrieval] token --
+    the checkpoint was fine-tuned on the stream
+    "[Retrieval]<paragraph>...</paragraph>[Relevant]sentence[Fully supported]
+    [Continue to Use Evidence]sentence..." (official repo, data_creation/
+    generator/postprocess_data.py), so multi-segment prompts reproduce that
+    stream exactly.
+    """
+    prompt = f"### Instruction:\n{instruction}\n\n### Response:\n{history}"
     if paragraph is not None:
-        prompt += f"[Retrieval]<paragraph>{paragraph}</paragraph>"
+        if not history.endswith(RETRIEVE_YES):
+            prompt += RETRIEVE_YES
+        prompt += f"<paragraph>{paragraph}</paragraph>"
     return prompt
 
 
@@ -89,10 +103,13 @@ class SelfRAGGenerator:
 
     # --- the interface pipeline.py depends on ---
 
-    def generate(self, instruction: str, paragraph: str | None = None) -> str:
+    def generate(self, instruction: str, paragraph: str | None = None,
+                 history: str = "") -> str:
         """Single forward generation. Returns raw text INCLUDING reflection
-        tokens -- callers parse those out via reflection_tokens.py."""
-        prompt = format_prompt(instruction, paragraph)
+        tokens -- callers parse those out via reflection_tokens.py.
+        `history` is the model's response stream so far (multi-segment
+        generation; see format_prompt)."""
+        prompt = format_prompt(instruction, paragraph, history)
         if self._backend == "llamacpp":
             out = self._llm(
                 prompt,
@@ -110,14 +127,16 @@ class SelfRAGGenerator:
         outputs = self._llm.generate([prompt], self._sampling_params)
         return outputs[0].outputs[0].text
 
-    def generate_batch(self, instruction: str, paragraphs: list[str]) -> list[str]:
+    def generate_batch(self, instruction: str, paragraphs: list[str],
+                       history: str = "") -> list[str]:
         """Generate one candidate continuation per passage. vLLM does this
         in a single batched call -- this is the 'parallel generation across
         retrieved passages' step from the paper. The llama.cpp backend
         completes sequentially instead; k <= 5 passages at Q4 on an
-        M-series chip is a few seconds each, fine for a demo trace."""
+        M-series chip is a few seconds each, fine for a demo trace.
+        `history` is the response stream so far (multi-segment generation)."""
         if self._backend == "llamacpp":
-            return [self.generate(instruction, p) for p in paragraphs]
-        prompts = [format_prompt(instruction, p) for p in paragraphs]
+            return [self.generate(instruction, p, history) for p in paragraphs]
+        prompts = [format_prompt(instruction, p, history) for p in paragraphs]
         outputs = self._llm.generate(prompts, self._sampling_params)
         return [o.outputs[0].text for o in outputs]

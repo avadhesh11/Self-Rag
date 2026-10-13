@@ -45,12 +45,21 @@ def print_trace(result):
         print(f"\nFinal answer (no retrieval needed):\n{result.final_answer}")
         return
 
-    for c in result.candidates:
-        tag = "-> SELECTED" if c is result.selected else ""
-        print(f"\n  Passage (page {c.passage.get('page')}): "
-              f"{c.passage['text'][:100]}...")
-        print(f"    ISREL={c.isrel}  ISSUP={c.issup}  ISUSE={c.isuse}  "
-              f"score={c.score:.2f} {tag}")
+    for seg in result.segments:
+        if seg.reused_evidence:
+            print(f"\n--- Segment {seg.index}: {seg.decision} (reusing evidence in context) ---")
+        else:
+            print(f"\n--- Segment {seg.index}: {seg.decision} -> "
+                  f"{len(seg.evidence)} passages fetched ---")
+        for c in seg.candidates:
+            tag = "-> SELECTED" if c is seg.selected else ""
+            src = c.passage.get("source", "?")
+            print(f"\n  Passage ([{src}], page {c.passage.get('page')}): "
+                  f"{c.passage['text'][:100]}...")
+            print(f"    ISREL={c.isrel}  ISSUP={c.issup}  ISUSE={c.isuse}  "
+                  f"score={c.score:.2f} {tag}")
+        if not seg.candidates:
+            print(f"\n  Contribution: {seg.answer_text[:200]}...")
 
     print(f"\nFinal answer:\n{result.final_answer}")
 
@@ -82,6 +91,8 @@ def main():
                     help="Path to a .gguf (llamacpp backend) or a HF model id (vllm backend)")
     ap.add_argument("--download-dir", default=None, help="vLLM backend only")
     ap.add_argument("--k", type=int, default=5, help="Number of passages to retrieve")
+    ap.add_argument("--max-segments", type=int, default=3,
+                    help="Max output segments for Self-RAG (paper Algorithm 1 loop)")
     ap.add_argument("--mode", default=None,
                     choices=["normal", "self", "both"],
                     help="RAG mode: normal | self | both  (interactive menu if omitted)")
@@ -119,6 +130,7 @@ def main():
         self_generator=self_generator,
         retriever=retriever,
         k=args.k,
+        max_segments=args.max_segments,
     )
 
     # Display results

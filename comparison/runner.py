@@ -43,6 +43,7 @@ def run_rag(
     self_generator=None,     # SelfRAGGenerator (required for "self"   / "both")
     retriever,               # shared PassageRetriever
     k: int = 5,
+    max_segments: int = 3,   # Self-RAG only: paper's multi-segment loop bound
 ) -> ComparisonResult:
     """Run one or both RAG pipelines and return a ComparisonResult.
 
@@ -53,6 +54,7 @@ def run_rag(
         self_generator:   SelfRAGGenerator (pass None if not using Self-RAG).
         retriever:        Shared PassageRetriever instance.
         k:                Number of passages to retrieve.
+        max_segments:     Max output segments for Self-RAG (Algorithm 1 loop).
     """
     mode = mode.lower().strip()
     result = ComparisonResult(query=query)
@@ -66,7 +68,8 @@ def run_rag(
         if self_generator is None:
             raise ValueError("self_generator is required for Self-RAG mode.")
         t0 = time.perf_counter()
-        result.self_rag = self_rag_answer(query, self_generator, retriever, k=k)
+        result.self_rag = self_rag_answer(
+            query, self_generator, retriever, k=k, max_segments=max_segments)
         result.self_rag_latency = time.perf_counter() - t0
 
     return result
@@ -114,7 +117,23 @@ def print_self_rag(r: SelfRAGResult, latency: float | None) -> None:
         print(f"Latency           : {latency:.2f}s")
 
     # Per-candidate critique tokens (same info as the original print_trace)
-    if r.candidates:
+    if r.segments:
+        for seg in r.segments:
+            if seg.reused_evidence:
+                print(f"\nSegment {seg.index}: {seg.decision} (reusing evidence in context)")
+            else:
+                print(f"\nSegment {seg.index}: {seg.decision} -> {len(seg.evidence)} passages fetched")
+            for c in seg.candidates:
+                tag = "-> SELECTED" if c is seg.selected else ""
+                src = c.passage.get("source", "?")
+                print(
+                    f"  [{src} page {c.passage.get('page', '?')}]  "
+                    f"ISREL={c.isrel}  ISSUP={c.issup}  "
+                    f"ISUSE={c.isuse}  score={c.score:.2f}  {tag}"
+                )
+            if not seg.candidates:
+                print(f"  contribution: {seg.answer_text[:120]}...")
+    elif r.candidates:
         print("\nPassage critique:")
         for c in r.candidates:
             tag = "-> SELECTED" if c is r.selected else ""

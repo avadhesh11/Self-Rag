@@ -1,5 +1,8 @@
 """
-Chunk a PDF into passage-sized units and build a FAISS index over them.
+Chunk one or more PDFs into passage-sized units and build a FAISS index
+over them. Multiple documents: pass several --pdf values; every chunk is
+tagged with a `source` (its PDF filename) so the Self-RAG trace can show
+WHICH document each retrieved passage came from.
 
 Self-RAG retrieves at the *passage* level (roughly paragraph-sized chunks),
 not arbitrary token windows, so we chunk paragraph-aligned and merge short
@@ -8,7 +11,7 @@ coherent enough for the [ISREL]/[ISSUP] critique tokens to make a sane
 judgment about it.
 
 Usage:
-    python index/build_index.py --pdf data/sample.pdf --out index/
+    python index/build_index.py --pdf data/sample.pdf data/2310.11511v1.pdf --out index/
 """
 import argparse
 import json
@@ -124,24 +127,33 @@ def merge_to_target_size(paragraphs: list[dict], target_words: int = 120,
     return chunks
 
 
-def build_index(pdf_path: str, out_dir: str, embed_model_name: str = DEFAULT_EMBED_MODEL,
+def build_index(pdf_paths: list[str], out_dir: str, embed_model_name: str = DEFAULT_EMBED_MODEL,
                  target_words: int = 120, overlap_words: int = 30):
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    print(f"[1/4] Extracting text from {pdf_path} ...")
-    paragraphs = extract_paragraphs(pdf_path)
-    print(f"      -> {len(paragraphs)} raw sentences")
+    all_chunks = []
+    sources = []
+    for pdf_path in pdf_paths:
+        pdf_path = Path(pdf_path)
+        print(f"[1/4] Extracting text from {pdf_path} ...")
+        paragraphs = extract_paragraphs(str(pdf_path))
+        print(f"      -> {len(paragraphs)} raw sentences")
 
-    print(f"[2/4] Merging into passage-sized chunks (target={target_words}w, overlap={overlap_words}w) ...")
-    chunks = merge_to_target_size(paragraphs, target_words=target_words, overlap_words=overlap_words)
-    for i, c in enumerate(chunks):
+        chunks = merge_to_target_size(paragraphs, target_words=target_words, overlap_words=overlap_words)
+        for c in chunks:
+            c["source"] = pdf_path.name
+        print(f"      -> {len(chunks)} passages")
+        all_chunks.extend(chunks)
+        sources.append(pdf_path.name)
+
+    for i, c in enumerate(all_chunks):
         c["chunk_id"] = i
-    print(f"      -> {len(chunks)} passages")
+    print(f"[2/4] Total passages across {len(pdf_paths)} document(s): {len(all_chunks)}")
 
     print(f"[3/4] Embedding passages with {embed_model_name} ...")
     model = SentenceTransformer(embed_model_name)
-    texts = [c["text"] for c in chunks]
+    texts = [c["text"] for c in all_chunks]
     embeddings = model.encode(texts, normalize_embeddings=True, show_progress_bar=True)
     embeddings = np.asarray(embeddings, dtype="float32")
 
@@ -152,14 +164,15 @@ def build_index(pdf_path: str, out_dir: str, embed_model_name: str = DEFAULT_EMB
 
     faiss.write_index(faiss_index, str(out_dir / "faiss.index"))
     with open(out_dir / "corpus.jsonl", "w") as f:
-        for c in chunks:
+        for c in all_chunks:
             f.write(json.dumps(c) + "\n")
     with open(out_dir / "meta.json", "w") as f:
         json.dump({
             "embed_model": embed_model_name,
-            "num_chunks": len(chunks),
+            "num_chunks": len(all_chunks),
             "target_words": target_words,
             "overlap_words": overlap_words,
+            "sources": sources,
         }, f, indent=2)
 
     print(f"Done. Wrote {out_dir/'faiss.index'} and {out_dir/'corpus.jsonl'}")
@@ -167,7 +180,8 @@ def build_index(pdf_path: str, out_dir: str, embed_model_name: str = DEFAULT_EMB
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--pdf", required=True, help="Path to source PDF")
+    ap.add_argument("--pdf", nargs="+", required=True,
+                    help="Source PDF(s); pass multiple for a multi-document index")
     ap.add_argument("--out", default="index", help="Output directory for index files")
     ap.add_argument("--embed-model", default=DEFAULT_EMBED_MODEL)
     ap.add_argument("--target-words", type=int, default=120,
