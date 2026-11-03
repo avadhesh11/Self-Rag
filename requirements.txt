@@ -10,3 +10,6 @@ numpy
 # --- Normal RAG (Gemini, works on any OS) ---
 google-genai
 python-dotenv
+
+# --- Benchmark testbench PDF generation (benchmark_addon/testbench) ---
+reportlab

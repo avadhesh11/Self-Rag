@@ -1,0 +1,70 @@
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 8031.18it/s]
+[short] selfrag-adaptive: 0 done, 18 to go
+[short] llama2:7b: 2 done, 16 to go
+[short] llama2:7b+ret: 2 done, 16 to go
+[short] llama3:8b: 2 done, 16 to go
+[short] llama3:8b+ret: 2 done, 16 to go
+[short] gemma3:12b: 0 done, 18 to go
+[short] gemma3:12b+ret: 0 done, 18 to go
+[multi] selfrag-adaptive: 0 done, 9 to go
+[multi] llama2:7b: 2 done, 7 to go
+[multi] llama2:7b+ret: 2 done, 7 to go
+[multi] llama3:8b: 2 done, 7 to go
+[multi] llama3:8b+ret: 2 done, 7 to go
+[multi] gemma3:12b: 0 done, 9 to go
+[multi] gemma3:12b+ret: 0 done, 9 to go
+[tf] selfrag-adaptive: 0 done, 7 to go
+[tf] llama2:7b: 2 done, 5 to go
+[tf] llama2:7b+ret: 2 done, 5 to go
+[tf] llama3:8b: 2 done, 5 to go
+[tf] llama3:8b+ret: 2 done, 5 to go
+[tf] gemma3:12b: 0 done, 7 to go
+[tf] gemma3:12b+ret: 0 done, 7 to go
+[mc] selfrag-adaptive: 0 done, 5 to go
+[mc] llama2:7b: 2 done, 3 to go
+[mc] llama2:7b+ret: 2 done, 3 to go
+[mc] llama3:8b: 2 done, 3 to go
+[mc] llama3:8b+ret: 2 done, 3 to go
+[mc] gemma3:12b: 0 done, 5 to go
+[mc] gemma3:12b+ret: 0 done, 5 to go
+[unanswerable] selfrag-adaptive: 0 done, 6 to go
+[unanswerable] llama2:7b: 2 done, 4 to go
+[unanswerable] llama2:7b+ret: 2 done, 4 to go
+[unanswerable] llama3:8b: 2 done, 4 to go
+[unanswerable] llama3:8b+ret: 2 done, 4 to go
+[unanswerable] gemma3:12b: 0 done, 6 to go
+[unanswerable] gemma3:12b+ret: 0 done, 6 to go
+[general] selfrag-adaptive: 0 done, 4 to go
+[general] llama2:7b: 2 done, 2 to go
+[general] llama2:7b+ret: 2 done, 2 to go
+[general] llama3:8b: 2 done, 2 to go
+[general] llama3:8b+ret: 2 done, 2 to go
+[general] gemma3:12b: 0 done, 4 to go
+[general] gemma3:12b+ret: 0 done, 4 to go
+[paper] selfrag-adaptive: 0 done, 6 to go
+[paper] llama2:7b: 2 done, 4 to go
+[paper] llama2:7b+ret: 2 done, 4 to go
+[paper] llama3:8b: 2 done, 4 to go
+[paper] llama3:8b+ret: 2 done, 4 to go
+[paper] gemma3:12b: 0 done, 6 to go
+[paper] gemma3:12b+ret: 0 done, 6 to go
+
+System                          Short      Multi        T/F         MC      Unans    General      Paper        Avg
+------------------------------------------------------------------------------------------------------------------
+gemma3:12b+ret                  100.0       77.8       85.7      100.0       50.0       25.0       66.7       72.2
+gemma3:12b                        5.6        0.0       85.7       20.0        0.0      100.0        0.0       30.2
+llama2:7b+ret                   100.0       44.4       57.1      100.0       33.3       25.0       66.7       60.9
+llama2:7b                        11.1        0.0       57.1        0.0      100.0      100.0       16.7       40.7
+llama3:8b+ret                   100.0       88.9       85.7      100.0       33.3       50.0       66.7       74.9
+llama3:8b                         5.6        0.0       71.4       40.0        0.0      100.0       16.7       33.4
+selfrag-adaptive                 55.6        0.0       57.1       20.0       16.7      100.0        0.0       35.6
+(n questions)                      18          9          7          5          6          4          6
+
+Retrieval hit-rate (gold evidence phrase inside the k retrieved passages):
+  MC       100.0%  (n=5)
+  Multi    100.0%  (n=9)
+  Paper     66.7%  (n=6)
+  Short    100.0%  (n=18)
+  T/F      100.0%  (n=7)
+
+acc: substring/label match (paper metric); Unans = % that abstain instead of hallucinating (phrase heuristic: spot check the `prediction` fields). Rows without '+ret' saw no passages.

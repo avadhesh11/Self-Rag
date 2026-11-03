@@ -28,28 +28,28 @@ Standard Self-RAG evaluates retrieval dynamically per segment and critiques cand
 flowchart TD
     UserQuery["User Query"] --> Norm["Canonical Normalization"]
     Norm --> CheckExact{"Exact Normalized Match<br/>in Experience Memory?"}
-    
+
     %% Path A
     CheckExact -- "Yes & Validated" --> PathA["PATH A: Direct Reuse<br/>• 0 LLM forward passes<br/>• Sub-millisecond retrieval<br/>• Stored answer & provenance returned"]
-    
+
     %% Semantic Lookup
     CheckExact -- "No" --> FAISS["FAISS Semantic Memory Search<br/>(Dense Cosine Similarity)"]
     FAISS --> Val{"Conservative Validator<br/>• Verification Status == APPROVED<br/>• Polarity & Scope Match<br/>• Source Document Freshness<br/>• Score >= Threshold"}
-    
+
     %% Path B
     Val -- "Valid Experience(s) Found" --> PathB["PATH B: Experience-Assisted Self-RAG<br/>• ExperienceAugmentedRetriever wraps document retriever<br/>• Memory context appended to candidate pool<br/>• Adaptive tree decoding over docs + experiences<br/>• Fresh grounded answer generated"]
-    
+
     %% Path C
     Val -- "No Valid Experience" --> PathC["PATH C: Normal Self-RAG Fallback<br/>• Base document retriever<br/>• Standard reflection-token generation loop"]
-    
+
     %% Learning Loop
     PathB --> Appr{"User / Expert Verification<br/>approve_and_save()"}
     PathC --> Appr
-    
+
     Appr -- "Approved" --> SQLite[("SQLite Experience Store<br/>(Single Source of Truth)")]
     SQLite --> FAISSRebuild["FAISS Memory Index Rebuild<br/>& Dynamic Reload"]
     FAISSRebuild -.-> FAISS
-    
+
     SQLite -.-> QLoRA["(Planned / Colab)<br/>Periodic QLoRA Offline Distillation"]
     QLoRA -.-> BaseLLM["Fine-Tuned Generator Checkpoint"]
 ```
@@ -223,12 +223,99 @@ python evorag_cli.py --help
 ```
 
 ### Category B: Verified Baseline Commands (Requires API Key or Model Download)
+Prints a menu, lets you pick the mode, then prompts for a question:
+
+```
+========================================
+        RAG COMPARISON DEMO
+========================================
+  1. Normal RAG  (Gemini)
+  2. Self-RAG    (selfrag_llama2_7b)
+  3. Compare Both
+  4. Ollama RAG  (local model)
+========================================
+Select mode [1/2/3/4] (default 2):
+
+Question:
+```
+
+### Non-interactive (CLI flags)
 
 ```bash
 # 1. Normal RAG using Gemini API (Requires GEMINI_API_KEY in .env)
 python demo.py --mode normal "How large is the Amazon rainforest?"
 
 # 2. Batch evaluation of questions bank (Requires GEMINI_API_KEY)
+# Mode 2 -- Self-RAG only (original behaviour)
+python demo.py --mode self "How large is the Amazon rainforest?"
+python demo.py --mode self "What is 2+2?"          # skips retrieval
+python demo.py --mode self --max-segments 5 "..."  # longer Algorithm 1 loop
+
+# Mode 3 -- Compare both side-by-side
+python demo.py --mode both "How large is the Amazon rainforest?"
+
+# Mode 4 -- Ollama RAG (local model; needs `ollama serve` + `ollama pull`)
+python demo.py --mode ollama "How large is the Amazon rainforest?"
+python demo.py --mode ollama --ollama-model gemma3:12b "..."
+
+# All original Self-RAG flags still work
+python demo.py --mode self --model path/to/custom.gguf --k 3 "..."
+SELFRAG_BACKEND=vllm python demo.py --mode self --model selfrag/selfrag_llama2_7b "..."
+```
+
+### Compare Both output format
+
+```
+=======================================================
+  NORMAL RAG  (Gemini)
+=======================================================
+Retrieved chunks : 5
+Latency          : 3.21s
+
+Retrieved passages:
+  [1] page 1  score=0.872
+      The Amazon rainforest covers 5,500,000 km2 ...
+  ...
+
+Answer:
+The Amazon rainforest covers roughly 5.5 million square kilometres ...
+
+=======================================================
+  SELF-RAG  (selfrag/selfrag_llama2_7b)
+=======================================================
+Retrieval decision: Yes ([Retrieval])
+Retrieved chunks  : 5
+Latency           : 18.40s
+
+Passage critique:
+  page   1  ISREL=[Relevant]  ISSUP=[Fully supported]  ISUSE=5  score=2.50  -> SELECTED
+  ...
+
+Answer:
+The Amazon rainforest is approximately 5.5 million km² ...
+
+=======================================================
+  COMPARISON SUMMARY
+=======================================================
+                     NORMAL RAG        SELF-RAG
+-------------------------------------------------------
+Chunks retrieved              5               5
+Retrieval decision       Always             Yes
+Latency               3.21s          18.40s
+Answer length (words)        18              14
+```
+
+---
+
+## Batch evaluation
+
+Run all questions from `evaluation/questions.json` through both pipelines:
+
+```bash
+# Compare both (requires both model and Gemini key)
+python evaluation/evaluate.py --mode both --out results.json
+
+# Normal RAG only (no Self-RAG model needed)
 python evaluation/evaluate.py --mode normal
 ```
 

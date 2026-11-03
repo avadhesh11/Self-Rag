@@ -13,7 +13,12 @@ RAG comparison demo: Normal RAG (Gemini) vs Self-RAG (selfrag_llama2_7b).
 --- Mode 3: Compare Both ---
     python demo.py --mode both "How large is the Amazon rainforest?"
 
+--- Mode 4: Ollama RAG (local model served by Ollama) ---
+    python demo.py --mode ollama "How large is the Amazon rainforest?"
+    python demo.py --mode ollama --ollama-model gemma3:12b "..."
+
 GEMINI_API_KEY must be set in .env (or the environment) for modes 1 and 3.
+Mode 4 needs `ollama serve` running with the model pulled (llama3:8b default).
 
 Self-RAG prints a full trace: retrieval decision, per-passage ISREL/ISSUP/ISUSE,
 which candidate was selected, and the final cleaned answer.
@@ -29,7 +34,8 @@ load_dotenv()  # loads .env so GEMINI_API_KEY is available
 from retriever.retriever import PassageRetriever
 from selfrag.generator import SelfRAGGenerator
 from selfrag.pipeline import self_rag_answer
-from comparison.runner import run_rag, print_normal_rag, print_self_rag, print_comparison
+from comparison.runner import (run_rag, print_normal_rag, print_ollama_rag,
+                               print_self_rag, print_comparison)
 
 
 def print_trace(result):
@@ -72,9 +78,10 @@ def _pick_mode_interactive() -> str:
     print("  1. Normal RAG  (Gemini)")
     print("  2. Self-RAG    (selfrag_llama2_7b)")
     print("  3. Compare Both")
+    print("  4. Ollama RAG  (local model)")
     print("=" * 40)
-    choice = input("Select mode [1/2/3] (default 2): ").strip() or "2"
-    return {"1": "normal", "2": "self", "3": "both"}.get(choice, "self")
+    choice = input("Select mode [1/2/3/4] (default 2): ").strip() or "2"
+    return {"1": "normal", "2": "self", "3": "both", "4": "ollama"}.get(choice, "self")
 
 
 def main():
@@ -94,8 +101,12 @@ def main():
     ap.add_argument("--max-segments", type=int, default=3,
                     help="Max output segments for Self-RAG (paper Algorithm 1 loop)")
     ap.add_argument("--mode", default=None,
-                    choices=["normal", "self", "both"],
-                    help="RAG mode: normal | self | both  (interactive menu if omitted)")
+                    choices=["normal", "self", "both", "ollama"],
+                    help="RAG mode: normal | self | both | ollama  (interactive menu if omitted)")
+    ap.add_argument("--ollama-model", default=os.environ.get("OLLAMA_MODEL", "llama3:8b"),
+                    help="Ollama model tag for --mode ollama (default llama3:8b)")
+    ap.add_argument("--ollama-host", default=os.environ.get("OLLAMA_HOST", "http://localhost:11434"),
+                    help="Ollama server URL (default http://localhost:11434)")
     args = ap.parse_args()
 
     # Determine mode -- CLI flag wins, else interactive menu
@@ -112,11 +123,17 @@ def main():
     # Only load generators that are actually needed
     normal_generator = None
     self_generator   = None
+    ollama_generator = None
 
     if mode in ("normal", "both"):
         from normal_rag.generator import GeminiGenerator
         print("Initialising Gemini generator ...")
         normal_generator = GeminiGenerator()
+
+    if mode == "ollama":
+        from normal_rag.ollama_generator import OllamaGenerator
+        print(f"Initialising Ollama generator ({args.ollama_model}) ...")
+        ollama_generator = OllamaGenerator(model=args.ollama_model, host=args.ollama_host)
 
     if mode in ("self", "both"):
         backend = os.environ.get("SELFRAG_BACKEND", "llamacpp")
@@ -128,6 +145,7 @@ def main():
         query, mode,
         normal_generator=normal_generator,
         self_generator=self_generator,
+        ollama_generator=ollama_generator,
         retriever=retriever,
         k=args.k,
         max_segments=args.max_segments,
@@ -136,6 +154,8 @@ def main():
     # Display results
     if mode == "normal":
         print_normal_rag(result.normal)
+    elif mode == "ollama":
+        print_ollama_rag(result.ollama, model_name=ollama_generator.name)
     elif mode == "self":
         # Use the original Self-RAG trace format (print_trace) for full fidelity
         print_trace(result.self_rag)
