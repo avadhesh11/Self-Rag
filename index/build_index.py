@@ -14,8 +14,10 @@ Usage:
     python index/build_index.py --pdf data/sample.pdf data/2310.11511v1.pdf --out index/
 """
 import argparse
+import hashlib
 import json
 import re
+import unicodedata
 from pathlib import Path
 
 import faiss
@@ -30,7 +32,40 @@ from sentence_transformers import SentenceTransformer
 DEFAULT_EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
 
-_SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+(?=[A-Z0-9])")
+_SENTENCE_SPLIT_RE = re.compile(
+    r"(?<!\b[Ss]ec\.)(?<!\b[Aa]rt\.)(?<!\b[Nn]o\.)(?<!\b[Rr]s\.)(?<=[.!?])\s+(?=[A-Z0-9])"
+)
+
+
+def split_sentences(text: str) -> list[str]:
+    """Split text into sentence-level units while preserving abbreviations."""
+    if not text:
+        return []
+    return [s.strip() for s in _SENTENCE_SPLIT_RE.split(text) if s.strip()]
+
+
+def compute_file_hash(file_path: str | Path) -> str:
+    """Compute SHA-256 hash of a file's raw bytes for source versioning."""
+    h = hashlib.sha256()
+    with open(file_path, "rb") as f:
+        while chunk := f.read(65536):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def normalize_chunk_text(text: str) -> str:
+    """Normalize chunk text for deterministic hashing (NFKC + collapsed whitespace)."""
+    if not text:
+        return ""
+    normalized = unicodedata.normalize("NFKC", text)
+    return " ".join(normalized.split())
+
+
+def compute_chunk_hash(source_id: str, text: str) -> str:
+    """Compute deterministic SHA-256 hash for a chunk derived from source_id and normalized text."""
+    norm_text = normalize_chunk_text(text)
+    payload = f"{source_id}:{norm_text}".encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
 
 
 def clean_pdf_text(text: str) -> str:
@@ -64,7 +99,7 @@ def extract_paragraphs(pdf_path: str) -> list[dict]:
         flat = clean_pdf_text(text)
         if not flat:
             continue
-        sentences = _SENTENCE_SPLIT_RE.split(flat)
+        sentences = split_sentences(flat)
         for sent in sentences:
             cleaned = sent.strip()
             if cleaned:
@@ -134,8 +169,11 @@ def build_index(pdf_paths: list[str], out_dir: str, embed_model_name: str = DEFA
 
     all_chunks = []
     sources = []
+    source_versions = {}
     for pdf_path in pdf_paths:
         pdf_path = Path(pdf_path)
+        source_version = compute_file_hash(pdf_path)
+        source_versions[pdf_path.name] = source_version
         print(f"[1/4] Extracting text from {pdf_path} ...")
         paragraphs = extract_paragraphs(str(pdf_path))
         print(f"      -> {len(paragraphs)} raw sentences")
@@ -143,6 +181,8 @@ def build_index(pdf_paths: list[str], out_dir: str, embed_model_name: str = DEFA
         chunks = merge_to_target_size(paragraphs, target_words=target_words, overlap_words=overlap_words)
         for c in chunks:
             c["source"] = pdf_path.name
+            c["source_version"] = source_version
+            c["chunk_hash"] = compute_chunk_hash(pdf_path.name, c["text"])
         print(f"      -> {len(chunks)} passages")
         all_chunks.extend(chunks)
         sources.append(pdf_path.name)
@@ -173,9 +213,11 @@ def build_index(pdf_paths: list[str], out_dir: str, embed_model_name: str = DEFA
             "target_words": target_words,
             "overlap_words": overlap_words,
             "sources": sources,
+            "source_versions": source_versions,
         }, f, indent=2)
 
     print(f"Done. Wrote {out_dir/'faiss.index'} and {out_dir/'corpus.jsonl'}")
+    return all_chunks
 
 
 if __name__ == "__main__":
