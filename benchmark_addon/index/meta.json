@@ -1,0 +1,13 @@
+{
+  "embed_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "num_chunks": 371,
+  "target_words": 40,
+  "overlap_words": 0,
+  "sources": [
+    "kestrel_valley_history.pdf",
+    "aurora_zx9_technical_note.pdf",
+    "tarn2_lumivex_trial.pdf",
+    "halcyon4_station_handbook.pdf",
+    "2310.11511v1.pdf"
+  ]
+}

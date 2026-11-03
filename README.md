@@ -233,8 +233,9 @@ Prints a menu, lets you pick the mode, then prompts for a question:
   1. Normal RAG  (Gemini)
   2. Self-RAG    (selfrag_llama2_7b)
   3. Compare Both
+  4. Ollama RAG  (local model)
 ========================================
-Select mode [1/2/3] (default 2):
+Select mode [1/2/3/4] (default 2):
 
 Question:
 ```
@@ -252,6 +253,10 @@ python demo.py --mode self --max-segments 5 "..."  # longer Algorithm 1 loop
 
 # Mode 3 -- Compare both side-by-side
 python demo.py --mode both "How large is the Amazon rainforest?"
+
+# Mode 4 -- Ollama RAG (local model; needs `ollama serve` + `ollama pull`)
+python demo.py --mode ollama "How large is the Amazon rainforest?"
+python demo.py --mode ollama --ollama-model gemma3:12b "..."
 
 # All original Self-RAG flags still work
 python demo.py --mode self --model path/to/custom.gguf --k 3 "..."
