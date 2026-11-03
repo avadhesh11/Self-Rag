@@ -5,9 +5,10 @@ Dispatches to the Normal RAG and/or Self-RAG pipelines based on mode,
 then pretty-prints structured results.
 
 Modes:
-    "normal" -- Normal RAG only (Gemini)
-    "self"   -- Self-RAG only (existing pipeline, unchanged)
-    "both"   -- run both, display side-by-side
+    "normal"  -- Normal RAG only (Gemini)
+    "self"    -- Self-RAG only (existing pipeline, unchanged)
+    "both"    -- run both, display side-by-side
+    "ollama"  -- Normal RAG with a local model served by Ollama
 
 The Self-RAG pipeline is called exactly as demo.py calls it today:
     self_rag_answer(query, generator, retriever, k=k)
@@ -29,6 +30,7 @@ class ComparisonResult:
     query: str
     normal: NormalRAGResult | None = None
     self_rag: SelfRAGResult | None = None
+    ollama: NormalRAGResult | None = None       # local-model RAG (same shape as normal)
     # Wall-clock latencies (seconds); set only when the corresponding
     # pipeline was run.  normal_rag/pipeline.py already measures its own
     # latency internally; we record Self-RAG latency here.
@@ -41,6 +43,7 @@ def run_rag(
     *,
     normal_generator=None,   # GeminiGenerator  (required for "normal" / "both")
     self_generator=None,     # SelfRAGGenerator (required for "self"   / "both")
+    ollama_generator=None,   # OllamaGenerator  (required for "ollama")
     retriever,               # shared PassageRetriever
     k: int = 5,
     max_segments: int = 3,   # Self-RAG only: paper's multi-segment loop bound
@@ -49,9 +52,10 @@ def run_rag(
 
     Args:
         query:            User question.
-        mode:             "normal" | "self" | "both"
+        mode:             "normal" | "self" | "both" | "ollama"
         normal_generator: GeminiGenerator (pass None if not using Normal RAG).
         self_generator:   SelfRAGGenerator (pass None if not using Self-RAG).
+        ollama_generator: OllamaGenerator (pass None if not using Ollama RAG).
         retriever:        Shared PassageRetriever instance.
         k:                Number of passages to retrieve.
         max_segments:     Max output segments for Self-RAG (Algorithm 1 loop).
@@ -63,6 +67,11 @@ def run_rag(
         if normal_generator is None:
             raise ValueError("normal_generator is required for Normal RAG mode.")
         result.normal = normal_rag_answer(query, normal_generator, retriever, k=k)
+
+    if mode == "ollama":
+        if ollama_generator is None:
+            raise ValueError("ollama_generator is required for Ollama RAG mode.")
+        result.ollama = normal_rag_answer(query, ollama_generator, retriever, k=k)
 
     if mode in ("self", "both"):
         if self_generator is None:
@@ -82,6 +91,27 @@ def run_rag(
 def print_normal_rag(r: NormalRAGResult) -> None:
     print(f"\n{DIVIDER}")
     print("  NORMAL RAG  (Gemini)")
+    print(DIVIDER)
+    print(f"Retrieved chunks : {r.num_chunks}")
+    print(f"Latency          : {r.latency:.2f}s")
+
+    if r.retrieved_chunks:
+        print("\nRetrieved passages:")
+        for i, chunk in enumerate(r.retrieved_chunks, start=1):
+            page   = chunk.get("page", "?")
+            score  = chunk.get("retrieval_score", 0.0)
+            text   = chunk.get("text", "")
+            preview = text[:200] + ("..." if len(text) > 200 else "")
+            print(f"  [{i}] page {page}  score={score:.3f}")
+            print(f"      {preview}")
+
+    print(f"\nAnswer:\n{r.answer}")
+
+
+def print_ollama_rag(r: NormalRAGResult, model_name: str = "local model") -> None:
+    """Same layout as print_normal_rag, labelled for the local Ollama model."""
+    print(f"\n{DIVIDER}")
+    print(f"  OLLAMA RAG  ({model_name})")
     print(DIVIDER)
     print(f"Retrieved chunks : {r.num_chunks}")
     print(f"Latency          : {r.latency:.2f}s")

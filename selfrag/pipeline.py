@@ -207,9 +207,14 @@ def _retrieve_new(retriever, search_query: str, k: int,
 
 
 def self_rag_answer(query: str, generator, retriever, k: int = 5,
-                    max_segments: int = 3) -> SelfRAGResult:
-    # Normalize the query: decouple search terms from the generation instruction
-    search_query, instruction = normalize_query(query)
+                    max_segments: int = 3, normalize: bool = True) -> SelfRAGResult:
+    # Normalize the query: decouple search terms from the generation instruction.
+    # Benchmarks pass normalize=False: the normalizer collapses whitespace
+    # (breaking ARC's multi-line options) and rewrites "What is X?" questions.
+    if normalize:
+        search_query, instruction = normalize_query(query)
+    else:
+        search_query, instruction = query, query
 
     # --- Segment 1: the model's own retrieval decision ---
     should_retrieve, decision = _decide_retrieve(generator, instruction)
