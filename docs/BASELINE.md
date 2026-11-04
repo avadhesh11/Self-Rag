@@ -9,9 +9,12 @@ This document establishes the exact configuration, dependencies, execution comma
 * **Embedding Model**: `sentence-transformers/all-MiniLM-L6-v2` (default, 384-dim, fast CPU execution).
 * **Vector Store**: FAISS (`IndexFlatIP` with normalized vectors for cosine similarity).
 * **Passage Retriever**: [`PassageRetriever`](../retriever/retriever.py) loads `meta.json`, `corpus.jsonl`, and `faiss.index`.
-* **Generator Backend**: [`SelfRAGGenerator`](../selfrag/generator.py) supports two interchangeable backends:
-  * `llamacpp` (Default): Local quantized GGUF models via `llama-cpp-python`.
-  * `vllm`: Direct Hugging Face weights (`selfrag/selfrag_llama2_7b`) for Linux + NVIDIA GPUs with 14GB+ VRAM.
+### Generator Backend: [`SelfRAGGenerator`](../selfrag/generator.py)
+Supports two interchangeable backends:
+* `llamacpp` (Default): Local quantized GGUF models via `llama-cpp-python`.
+  * **macOS (Apple Silicon)**: Fully accelerated with Apple Metal (`n_gpu_layers=-1` offloads all 32 layers, completing single segments in ~1.8s).
+  * **Windows / Linux (CPU)**: Runs in 16 GB RAM with `n_gpu_layers=0` at ~3–8 tokens/sec.
+* `vllm`: Direct Hugging Face weights (`selfrag/selfrag_llama2_7b`) for Linux + NVIDIA GPUs with 14GB+ VRAM.
 * **Inference Loop**: [`self_rag_answer`](../selfrag/pipeline.py) implements the Algorithm 1 multi-segment loop:
   1. Greedy decoding probe predicts initial retrieval decision (`[Retrieval]` vs `[No Retrieval]`).
   2. If `[Retrieval]`, retrieves $k$ passages and generates candidate responses in parallel/sequence.

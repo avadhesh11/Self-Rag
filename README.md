@@ -1,6 +1,6 @@
 # EvoRAG: Evolutionary Retrieval-Augmented Generation with Hybrid Experience Learning
 
-[![Tests](https://img.shields.io/badge/tests-95%20passed-brightgreen.svg)](#running-automated-tests)
+[![Tests](https://img.shields.io/badge/tests-101%20passed-brightgreen.svg)](#running-automated-tests)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](#installation--setup)
 [![Architecture](https://img.shields.io/badge/architecture-Self--RAG%20%2B%20Experience%20Memory-orange.svg)](#evorag-architecture)
 
@@ -68,7 +68,7 @@ For complete mathematical definitions, validator heuristics, and failure handlin
 | **Document Retrieval** | FAISS + `PassageRetriever` | Segment-level document passage retrieval over chunked source PDFs. |
 | **Self-RAG Generator** | `llama-cpp-python` / `vLLM` | Execution of `selfrag_llama2_7b.Q4_K_M.gguf` emitting reflection tokens (`[Retrieval]`, `[Relevant]`, etc.). |
 | **Baseline Normal RAG** | `google-genai` SDK | Gemini API baseline used for side-by-side comparison in `demo.py` and evaluation. |
-| **Testing & CI** | `pytest` | 65 automated regression, integration, and provenance tests. |
+| **Testing & CI** | `pytest` | 101 automated regression, integration, real FAISS, and real Self-RAG model tests. |
 
 ---
 
@@ -81,7 +81,8 @@ Self-Rag/
 │   └── 2310.11511v1.pdf          # Self-RAG original research paper
 ├── docs/                         # Detailed architecture and audit documentation
 │   ├── BASELINE.md               # Hardware feasibility, Self-RAG baseline audit, execution guide
-│   └── EXPERIENCE_MEMORY.md      # Detailed Experience Memory specification, retrieval budget, provenance
+│   ├── EXPERIENCE_MEMORY.md      # Detailed Experience Memory specification, retrieval budget, provenance
+│   └── SELFRAG_INTEGRATION.md    # Task 7B actual Self-RAG model integration and validation
 ├── evorag/                       # ── EvoRAG Hybrid Learning Subsystem ──
 │   ├── __init__.py               # Exports controller, results, and memory adapter
 │   ├── config.py                 # Default paths, thresholds, and dimensions
@@ -115,7 +116,8 @@ Self-Rag/
 │   ├── evaluate.py               # Batch evaluation CLI (with UTF-8 BOM support)
 │   ├── metrics.py                # Latency, chunk count, and length metrics
 │   └── questions.json            # 4-category evaluation benchmark
-├── tests/                        # ── Automated Test Suite (95 passing tests) ──
+├── tests/                        # ── Automated Test Suite (101 passing tests) ──
+│   ├── test_actual_selfrag_integration.py # 6 tests: actual Self-RAG 7B model integration (Paths A, B, C, reflection tokens, learning loop)
 │   ├── test_chunker.py           # 12 tests: sentence splitting, abbreviations, chunk construction
 │   ├── test_controller.py        # 24 tests: three-path routing, provenance extraction, budget, recovery
 │   ├── test_evaluation.py        # 2 tests: UTF-8 BOM and standard JSON loading
@@ -148,7 +150,7 @@ Self-Rag/
 | **Task 6C: Documentation & Reproducibility Audit** | **Completed** | Verified repository docs, execution boundaries, and reproducibility instructions. |
 | **Task 7A: Model-Free End-to-End Validation** | **Completed** | Verified real document extraction/chunking, SQLite memory, validator heuristics, augmented retrieval, 3-path routing, and CLI ([docs/MODEL_FREE_VALIDATION.md](docs/MODEL_FREE_VALIDATION.md)). |
 | **Task 7A.1: Real FAISS & SentenceTransformer** | **Completed** | Verified real `faiss-cpu` vector search, real `all-MiniLM-L6-v2` embeddings, SQLite resolution, and recovery (`tests/test_real_faiss_integration.py`). |
-| **End-to-End Self-RAG GPU Inference** | *Pending* | Requires downloading 4.1 GB GGUF model or running in Google Colab (see Section 7). |
+| **Task 7B: Actual Self-RAG Model Integration** | **Completed** | Verified real 7B GGUF model integration, reflection tokens, all 3 paths (A, B, C), and continuous learning (`tests/test_actual_selfrag_integration.py`). |
 | **Periodic QLoRA Offline Distillation** | *Pending* | Planned future phase on Google Colab / GPU clusters. |
 | **Indian Legal Corpus Integration** | *Pending* | Planned future phase (currently using sample.pdf and research paper). |
 
@@ -195,14 +197,17 @@ pip install faiss-cpu pytest
 
 ### Step 4: Run Automated Tests
 ```bash
-# Run all 95 automated tests across all modules (unit + real integration):
+# Run all 101 automated tests across all modules (unit + real FAISS + real Self-RAG model):
 python -m pytest tests/ -v
 
 # Run ONLY fast model-free unit tests (79 tests, ~3 seconds):
-python -m pytest tests/ -m "not integration" -v
+python -m pytest tests/ -m "not integration and not model" -v
 
 # Run ONLY real FAISS and SentenceTransformer integration tests (16 tests):
 python -m pytest tests/ -m "integration" -v
+
+# Run ONLY real Self-RAG 7B model integration tests (6 tests, ~28 seconds):
+python -m pytest tests/ -m "model" -v
 ```
 The fast unit tests run in ~3 seconds using deterministic mock embedders and in-memory test databases. Real integration tests execute actual FAISS C++ vector indexing and SentenceTransformer embeddings.
 
@@ -215,22 +220,28 @@ The fast unit tests run in ~3 seconds using deterministic mock embedders and in-
 These commands run locally out of the box and have been verified:
 
 ```bash
-# 1. Run all test suites (95 tests)
+# 1. Run all test suites (101 tests)
 python -m pytest tests/ -v
 
-# 2. Run real FAISS & SentenceTransformer integration tests (16 tests)
+# 2. Run real Self-RAG 7B model integration tests (6 tests, ~28s)
+python -m pytest tests/test_actual_selfrag_integration.py -v
+
+# 3. Run real FAISS & SentenceTransformer integration tests (16 tests)
 python -m pytest tests/test_real_faiss_integration.py -v
 
-# 3. Run specific test suites
+# 4. Run fast model-free unit tests (79 tests)
+python -m pytest tests/ -m "not integration and not model" -v
+
+# 5. Run specific test suites
 python -m pytest tests/test_controller.py -v   # EvoRAG controller & hybrid routing
 python -m pytest tests/test_memory.py -v       # SQLite store, validator, FAISS indexing
 python -m pytest tests/test_provenance.py -v   # SHA-256 chunk hashes and source versions
 python -m pytest tests/test_chunker.py -v      # Legal reference sentence chunking
 
-# 4. Build document FAISS index over source PDFs (requires sentence-transformers + faiss-cpu)
+# 6. Build document FAISS index over source PDFs (requires sentence-transformers + faiss-cpu)
 python index/build_index.py --pdf data/sample.pdf data/2310.11511v1.pdf --out index/
 
-# 5. View EvoRAG CLI help
+# 7. View EvoRAG CLI help
 python evorag_cli.py --help
 ```
 
@@ -371,8 +382,11 @@ A key architectural distinction in EvoRAG is the separation between document kno
    - **llama.cpp GPU offloading (`n_gpu_layers=-1`)**: Will run out of memory on 4 GB VRAM (requires ~5 GB for 7B model + KV cache).
    - **llama.cpp CPU execution (`n_gpu_layers=0`)**: Feasible in 16 GB RAM at ~3–8 tokens/sec.
    - **Google Colab recommended**: For full GPU inference or batch evaluation, running on a free T4 GPU in Google Colab is recommended.
-2. **Current Evaluation Baseline**:
-   - The 79 passing automated tests verify system logic, routing, persistence, and regression behavior using mock generators and deterministic embedders. They do **not** claim live empirical accuracy of the 7B LLM on domain benchmarks.
+2. **Evaluation and Test Hierarchy**:
+   - The 79 model-free unit tests verify system logic, routing, persistence, and regression behavior using mock generators and deterministic embedders (~3s).
+   - The 16 integration tests verify real FAISS C++ indexing and SentenceTransformer embeddings (`all-MiniLM-L6-v2`, ~8s).
+   - The 6 model integration tests verify real Self-RAG 7B GGUF inference (`models/selfrag_llama2_7b.Q4_K_M.gguf`), reflection tokens, and all three hybrid paths on Apple Silicon Metal or CUDA GPU (~28s).
+   - Real model validation proves architectural correctness and token handling, but does not claim domain-specific empirical benchmark optimization (which will be tackled in subsequent offline distillation phases).
 3. **Pending Offline Distillation**:
    - Periodic QLoRA fine-tuning of the Self-RAG generator using verified experiences from SQLite is designed in the architecture, but model training scripts are pending Colab development.
 

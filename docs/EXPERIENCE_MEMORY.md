@@ -134,20 +134,45 @@ In Task 7A.1, the Experience Memory subsystem was validated against **real `fais
 
 ---
 
-## 6. Verification & Testing
+## 6. Actual Self-RAG Model Integration (Task 7B)
+
+In Task 7B, the EvoRAG hybrid memory architecture was integrated with and validated against the **actual Self-RAG model** (`models/selfrag_llama2_7b.Q4_K_M.gguf`, 3.8 GB) executed via `llama-cpp-python` with Apple Metal acceleration:
+
+1. **Reflection-Token & Tokenizer Validation**:
+   - The Self-RAG LLaMA-2 7B checkpoint contains 16 special reflection tokens (IDs 32000–32015).
+   - Token mapping: `[No Retrieval]` (32000), `[Retrieval]` (32001), `[Continue to Use Evidence]` (32002), `[Irrelevant]` (32003), `[Relevant]` (32004), `<paragraph>` (32005), `</paragraph>` (32006), `[Utility:1..5]` (32007–32011), `[Fully supported]` (32012), `[Partially supported]` (32013), `[No support / Contradictory]` (32014), `<pad>` (32015).
+   - Confirmed exact round-trip detokenization and critique scoring preservation.
+
+2. **Three-Path End-to-End Validation**:
+   - **Path A (Direct Reuse)**: Approved, fresh experience returns stored answer verbatim with 0 LLM forward passes (`generate_calls=0`, `batch_calls=0`).
+   - **Path B (Experience-Assisted)**: Semantically related experience is injected alongside document passages into candidate generation. Verified that both contexts reach model input inside `<paragraph>` tokens, a fresh grounded answer is generated, and both source types are recorded in result evidence without corrupting provenance.
+   - **Path C (Normal Fallback)**: Queries with no related experience execute standard Self-RAG document retrieval and generation.
+
+3. **Provenance Integrity**:
+   - Synthetic memory hashes (`mem_...`) are excluded from document chunk hashes.
+   - Original PDF byte hashes (`source_versions`) and chunk hashes are faithfully preserved across all paths.
+   - `approve_and_save` immediately registers newly verified answers into SQLite and rebuilds the FAISS memory index, enabling immediate Path A reuse.
+
+---
+
+## 7. Verification & Testing
 
 Run the test suite from the repository root:
 
 ```bash
-# Run complete test suite (95 tests: 79 unit + 16 real integration tests)
+# Run complete test suite (101 tests: 79 unit + 16 FAISS integration + 6 real model tests)
 python -m pytest tests/ -v
+
+# Run real Self-RAG 7B model integration tests (6 tests, ~28s)
+python -m pytest tests/test_actual_selfrag_integration.py -v
+python -m pytest tests/ -m "model" -v
 
 # Run real FAISS and SentenceTransformer integration tests (16 tests)
 python -m pytest tests/test_real_faiss_integration.py -v
 python -m pytest tests/ -m "integration" -v
 
-# Run fast model-free unit tests (79 tests)
-python -m pytest tests/ -m "not integration" -v
+# Run fast model-free unit tests (79 tests, ~3s)
+python -m pytest tests/ -m "not integration and not model" -v
 
 # Run controller tests (24 tests)
 python -m pytest tests/test_controller.py -v
