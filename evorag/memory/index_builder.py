@@ -48,6 +48,8 @@ class ExperienceIndexBuilder:
             embeddings = embedder(texts)
 
         embeddings = np.asarray(embeddings, dtype="float32")
+        if embeddings.ndim != 2 or embeddings.shape[1] == 0:
+            raise ValueError(f"Expected 2D embedding array with non-zero dimension, got shape {embeddings.shape}.")
         # Ensure L2 normalization for cosine similarity via inner product
         norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
         norms[norms == 0] = 1e-12

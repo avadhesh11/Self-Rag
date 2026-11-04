@@ -41,6 +41,12 @@ try:
 except ImportError:
     HAS_FITZ = False
 
+try:
+    from reportlab.pdfgen import canvas
+    HAS_REPORTLAB = True
+except ImportError:
+    HAS_REPORTLAB = False
+
 import pypdf
 
 from index.build_index import (
@@ -69,37 +75,70 @@ class TestPhase2RealDocumentIndexing:
 
     @pytest.fixture
     def sample_pdfs(self, tmp_path: Path) -> list[Path]:
-        """Generate two realistic technical/legal test PDFs using PyMuPDF."""
-        if not HAS_FITZ:
-            pytest.skip("PyMuPDF (fitz) required for generating realistic test PDFs")
+        """Generate two realistic technical/legal test PDFs using PyMuPDF or reportlab."""
+        if not HAS_FITZ and not HAS_REPORTLAB:
+            pytest.skip("PyMuPDF (fitz) or reportlab required for generating realistic test PDFs")
 
         pdf1_path = tmp_path / "act_2024.pdf"
-        doc1 = fitz.open()
-        p1 = doc1.new_page()
-        p1.insert_text((50, 72), (
-            "Section 14 of the Compliance Act. Under Clause 1, any registered entity must file returns.\n"
-            "Sec. 14 provides special exemptions for small enterprises under No. 5.\n"
-            "Furthermore, Art. 19 guarantees fundamental freedoms subject to reasonable restrictions.\n"
-            "The statutory penalty for non-compliance under Sec. 14 is Rs. 500 per day."
-        ))
-        p2 = doc1.new_page()
-        p2.insert_text((50, 72), (
-            "Section 15 of the Compliance Act. All appeals lie before the Appellate Tribunal.\n"
-            "An appeal must be filed within forty-five days from the receipt of the order under Sec. 14."
-        ))
-        doc1.save(str(pdf1_path))
-        doc1.close()
-
         pdf2_path = tmp_path / "procedure_manual.pdf"
-        doc2 = fitz.open()
-        page2 = doc2.new_page()
-        page2.insert_text((50, 72), (
-            "Appellate Procedure Manual. All filings must be submitted electronically.\n"
-            "Under Clause 4, interlocutory orders cannot be challenged except as provided in Sec. 14.\n"
-            "No. 5 of Schedule II governs the procedure for expedited hearings."
-        ))
-        doc2.save(str(pdf2_path))
-        doc2.close()
+
+        if HAS_FITZ:
+            doc1 = fitz.open()
+            p1 = doc1.new_page()
+            p1.insert_text((50, 72), (
+                "Section 14 of the Compliance Act. Under Clause 1, any registered entity must file returns.\n"
+                "Sec. 14 provides special exemptions for small enterprises under No. 5.\n"
+                "Furthermore, Art. 19 guarantees fundamental freedoms subject to reasonable restrictions.\n"
+                "The statutory penalty for non-compliance under Sec. 14 is Rs. 500 per day."
+            ))
+            p2 = doc1.new_page()
+            p2.insert_text((50, 72), (
+                "Section 15 of the Compliance Act. All appeals lie before the Appellate Tribunal.\n"
+                "An appeal must be filed within forty-five days from the receipt of the order under Sec. 14."
+            ))
+            doc1.save(str(pdf1_path))
+            doc1.close()
+
+            doc2 = fitz.open()
+            page2 = doc2.new_page()
+            page2.insert_text((50, 72), (
+                "Appellate Procedure Manual. All filings must be submitted electronically.\n"
+                "Under Clause 4, interlocutory orders cannot be challenged except as provided in Sec. 14.\n"
+                "No. 5 of Schedule II governs the procedure for expedited hearings."
+            ))
+            doc2.save(str(pdf2_path))
+            doc2.close()
+        else:
+            c1 = canvas.Canvas(str(pdf1_path))
+            t1 = c1.beginText(50, 750)
+            for line in [
+                "Section 14 of the Compliance Act. Under Clause 1, any registered entity must file returns.",
+                "Sec. 14 provides special exemptions for small enterprises under No. 5.",
+                "Furthermore, Art. 19 guarantees fundamental freedoms subject to reasonable restrictions.",
+                "The statutory penalty for non-compliance under Sec. 14 is Rs. 500 per day."
+            ]:
+                t1.textLine(line)
+            c1.drawText(t1)
+            c1.showPage()
+            t2 = c1.beginText(50, 750)
+            for line in [
+                "Section 15 of the Compliance Act. All appeals lie before the Appellate Tribunal.",
+                "An appeal must be filed within forty-five days from the receipt of the order under Sec. 14."
+            ]:
+                t2.textLine(line)
+            c1.drawText(t2)
+            c1.save()
+
+            c2 = canvas.Canvas(str(pdf2_path))
+            t3 = c2.beginText(50, 750)
+            for line in [
+                "Appellate Procedure Manual. All filings must be submitted electronically.",
+                "Under Clause 4, interlocutory orders cannot be challenged except as provided in Sec. 14.",
+                "No. 5 of Schedule II governs the procedure for expedited hearings."
+            ]:
+                t3.textLine(line)
+            c2.drawText(t3)
+            c2.save()
 
         return [pdf1_path, pdf2_path]
 

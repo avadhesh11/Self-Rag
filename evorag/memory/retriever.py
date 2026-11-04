@@ -42,14 +42,16 @@ class ExperienceRetriever:
         meta_path = self.index_dir / META_FILE_NAME
 
         if faiss is None or not index_path.exists() or not meta_path.exists():
-            self._index = None
-            self._id_map = []
-            self._meta = {}
+            self.invalidate_index()
             return
 
-        self._meta = json.loads(meta_path.read_text(encoding="utf-8"))
-        self._id_map = self._meta.get("id_map", [])
-        self._index = faiss.read_index(str(index_path))
+        try:
+            self._meta = json.loads(meta_path.read_text(encoding="utf-8"))
+            self._id_map = self._meta.get("id_map", [])
+            self._index = faiss.read_index(str(index_path))
+        except Exception:
+            self.invalidate_index()
+            raise
 
     def invalidate_index(self) -> None:
         """Invalidate in-memory index state to prevent serving from an out-of-sync or failed index."""
@@ -74,6 +76,8 @@ class ExperienceRetriever:
             embedding = embedder([norm_q])
 
         arr = np.asarray(embedding, dtype="float32")
+        if arr.ndim != 2 or arr.shape[1] == 0:
+            raise ValueError(f"Expected 2D query embedding with non-zero dimension, got shape {arr.shape}.")
         norm = np.linalg.norm(arr, axis=1, keepdims=True)
         norm[norm == 0] = 1e-12
         return arr / norm
@@ -92,6 +96,10 @@ class ExperienceRetriever:
             raise ValueError("ExperienceRetriever requires an ExperienceStore to resolve experiences.")
 
         q_emb = self._encode_query(query)
+        if hasattr(self._index, "d") and q_emb.shape[1] != self._index.d:
+            raise ValueError(
+                f"Query embedding dimension {q_emb.shape[1]} does not match index dimension {self._index.d}."
+            )
         search_k = min(k, len(self._id_map))
         scores, indices = self._index.search(q_emb, search_k)
 

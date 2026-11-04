@@ -60,25 +60,65 @@ The goal of Task 7A is to validate the integrity of the complete EvoRAG systemâ€
 
 ---
 
-## 5. Commands to Reproduce Validation
+## 5. Task 7A.1: Real FAISS and SentenceTransformer Validation
 
-Run the complete automated test suite (all 79 tests):
+Task 7A.1 extends the validation framework to move beyond mock embeddings and verified vector indices, testing the **actual vector retrieval infrastructure** with real local dependencies (`faiss-cpu` and `sentence-transformers`).
+
+### Four Clear Validation Layers
+
+| Layer | Component | Status | Method | Notes |
+| :--- | :--- | :---: | :--- | :--- |
+| **1. Mock-Based Validation** | Unit tests & fast regressions | **Verified** | `DeterministicTestEmbedder`, `MockIndexFlatIP`, tracking generator | Fast CI testing (79 tests, ~3s), runs with 0 GPU or heavy downloads. |
+| **2. Real FAISS Validation** | Dense vector search | **Verified** | `faiss.IndexFlatIP` via `faiss-cpu` (1.15.0) | True C++ vector indexing, serialization (`write_index`/`read_index`), and search. |
+| **3. Real SentenceTransformer Validation** | Dense text embeddings | **Verified** | `sentence-transformers/all-MiniLM-L6-v2` (6.0.0) | Real 384-dimensional float32 L2-normalized embeddings and cosine ranking. |
+| **4. Full Self-RAG Inference Validation** | Reflection token generation | *Pending* | Quantized 7B LLaMA-2 Self-RAG (`.gguf` / vLLM) | Requires ~4.1 GB weights download or Google Colab GPU environment. |
+
+### Real Validation Results (Task 7A.1)
+
+| Test Area | Real or Mock | Observed Result | Status |
+| :--- | :---: | :--- | :---: |
+| **SentenceTransformer Loading** | Real | Loaded `all-MiniLM-L6-v2` locally from Hugging Face cache. | **PASSED** |
+| **Embedding Generation** | Real | Generated 384-dim float32 vectors with unit L2 norm ($1.0 \pm 10^{-5}$). | **PASSED** |
+| **Semantic Similarity Ranking** | Real | Relevant query scored 0.727 vs legal appeal 0.253 vs rainforest -0.033. | **PASSED** |
+| **Document FAISS Build & Persistence** | Real | `build_index` built and wrote `faiss.index`, `corpus.jsonl`, `meta.json`. | **PASSED** |
+| **Document Retrieval & Metadata** | Real | `PassageRetriever` retrieved top passage with score, chunk_hash, source_version. | **PASSED** |
+| **Experience FAISS Build** | Real | Indexed approved experience questions into `experience_faiss.index`. | **PASSED** |
+| **Experience Retrieval & Ranking** | Real | Semantic retrieval correctly retrieved matching experience with score > 0.75. | **PASSED** |
+| **SQLite ID Mapping** | Real | FAISS vector index resolved strictly via `id_map` to SQLite `experience_id`. | **PASSED** |
+| **Incremental Addition** | Real | Adding an experience to SQLite and rebuilding made it immediately retrievable. | **PASSED** |
+| **Persistence Across Reopen** | Real | Closed and reopened store and retriever; retrieval results remained intact. | **PASSED** |
+| **Recovery: Missing FAISS Index** | Real | Index file deleted; `recover_index()` rebuilt it from SQLite without data loss. | **PASSED** |
+| **Recovery: Corrupted FAISS Index** | Real | Corrupted binary file raised `RuntimeError`; `recover_index()` restored clean index. | **PASSED** |
+| **Recovery: Corrupted Metadata JSON** | Real | Corrupted JSON raised `JSONDecodeError`; `recover_index()` rebuilt valid metadata. | **PASSED** |
+| **Empty Memory Handling** | Real | 0 experiences built empty index; retriever safely returned `[]` without error. | **PASSED** |
+| **Three-Path Routing with Real FAISS** | Real | Verified Path A direct reuse (0 LLM calls), Path B assist, and Path C fallback. | **PASSED** |
+| **Dimension Mismatch Handling** | Real | Query dimension mismatch explicitly raises `ValueError` with clear message. | **PASSED** |
+
+---
+
+## 6. Commands to Reproduce Validation
 
 ```bash
-# Run the complete test suite
+# 1. Run the entire test suite (95 tests: 79 unit + 16 real integration tests)
 python -m pytest tests/ -v
 
-# Run only the model-free end-to-end validation suite (Task 7A)
+# 2. Run ONLY the fast model-free unit tests (79 tests)
+python -m pytest tests/ -m "not integration" -v
+
+# 3. Run ONLY the real FAISS and SentenceTransformer integration tests (16 tests)
+python -m pytest tests/ -m "integration" -v
+
+# 4. Run the model-free end-to-end validation suite
 python -m pytest tests/test_model_free_validation.py -v
 
-# Test CLI configuration handling
+# 5. Test CLI configuration handling
 python evorag_cli.py --help
 python evorag_cli.py "Test question without index or model"
 ```
 
 ---
 
-## 6. Known Limitations & Pending Model Work
+## 7. Known Limitations & Pending Model Work
 
 > [!IMPORTANT]
 > **Actual Language Model Generation is Pending**:

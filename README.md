@@ -1,6 +1,6 @@
 # EvoRAG: Evolutionary Retrieval-Augmented Generation with Hybrid Experience Learning
 
-[![Tests](https://img.shields.io/badge/tests-79%20passed-brightgreen.svg)](#running-automated-tests)
+[![Tests](https://img.shields.io/badge/tests-95%20passed-brightgreen.svg)](#running-automated-tests)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](#installation--setup)
 [![Architecture](https://img.shields.io/badge/architecture-Self--RAG%20%2B%20Experience%20Memory-orange.svg)](#evorag-architecture)
 
@@ -115,12 +115,14 @@ Self-Rag/
 │   ├── evaluate.py               # Batch evaluation CLI (with UTF-8 BOM support)
 │   ├── metrics.py                # Latency, chunk count, and length metrics
 │   └── questions.json            # 4-category evaluation benchmark
-├── tests/                        # ── Automated Test Suite (65 passing tests) ──
+├── tests/                        # ── Automated Test Suite (95 passing tests) ──
 │   ├── test_chunker.py           # 12 tests: sentence splitting, abbreviations, chunk construction
 │   ├── test_controller.py        # 24 tests: three-path routing, provenance extraction, budget, recovery
 │   ├── test_evaluation.py        # 2 tests: UTF-8 BOM and standard JSON loading
 │   ├── test_memory.py            # 16 tests: SQLite persistence, FAISS mapping, validation heuristics
+│   ├── test_model_free_validation.py # 14 tests: end-to-end model-free pipeline validation
 │   ├── test_provenance.py        # 8 tests: deterministic chunk hashing, PDF byte hashing
+│   ├── test_real_faiss_integration.py # 16 tests: real FAISS vector search & SentenceTransformer integration
 │   └── test_retriever.py         # 3 tests: document PassageRetriever and pipeline compatibility
 ├── evorag_cli.py                 # EvoRAG Terminal CLI (query, memory lookup, approval flow)
 ├── demo.py                       # Unified comparison demo CLI (Normal RAG vs Self-RAG)
@@ -145,6 +147,7 @@ Self-Rag/
 | **Task 6B: Integration Stabilization** | **Completed** | Verified: Original provenance extraction, retrieval budget semantics, recoverable persistence (`recover_index`). |
 | **Task 6C: Documentation & Reproducibility Audit** | **Completed** | Verified repository docs, execution boundaries, and reproducibility instructions. |
 | **Task 7A: Model-Free End-to-End Validation** | **Completed** | Verified real document extraction/chunking, SQLite memory, validator heuristics, augmented retrieval, 3-path routing, and CLI ([docs/MODEL_FREE_VALIDATION.md](docs/MODEL_FREE_VALIDATION.md)). |
+| **Task 7A.1: Real FAISS & SentenceTransformer** | **Completed** | Verified real `faiss-cpu` vector search, real `all-MiniLM-L6-v2` embeddings, SQLite resolution, and recovery (`tests/test_real_faiss_integration.py`). |
 | **End-to-End Self-RAG GPU Inference** | *Pending* | Requires downloading 4.1 GB GGUF model or running in Google Colab (see Section 7). |
 | **Periodic QLoRA Offline Distillation** | *Pending* | Planned future phase on Google Colab / GPU clusters. |
 | **Indian Legal Corpus Integration** | *Pending* | Planned future phase (currently using sample.pdf and research paper). |
@@ -192,10 +195,16 @@ pip install faiss-cpu pytest
 
 ### Step 4: Run Automated Tests
 ```bash
-# Run all 79 automated tests across all modules:
+# Run all 95 automated tests across all modules (unit + real integration):
 python -m pytest tests/ -v
+
+# Run ONLY fast model-free unit tests (79 tests, ~3 seconds):
+python -m pytest tests/ -m "not integration" -v
+
+# Run ONLY real FAISS and SentenceTransformer integration tests (16 tests):
+python -m pytest tests/ -m "integration" -v
 ```
-All 79 tests run in ~2.5 seconds using deterministic mock embedders and in-memory test databases.
+The fast unit tests run in ~3 seconds using deterministic mock embedders and in-memory test databases. Real integration tests execute actual FAISS C++ vector indexing and SentenceTransformer embeddings.
 
 ---
 
@@ -206,19 +215,22 @@ All 79 tests run in ~2.5 seconds using deterministic mock embedders and in-memor
 These commands run locally out of the box and have been verified:
 
 ```bash
-# 1. Run all test suites
+# 1. Run all test suites (95 tests)
 python -m pytest tests/ -v
 
-# 2. Run specific test suites
+# 2. Run real FAISS & SentenceTransformer integration tests (16 tests)
+python -m pytest tests/test_real_faiss_integration.py -v
+
+# 3. Run specific test suites
 python -m pytest tests/test_controller.py -v   # EvoRAG controller & hybrid routing
 python -m pytest tests/test_memory.py -v       # SQLite store, validator, FAISS indexing
 python -m pytest tests/test_provenance.py -v   # SHA-256 chunk hashes and source versions
 python -m pytest tests/test_chunker.py -v      # Legal reference sentence chunking
 
-# 3. Build document FAISS index over source PDFs (requires sentence-transformers + faiss-cpu)
+# 4. Build document FAISS index over source PDFs (requires sentence-transformers + faiss-cpu)
 python index/build_index.py --pdf data/sample.pdf data/2310.11511v1.pdf --out index/
 
-# 4. View EvoRAG CLI help
+# 5. View EvoRAG CLI help
 python evorag_cli.py --help
 ```
 

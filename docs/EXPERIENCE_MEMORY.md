@@ -111,18 +111,48 @@ To prevent data loss or silent state corruption:
 
 ---
 
-## 5. Verification & Testing
+## 5. Real FAISS and SentenceTransformer Integration (Task 7A.1)
+
+In Task 7A.1, the Experience Memory subsystem was validated against **real `faiss-cpu` and `sentence-transformers` dependencies**:
+
+1. **Embedding Model & Vectors**:
+   - Model: `sentence-transformers/all-MiniLM-L6-v2`.
+   - Dimension: 384 float32 values.
+   - Vectors are explicitly L2-normalized so inner product (`faiss.IndexFlatIP`) computes cosine similarity.
+   - Validation checks confirm that query vectors with mismatched dimensionality explicitly raise a descriptive `ValueError`.
+
+2. **FAISS ID Mapping**:
+   - FAISS internal vector row IDs (`0, 1, ..., N-1`) map strictly to SQLite primary keys via `experience_meta.json` (`id_map: list[str]`).
+   - SQLite is always the authoritative source of truth. FAISS row indices are never conflated with SQLite experience IDs.
+
+3. **Corruption Invalidation & Rebuild**:
+   - `ExperienceRetriever._load_index()` invalidates in-memory index state (`invalidate_index()`) if loading a corrupted binary index or corrupted metadata fails, preventing stale or desynchronized state.
+   - `controller.recover_index()` reconstructs a pristine FAISS index and metadata file directly from SQLite.
+
+4. **Empty Experience Memory**:
+   - When no approved experiences exist, an empty 0-vector FAISS index is written, and queries safely return an empty candidate list without throwing exceptions.
+
+---
+
+## 6. Verification & Testing
 
 Run the test suite from the repository root:
 
 ```bash
-# Run controller and integration tests (24 tests)
+# Run complete test suite (95 tests: 79 unit + 16 real integration tests)
+python -m pytest tests/ -v
+
+# Run real FAISS and SentenceTransformer integration tests (16 tests)
+python -m pytest tests/test_real_faiss_integration.py -v
+python -m pytest tests/ -m "integration" -v
+
+# Run fast model-free unit tests (79 tests)
+python -m pytest tests/ -m "not integration" -v
+
+# Run controller tests (24 tests)
 python -m pytest tests/test_controller.py -v
 
 # Run experience memory subsystem tests (16 tests)
 python -m pytest tests/test_memory.py -v
-
-# Run complete repository test suite (65 tests)
-python -m pytest tests/ -v
 ```
 
