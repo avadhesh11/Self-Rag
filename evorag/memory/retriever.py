@@ -133,12 +133,16 @@ class ExperienceAugmentedRetriever:
 
     Retrieval Budget Semantics:
     - `base_retriever.search(query, k=k)` retrieves up to `k` document passages.
-    - Up to `max_memory_context` validated experience passages are appended.
-    - The parameter `k` strictly governs document retrieval; experience memory passages
-      form an additional candidate set.
-    - The total candidate count returned is therefore `len(document_passages) + len(memory_passages)`
-      (which can be up to `k + max_memory_context`).
-    - Document passages are never evicted or displaced by memory passages.
+    - Experience context is embedded inline into each document passage's text so that
+      both document evidence and experience evidence appear in the same Self-RAG
+      generation candidate (<paragraph> block).  This guarantees combined-context
+      generation without creating experience-only candidates that compete with document
+      candidates in the pipeline's critique-scoring step.
+    - The parameter `k` strictly governs the number of returned passages; experience
+      context is never an additional separate candidate — document passages are never
+      evicted or displaced.
+    - Each returned passage carries `_embedded_exp_passages` for downstream provenance
+      extraction.
     """
 
     def __init__(
@@ -187,11 +191,14 @@ class ExperienceAugmentedRetriever:
         return passages
 
     def search(self, query: str, k: int = 5) -> list[dict[str, Any]]:
-        """Retrieve normal document passages (up to k) and append memory-derived passages.
+        """Retrieve document passages (up to k) with experience context embedded inline.
 
-        Note: `k` controls document retrieval budget. Memory passages are appended
-        without displacing any document passages, so the returned list may contain up to
-        `k + len(self._memory_passages)` items.
+        Each document passage's text is extended with the concatenated text of all
+        validated experience passages so that the Self-RAG pipeline's
+        ``generate_batch`` call receives a single combined context per candidate —
+        both document evidence and experience reasoning appear inside the same
+        ``<paragraph>`` block.  `k` still controls how many document passages are
+        retrieved; experience context does not displace any document passage.
         """
         doc_passages = self.base_retriever.search(query, k=k) if self.base_retriever else []
 
@@ -202,4 +209,21 @@ class ExperienceAugmentedRetriever:
                 p_copy["source_type"] = "document"
             tagged_docs.append(p_copy)
 
-        return tagged_docs + self._memory_passages
+        if not self._memory_passages:
+            return tagged_docs
+
+        # Build a single experience context block from all validated experience passages.
+        exp_text_block = "\n\n".join(mp["text"] for mp in self._memory_passages)
+
+        # Embed the experience block into every document passage's text.
+        # The passage dict retains all original provenance fields; we add
+        # `_embedded_exp_passages` so that `_extract_provenance` can recover
+        # original source versions and chunk hashes from the experiences.
+        combined_docs: list[dict[str, Any]] = []
+        for doc in tagged_docs:
+            c = dict(doc)
+            c["text"] = doc["text"] + "\n\n" + exp_text_block
+            c["_embedded_exp_passages"] = list(self._memory_passages)
+            combined_docs.append(c)
+
+        return combined_docs

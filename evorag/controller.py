@@ -162,7 +162,23 @@ class EvoRAGController:
 
             evidence, chunk_hashes, source_versions = self._extract_provenance(self_rag_res)
             doc_ev = [p for p in evidence if p.get("source_type") != "experience_memory"]
-            mem_ev = [p for p in evidence if p.get("source_type") == "experience_memory"]
+
+            # With combined-context mode, experience passages are embedded inside doc
+            # passages rather than returned as separate candidates.  Reconstruct mem_ev
+            # from the `_embedded_exp_passages` metadata carried by combined doc passages.
+            mem_ev: list[dict] = []
+            seen_exp_ids: set[str] = set()
+            for p in doc_ev:
+                for ep in p.get("_embedded_exp_passages", []):
+                    if not isinstance(ep, dict):
+                        continue
+                    eid = ep.get("experience_id", ep.get("chunk_id", ""))
+                    if eid not in seen_exp_ids:
+                        seen_exp_ids.add(eid)
+                        mem_ev.append(ep)
+            # Fallback: if no embedded experiences, check for standalone experience passages
+            if not mem_ev:
+                mem_ev = [p for p in evidence if p.get("source_type") == "experience_memory"]
 
             return EvoRAGResult(
                 question=question,
@@ -389,5 +405,24 @@ class EvoRAGController:
                 if isinstance(src, str) and src.strip() and isinstance(ver, str) and ver.strip():
                     if src != "experience_memory":
                         source_versions[src] = ver
+
+                # 5. Combined document passage: extract provenance from embedded experience passages
+                #    (used by ExperienceAugmentedRetriever's combined-context mode).
+                for ep in p.get("_embedded_exp_passages", []):
+                    if not isinstance(ep, dict):
+                        continue
+                    orig_hashes = ep.get("original_chunk_hashes")
+                    if isinstance(orig_hashes, list):
+                        for h in orig_hashes:
+                            if isinstance(h, str) and h.strip() and not h.startswith("mem_"):
+                                if h not in seen_chunk_hashes:
+                                    seen_chunk_hashes.add(h)
+                                    chunk_hashes.append(h)
+                    orig_versions = ep.get("original_source_versions")
+                    if isinstance(orig_versions, dict):
+                        for esrc, ever in orig_versions.items():
+                            if isinstance(esrc, str) and esrc.strip() and isinstance(ever, str) and ever.strip():
+                                if esrc != "experience_memory":
+                                    source_versions[esrc] = ever
 
         return evidence, chunk_hashes, source_versions

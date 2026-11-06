@@ -271,7 +271,7 @@ class TestEvoRAGController:
         assert doc_retriever.search.call_count >= 1
 
     def test_memory_derived_evidence_retains_provenance(self, mock_self_rag_setup):
-        """Verify augmented retriever attaches experience provenance fields clearly marked."""
+        """Verify augmented retriever embeds experience provenance inside combined doc passages."""
         base_retriever = mock_self_rag_setup["doc_retriever"]
         exp = Experience(
             question="Sample Q",
@@ -284,21 +284,31 @@ class TestEvoRAGController:
 
         passages = aug_retriever.search("test query", k=2)
 
-        # Check document passages
+        # Combined-context mode: only document passages are returned (experience embedded inside)
         doc_passages = [p for p in passages if p.get("source_type") == "document"]
         assert len(doc_passages) == 1
         assert doc_passages[0]["chunk_id"] == 0
 
-        # Check memory-derived passages
+        # Experience text is embedded inside the doc passage's text
+        assert "[PRIOR VERIFIED EXPERIENCE" in doc_passages[0]["text"]
+        assert "Sample Q" in doc_passages[0]["text"]
+        assert "Sample A" in doc_passages[0]["text"]
+
+        # Experience provenance is accessible via _embedded_exp_passages
+        assert "_embedded_exp_passages" in doc_passages[0]
+        embedded = doc_passages[0]["_embedded_exp_passages"]
+        assert len(embedded) == 1
+        ep = embedded[0]
+        assert ep["experience_id"] == exp.experience_id
+        assert ep["original_question"] == exp.question
+        assert ep["original_answer"] == exp.answer
+        assert ep["original_source_versions"] == exp.source_versions
+        assert ep["original_chunk_hashes"] == exp.chunk_hashes
+        assert ep["source_type"] == "experience_memory"
+
+        # No standalone experience_memory passages in the returned list
         mem_passages = [p for p in passages if p.get("source_type") == "experience_memory"]
-        assert len(mem_passages) == 1
-        mp = mem_passages[0]
-        assert mp["experience_id"] == exp.experience_id
-        assert mp["original_question"] == exp.question
-        assert mp["original_answer"] == exp.answer
-        assert mp["original_source_versions"] == exp.source_versions
-        assert mp["original_chunk_hashes"] == exp.chunk_hashes
-        assert "[PRIOR VERIFIED EXPERIENCE" in mp["text"]
+        assert len(mem_passages) == 0
 
     # -------------------------------------------------------------
     # Path C: Normal Self-RAG (Exclusions and Fallback)
@@ -620,7 +630,7 @@ class TestEvoRAGController:
     # -------------------------------------------------------------
 
     def test_retrieval_budget_k5_two_experiences(self):
-        """k=5 with 2 experiences -> 7 total passages returned."""
+        """k=5 with 2 experiences -> 5 combined passages (experience context embedded inline)."""
         base_retriever = MagicMock()
         base_retriever.search.return_value = [{"text": f"doc {i}", "source": f"d{i}.pdf"} for i in range(5)]
         exps = [
@@ -629,9 +639,16 @@ class TestEvoRAGController:
         ]
         aug = ExperienceAugmentedRetriever(base_retriever, exps)
         res = aug.search("query", k=5)
-        assert len(res) == 7
+        # With combined-context mode, experience text is embedded inside doc passages.
+        # Document count is preserved (k=5); no separate experience candidates are added.
+        assert len(res) == 5
         assert sum(1 for p in res if p.get("source_type") == "document") == 5
-        assert sum(1 for p in res if p.get("source_type") == "experience_memory") == 2
+        assert sum(1 for p in res if p.get("source_type") == "experience_memory") == 0
+        # Every combined passage carries embedded experience metadata
+        assert all("_embedded_exp_passages" in p for p in res)
+        assert all(len(p["_embedded_exp_passages"]) == 2 for p in res)
+        # Experience text is present inside each doc passage's text
+        assert all("[PRIOR VERIFIED EXPERIENCE" in p["text"] for p in res)
         base_retriever.search.assert_called_once_with("query", k=5)
 
     def test_retrieval_budget_k5_zero_experiences(self):
@@ -646,7 +663,7 @@ class TestEvoRAGController:
         base_retriever.search.assert_called_once_with("query", k=5)
 
     def test_retrieval_budget_k1_two_experiences(self):
-        """k=1 with 2 experiences -> 3 total passages returned."""
+        """k=1 with 2 experiences -> 1 combined passage (experience context embedded inline)."""
         base_retriever = MagicMock()
         base_retriever.search.return_value = [{"text": "doc 0", "source": "d0.pdf"}]
         exps = [
@@ -655,9 +672,13 @@ class TestEvoRAGController:
         ]
         aug = ExperienceAugmentedRetriever(base_retriever, exps)
         res = aug.search("query", k=1)
-        assert len(res) == 3
+        # Combined-context mode: 1 doc passage with exp text embedded = 1 total passage
+        assert len(res) == 1
         assert sum(1 for p in res if p.get("source_type") == "document") == 1
-        assert sum(1 for p in res if p.get("source_type") == "experience_memory") == 2
+        assert sum(1 for p in res if p.get("source_type") == "experience_memory") == 0
+        # Both experience texts are present inside the single combined passage
+        assert len(res[0]["_embedded_exp_passages"]) == 2
+        assert "[PRIOR VERIFIED EXPERIENCE" in res[0]["text"]
         base_retriever.search.assert_called_once_with("query", k=1)
 
     def test_retrieval_budget_preserves_document_passages_without_displacement(self):
@@ -668,8 +689,10 @@ class TestEvoRAGController:
         exps = [Experience(question="Q", answer="A", evidence=[], source_versions={"p.pdf": "v1"}, chunk_hashes=["h"])]
         aug = ExperienceAugmentedRetriever(base_retriever, exps)
         res = aug.search("query", k=4)
+        # All 4 document passages are present in the results (embedded with experience text)
+        assert len(res) == 4
         for i in range(4):
-            assert any(p["text"] == f"original doc passage {i}" for p in res)
+            assert any(f"original doc passage {i}" in p["text"] for p in res)
 
     # -------------------------------------------------------------
     # Task 6B - Issue 3: Recoverable SQLite/FAISS Persistence Tests
