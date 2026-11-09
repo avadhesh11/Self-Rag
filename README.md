@@ -1,6 +1,6 @@
 # EvoRAG: Evolutionary Retrieval-Augmented Generation with Hybrid Experience Learning
 
-[![Tests](https://img.shields.io/badge/tests-101%20passed-brightgreen.svg)](#running-automated-tests)
+[![Tests](https://img.shields.io/badge/tests-124%20passed-brightgreen.svg)](#running-automated-tests)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](#installation--setup)
 [![Architecture](https://img.shields.io/badge/architecture-Self--RAG%20%2B%20Experience%20Memory-orange.svg)](#evorag-architecture)
 
@@ -68,7 +68,7 @@ For complete mathematical definitions, validator heuristics, and failure handlin
 | **Document Retrieval** | FAISS + `PassageRetriever` | Segment-level document passage retrieval over chunked source PDFs. |
 | **Self-RAG Generator** | `llama-cpp-python` / `vLLM` | Execution of `selfrag_llama2_7b.Q4_K_M.gguf` emitting reflection tokens (`[Retrieval]`, `[Relevant]`, etc.). |
 | **Baseline Normal RAG** | `google-genai` SDK | Gemini API baseline used for side-by-side comparison in `demo.py` and evaluation. |
-| **Testing & CI** | `pytest` | 101 automated regression, integration, real FAISS, and real Self-RAG model tests. |
+| **Testing & CI** | `pytest` | 124 automated regression, integration, real FAISS, DBMS corpus, and real Self-RAG model tests. |
 
 ---
 
@@ -76,11 +76,15 @@ For complete mathematical definitions, validator heuristics, and failure handlin
 
 ```
 Self-Rag/
-├── data/                         # Source documents (place PDFs here)
+├── data/                         # Source documents and corpus bundles
 │   ├── sample.pdf                # 1-page Amazon rainforest note
-│   └── 2310.11511v1.pdf          # Self-RAG original research paper
+│   ├── 2310.11511v1.pdf          # Self-RAG original research paper
+│   ├── manifest.json             # Task 8 DBMS & SQL corpus manifest with SHA-256 hashes
+│   ├── university_schema.sql     # PostgreSQL 18 sample university schema
+│   └── pdf/                      # 15 standalone DBMS & SQL educational PDFs
 ├── docs/                         # Detailed architecture and audit documentation
 │   ├── BASELINE.md               # Hardware feasibility, Self-RAG baseline audit, execution guide
+│   ├── DBMS_CORPUS.md            # Task 8 DBMS & SQL knowledge corpus integration and validation
 │   ├── EXPERIENCE_MEMORY.md      # Detailed Experience Memory specification, retrieval budget, provenance
 │   └── SELFRAG_INTEGRATION.md    # Task 7B actual Self-RAG model integration and validation
 ├── evorag/                       # ── EvoRAG Hybrid Learning Subsystem ──
@@ -97,9 +101,13 @@ Self-Rag/
 │       └── validator.py          # ExperienceValidator: polarity, numeric/interrogative scope, freshness
 ├── index/
 │   ├── build_index.py            # PDF -> sentence splitter -> passage chunks -> FAISS index
-│   ├── corpus.jsonl              # Generated document corpus with chunk hashes & source versions
-│   ├── faiss.index               # Generated document FAISS vector index
-│   └── meta.json                 # Document index metadata (source PDF byte hashes)
+│   ├── corpus.jsonl              # Baseline document corpus with chunk hashes & source versions
+│   ├── faiss.index               # Baseline document FAISS vector index
+│   ├── meta.json                 # Baseline document index metadata (source PDF byte hashes)
+│   └── dbms_sql_v1/              # Dedicated Task 8 DBMS & SQL index (232 chunks across 15 PDFs)
+│       ├── corpus.jsonl          # 232 passage chunks with manifest-verified SHA-256 source versions
+│       ├── faiss.index           # FAISS IndexFlatIP (384-dim normalized vectors)
+│       └── meta.json             # Corpus metadata with complete source version mapping
 ├── retriever/
 │   └── retriever.py              # Shared PassageRetriever for document FAISS index
 ├── selfrag/                      # ── Original Self-RAG pipeline ──
@@ -116,10 +124,11 @@ Self-Rag/
 │   ├── evaluate.py               # Batch evaluation CLI (with UTF-8 BOM support)
 │   ├── metrics.py                # Latency, chunk count, and length metrics
 │   └── questions.json            # 4-category evaluation benchmark
-├── tests/                        # ── Automated Test Suite (101 passing tests) ──
+├── tests/                        # ── Automated Test Suite ──
 │   ├── test_actual_selfrag_integration.py # 6 tests: actual Self-RAG 7B model integration (Paths A, B, C, reflection tokens, learning loop)
 │   ├── test_chunker.py           # 12 tests: sentence splitting, abbreviations, chunk construction
 │   ├── test_controller.py        # 24 tests: three-path routing, provenance extraction, budget, recovery
+│   ├── test_dbms_corpus.py       # 23 tests: DBMS corpus manifest checksums, index reload, 15-doc smoke retrieval, isolation
 │   ├── test_evaluation.py        # 2 tests: UTF-8 BOM and standard JSON loading
 │   ├── test_memory.py            # 16 tests: SQLite persistence, FAISS mapping, validation heuristics
 │   ├── test_model_free_validation.py # 14 tests: end-to-end model-free pipeline validation
@@ -151,6 +160,7 @@ Self-Rag/
 | **Task 7A: Model-Free End-to-End Validation** | **Completed** | Verified real document extraction/chunking, SQLite memory, validator heuristics, augmented retrieval, 3-path routing, and CLI ([docs/MODEL_FREE_VALIDATION.md](docs/MODEL_FREE_VALIDATION.md)). |
 | **Task 7A.1: Real FAISS & SentenceTransformer** | **Completed** | Verified real `faiss-cpu` vector search, real `all-MiniLM-L6-v2` embeddings, SQLite resolution, and recovery (`tests/test_real_faiss_integration.py`). |
 | **Task 7B: Actual Self-RAG Model Integration** | **Completed** | Verified real 7B GGUF model integration, reflection tokens, all 3 paths (A, B, C), and continuous learning (`tests/test_actual_selfrag_integration.py`). |
+| **Task 8: DBMS & SQL Knowledge Corpus** | **Completed** | Integrated 15 educational PDFs (PostgreSQL 18 baseline), built dedicated index `index/dbms_sql_v1` (232 chunks), verified all manifest checksums and 15-document retrieval (`tests/test_dbms_corpus.py`, [docs/DBMS_CORPUS.md](docs/DBMS_CORPUS.md)). |
 | **Periodic QLoRA Offline Distillation** | *Pending* | Planned future phase on Google Colab / GPU clusters. |
 | **Indian Legal Corpus Integration** | *Pending* | Planned future phase (currently using sample.pdf and research paper). |
 
@@ -226,22 +236,27 @@ python -m pytest tests/ -v
 # 2. Run real Self-RAG 7B model integration tests (6 tests, ~28s)
 python -m pytest tests/test_actual_selfrag_integration.py -v
 
-# 3. Run real FAISS & SentenceTransformer integration tests (16 tests)
-python -m pytest tests/test_real_faiss_integration.py -v
+# 3. Run real FAISS & SentenceTransformer integration tests (39 tests: 16 general + 23 DBMS corpus)
+python -m pytest tests/test_real_faiss_integration.py tests/test_dbms_corpus.py -v
+python -m pytest tests/ -m "integration" -v
 
 # 4. Run fast model-free unit tests (79 tests)
 python -m pytest tests/ -m "not integration and not model" -v
 
 # 5. Run specific test suites
+python -m pytest tests/test_dbms_corpus.py -v  # DBMS corpus manifest, index reload, 15-doc retrieval
 python -m pytest tests/test_controller.py -v   # EvoRAG controller & hybrid routing
 python -m pytest tests/test_memory.py -v       # SQLite store, validator, FAISS indexing
 python -m pytest tests/test_provenance.py -v   # SHA-256 chunk hashes and source versions
 python -m pytest tests/test_chunker.py -v      # Legal reference sentence chunking
 
-# 6. Build document FAISS index over source PDFs (requires sentence-transformers + faiss-cpu)
+# 6. Build dedicated DBMS & SQL FAISS index over 15 educational PDFs
+python index/build_index.py --pdf data/pdf/*.pdf --out index/dbms_sql_v1/
+
+# 7. Build baseline document FAISS index over source PDFs
 python index/build_index.py --pdf data/sample.pdf data/2310.11511v1.pdf --out index/
 
-# 7. View EvoRAG CLI help
+# 8. View EvoRAG CLI help
 python evorag_cli.py --help
 ```
 
