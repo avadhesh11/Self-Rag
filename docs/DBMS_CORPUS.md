@@ -140,3 +140,4 @@ HF_HUB_OFFLINE=1 arch -arm64 .venv/bin/pytest tests/ -m "not integration and not
 ```
 
 All 23 DBMS tests passed with 100% precision. All 79 model-free unit tests and 16 original FAISS integration tests continue to pass without regression.
+

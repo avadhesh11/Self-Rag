@@ -1,6 +1,6 @@
 # EvoRAG: Evolutionary Retrieval-Augmented Generation with Hybrid Experience Learning
 
-[![Tests](https://img.shields.io/badge/tests-124%20passed-brightgreen.svg)](#running-automated-tests)
+[![Tests](https://img.shields.io/badge/tests-150%20passed-brightgreen.svg)](#running-automated-tests)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](#installation--setup)
 [![Architecture](https://img.shields.io/badge/architecture-Self--RAG%20%2B%20Experience%20Memory-orange.svg)](#evorag-architecture)
 
@@ -121,11 +121,17 @@ Self-Rag/
 ├── comparison/
 │   └── runner.py                 # Side-by-side execution and latency comparison
 ├── evaluation/
+│   ├── convert_answer_key_pdf.py # Task 9B PDF answer key to structured JSONL converter
 │   ├── evaluate.py               # Batch evaluation CLI (with UTF-8 BOM support)
-│   ├── metrics.py                # Latency, chunk count, and length metrics
-│   └── questions.json            # 4-category evaluation benchmark
+│   ├── ingest_experiences.py     # Task 9B verified experience memory ingestion & index builder
+│   ├── metrics.py                # Latency, chunk count, EM, token F1, and citation metrics
+│   ├── questions.json            # 4-category evaluation benchmark
+│   ├── run_blind_evaluation.py   # Task 9A.1 blind evaluation runner & prediction freeze
+│   ├── run_post_learning_evaluation.py # Task 9B post-learning evaluation & benchmark comparison runner
+│   └── score_predictions.py      # Task 9A.2 offline prediction scoring & benchmark reporting
 ├── tests/                        # ── Automated Test Suite ──
 │   ├── test_actual_selfrag_integration.py # 6 tests: actual Self-RAG 7B model integration (Paths A, B, C, reflection tokens, learning loop)
+│   ├── test_blind_evaluation.py  # 6 tests: blind runner question loading, blind safeguards, freeze output schemas
 │   ├── test_chunker.py           # 12 tests: sentence splitting, abbreviations, chunk construction
 │   ├── test_controller.py        # 24 tests: three-path routing, provenance extraction, budget, recovery
 │   ├── test_dbms_corpus.py       # 23 tests: DBMS corpus manifest checksums, index reload, 15-doc smoke retrieval, isolation
@@ -134,7 +140,9 @@ Self-Rag/
 │   ├── test_model_free_validation.py # 14 tests: end-to-end model-free pipeline validation
 │   ├── test_provenance.py        # 8 tests: deterministic chunk hashing, PDF byte hashing
 │   ├── test_real_faiss_integration.py # 16 tests: real FAISS vector search & SentenceTransformer integration
-│   └── test_retriever.py         # 3 tests: document PassageRetriever and pipeline compatibility
+│   ├── test_retriever.py         # 3 tests: document PassageRetriever and pipeline compatibility
+│   ├── test_scoring.py           # 11 tests: prediction scoring, schema validation, latency & quality metrics
+│   └── test_task9b_learning.py   # 9 tests: answer key conversion, contamination guards, memory rebuild, post-learning evaluation
 ├── evorag_cli.py                 # EvoRAG Terminal CLI (query, memory lookup, approval flow)
 ├── demo.py                       # Unified comparison demo CLI (Normal RAG vs Self-RAG)
 ├── requirements.txt              # Core dependencies + google-genai + python-dotenv
@@ -161,6 +169,9 @@ Self-Rag/
 | **Task 7A.1: Real FAISS & SentenceTransformer** | **Completed** | Verified real `faiss-cpu` vector search, real `all-MiniLM-L6-v2` embeddings, SQLite resolution, and recovery (`tests/test_real_faiss_integration.py`). |
 | **Task 7B: Actual Self-RAG Model Integration** | **Completed** | Verified real 7B GGUF model integration, reflection tokens, all 3 paths (A, B, C), and continuous learning (`tests/test_actual_selfrag_integration.py`). |
 | **Task 8: DBMS & SQL Knowledge Corpus** | **Completed** | Integrated 15 educational PDFs (PostgreSQL 18 baseline), built dedicated index `index/dbms_sql_v1` (232 chunks), verified all manifest checksums and 15-document retrieval (`tests/test_dbms_corpus.py`, [docs/DBMS_CORPUS.md](docs/DBMS_CORPUS.md)). |
+| **Task 9A.1: Blind Evaluation Runner & Prediction Freeze** | **Completed** | Implemented blind evaluation runner (`evaluation/run_blind_evaluation.py`) for 32 held-out questions across Normal RAG, Self-RAG, and EvoRAG. Enforced strict blindness safeguards, isolated memory from saving (`approve_and_save` prohibited), exported predictions to template-compliant CSV and JSONL (`tests/test_blind_evaluation.py`, [docs/BLIND_EVALUATION.md](docs/BLIND_EVALUATION.md)). |
+| **Task 9A.2: Evaluator Scoring & Benchmark Report** | **Completed** | Implemented offline prediction scoring pipeline (`evaluation/score_predictions.py`). Evaluated frozen predictions across Normal RAG, Self-RAG, and EvoRAG, calculated latency distributions (mean, median, P95, hit vs miss), validated schemas, enforced prediction file immutability, and generated comprehensive Markdown, JSON, and CSV reports (`tests/test_scoring.py`, [evaluation/reports/](evaluation/reports/)). |
+| **Task 9B: Verified Experience Learning & Benchmark Validation** | **Completed** | Built answer key PDF converter (`evaluation/convert_answer_key_pdf.py`), scored frozen predictions against official key, implemented verified experience ingestion with anti-contamination guards (`evaluation/ingest_experiences.py`), rebuilt FAISS Experience Memory with 25 approved entries, and executed post-learning benchmark evaluation showing Path B activation and 0 regression (`tests/test_task9b_learning.py`). |
 | **Periodic QLoRA Offline Distillation** | *Pending* | Planned future phase on Google Colab / GPU clusters. |
 | **Indian Legal Corpus Integration** | *Pending* | Planned future phase (currently using sample.pdf and research paper). |
 
@@ -355,6 +366,56 @@ python evaluation/evaluate.py --mode both --out results.json
 
 # Normal RAG only (no Self-RAG model needed)
 python evaluation/evaluate.py --mode normal
+```
+
+### Blind Evaluation (Task 9A.1)
+Run the 32 held-out DBMS questions across Normal RAG, Self-RAG, and EvoRAG to produce frozen prediction artifacts:
+
+```bash
+python evaluation/run_blind_evaluation.py \
+  --questions EvoRAG_Blind_Test_Questions/held_out_test_questions_only.jsonl \
+  --corpus-index index/dbms_sql_v1 \
+  --model models/selfrag_llama2_7b.Q4_K_M.gguf \
+  --out-dir evaluation/predictions/
+```
+
+### Prediction Scoring & Benchmark Reporting (Task 9A.2)
+Score frozen prediction files offline against an official answer key (or generate execution, latency, and routing profiles):
+
+```bash
+# Evaluate frozen predictions (latency, routing, and operational analysis):
+python evaluation/score_predictions.py \
+  --predictions evaluation/predictions/frozen/predictions_20261109_151957Z.csv \
+  --out-dir evaluation/reports/
+
+# Score against an official answer key (computes Exact Match, Token F1, and Citations):
+python evaluation/score_predictions.py \
+  --predictions evaluation/predictions/frozen/predictions_20261109_151957Z.csv \
+  --answer-key EvoRAG_Answer_Key_For_Frozen_Run/answer_key_32_converted_from_pdf.jsonl \
+  --out-dir evaluation/reports/
+```
+
+### Verified Experience Learning & Post-Learning Evaluation (Task 9B)
+Convert official answer key PDF, ingest verified DBMS training experiences, and run post-learning evaluation:
+
+```bash
+# 1. Convert official answer key PDF to structured JSONL:
+python evaluation/convert_answer_key_pdf.py \
+  --pdf EvoRAG_Answer_Key_For_Frozen_Run/answer_key_32_for_frozen_run.pdf \
+  --out EvoRAG_Answer_Key_For_Frozen_Run/answer_key_32_converted_from_pdf.jsonl
+
+# 2. Ingest verified DBMS experiences into SQLite and rebuild FAISS index:
+python evaluation/ingest_experiences.py \
+  --input data/dbms_training_experiences.jsonl \
+  --db-path data/experience_memory.db \
+  --index-dir data
+
+# 3. Run post-learning evaluation across held-out questions:
+python evaluation/run_post_learning_evaluation.py \
+  --questions EvoRAG_Blind_Test_Questions/held_out_test_questions_only.jsonl \
+  --corpus-index index/dbms_sql_v1 \
+  --answer-key EvoRAG_Answer_Key_For_Frozen_Run/answer_key_32_converted_from_pdf.jsonl \
+  --mock  # Or provide --model models/selfrag_llama2_7b.Q4_K_M.gguf for real inference
 ```
 
 ### Category C: Commands Requiring Self-RAG Weights (~4.1 GB Download)
