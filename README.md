@@ -1,6 +1,6 @@
 # EvoRAG: Evolutionary Retrieval-Augmented Generation with Hybrid Experience Learning
 
-[![Tests](https://img.shields.io/badge/tests-150%20passed-brightgreen.svg)](#running-automated-tests)
+[![Tests](https://img.shields.io/badge/tests-152%20passed-brightgreen.svg)](#running-automated-tests)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](#installation--setup)
 [![Architecture](https://img.shields.io/badge/architecture-Self--RAG%20%2B%20Experience%20Memory-orange.svg)](#evorag-architecture)
 
@@ -418,7 +418,31 @@ python evaluation/run_post_learning_evaluation.py \
   --mock  # Or provide --model models/selfrag_llama2_7b.Q4_K_M.gguf for real inference
 ```
 
-### Category C: Commands Requiring Self-RAG Weights (~4.1 GB Download)
+### Real-Model Warm-Cache Evaluation (Task 10)
+Run all 32 held-out DBMS questions through EvoRAG using real quantized 7B Self-RAG model inference (`models/selfrag_llama2_7b.Q4_K_M.gguf`) with the populated Experience Memory:
+
+```bash
+# Execute real-model warm-cache evaluation across 32 questions:
+HF_HUB_OFFLINE=1 python evaluation/run_real_model_warm_cache_evaluation.py
+
+# Score or regenerate report from existing evaluation predictions:
+python evaluation/run_real_model_warm_cache_evaluation.py \
+  --from-existing-dir evaluation/predictions/real_model_warm_cache_20261111_043342Z
+```
+
+#### Task 10 Comparative Results:
+| Metric | Normal RAG | Self-RAG (Baseline) | EvoRAG (Cold Cache) | EvoRAG (Warm Cache Real Model) |
+| :--- | :---: | :---: | :---: | :---: |
+| **Exact Match** | 0.00% | 0.00% | 0.00% | **0.00%** |
+| **Token F1** | 32.40% | 22.10% | 22.14% | **23.66%** (+1.56%) |
+| **Token Precision** | 31.05% | 23.39% | 23.43% | **24.49%** (+1.10%) |
+| **Token Recall** | 40.97% | 28.97% | 28.97% | **31.40%** (+2.43%) |
+| **Citation F1** | 65.67% | 52.67% | 65.56% | **65.56%** |
+| **Evidence Support** | 96.67% | 76.67% | 70.00% | **70.00%** |
+| **Mean Latency** | 1.66s | 13.57s | 13.49s | **17.03s** |
+| **Path Breakdown** | Normal RAG (32) | Self-RAG (32) | Path C (32 / 100%) | **Path B: 5 (15.6%), Path C: 27 (84.4%), Path A: 0** |
+| **Real Model Invocations**| 32 (100%) | 32 (100%) | 32 (100%) | **32 / 32 (100%)** |
+
 
 Running actual Self-RAG local generation requires downloading the quantized 4-bit LLaMA-2 Self-RAG model:
 
