@@ -1,0 +1,183 @@
+{
+  "timestamp": "20261113_132826Z",
+  "question": "What is write-ahead logging (WAL) in database systems?",
+  "category": "pdf",
+  "index_dir": "/Users/devj/code/self-rag/self-rag-demo/index/dbms_sql_v1",
+  "results": [
+    {
+      "system_id": "normal",
+      "system_name": "Normal RAG (Gemini)",
+      "backend": "Google Gemini API (google-genai)",
+      "model": "gemini-3.5-flash-lite",
+      "success": true,
+      "error": null,
+      "answer": "Based on the provided context, the write-ahead logging principle requires that the log record describing a change be flushed to durable storage before the changed data page is allowed to be written.",
+      "answer_status": "Success",
+      "total_query_latency_ms": 1148.06,
+      "retrieval_latency_ms": 258.55,
+      "generation_latency_ms": 889.49,
+      "model_load_time_ms": 307.12,
+      "is_cold_start": true,
+      "retrieval_decision": "[Retrieval] (Forced by RAG architecture)",
+      "retrieved_passage_count": 1,
+      "routing_path": null,
+      "memory_hit": false,
+      "memory_match_id": null,
+      "memory_match_score": null,
+      "citations": [
+        "12_database_recovery_logging_wal_and_backup.pdf (page 2, chunk 172)"
+      ],
+      "evidence": [
+        {
+          "text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 2 2. Logging and write-ahead logging A log records enough information to recover the database. A simplified update log record may contain a transaction identifier, page or record identifier, and before/after information. Undo logging uses old values; redo logging uses new values; undo/redo logging retains both or otherwise carries sufficient recovery data. Actual engines use more complex log formats, page identifiers, sequence numbers, checksums, and transaction state. The write-ahead logging principle requires the log record describing a change to be flushed to durable storage before the changed data page is allowed to be written. If a crash occurs after a data page was written but before its log record became durable, recovery might not know how to repair it.",
+          "page": 2,
+          "source": "12_database_recovery_logging_wal_and_backup.pdf",
+          "source_version": "2106972c6103bb9c26548ba3810fe29050532404d66913015e2e2edf94baf343",
+          "chunk_hash": "dcd76e5d33aff4d374efc92edcfc124b7de3d79f23c9fbaa19de3a8689706c9a",
+          "chunk_id": 172,
+          "retrieval_score": 0.6776012182235718
+        }
+      ]
+    },
+    {
+      "system_id": "selfrag_gguf",
+      "system_name": "Original Self-RAG (GGUF)",
+      "backend": "llama.cpp (Q4_K_M)",
+      "model": "models/selfrag_llama2_7b.Q4_K_M.gguf",
+      "success": true,
+      "error": null,
+      "answer": "Write-ahead logging (WAL) is a technique used in database systems to ensure data integrity and prevent data loss in the event of a system failure or restart.WAL works by writing a log of all changes made to the database to a separate storage area, called the log file.This log is written in advance of the changes being made to the database, hence the name \"write-ahead logging.\"If a system failure or restart occurs, the database can use the log file to recover the changes that were made since the last checkpoint, without having to read the data from the database itself.This means that the database can continue to operate without interruption, even if there is a failure or restart",
+      "answer_status": "Success",
+      "total_query_latency_ms": 9947.64,
+      "retrieval_latency_ms": 395.06,
+      "generation_latency_ms": 9552.58,
+      "model_load_time_ms": 2628.97,
+      "is_cold_start": true,
+      "retrieval_decision": "[Retrieval]",
+      "retrieved_passage_count": 1,
+      "routing_path": null,
+      "memory_hit": false,
+      "memory_match_id": null,
+      "memory_match_score": null,
+      "citations": [
+        "12_database_recovery_logging_wal_and_backup.pdf (page 2, chunk 172)"
+      ],
+      "evidence": [
+        {
+          "text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 2 2. Logging and write-ahead logging A log records enough information to recover the database. A simplified update log record may contain a transaction identifier, page or record identifier, and before/after information. Undo logging uses old values; redo logging uses new values; undo/redo logging retains both or otherwise carries sufficient recovery data. Actual engines use more complex log formats, page identifiers, sequence numbers, checksums, and transaction state. The write-ahead logging principle requires the log record describing a change to be flushed to durable storage before the changed data page is allowed to be written. If a crash occurs after a data page was written but before its log record became durable, recovery might not know how to repair it.",
+          "page": 2,
+          "source": "12_database_recovery_logging_wal_and_backup.pdf",
+          "source_version": "2106972c6103bb9c26548ba3810fe29050532404d66913015e2e2edf94baf343",
+          "chunk_hash": "dcd76e5d33aff4d374efc92edcfc124b7de3d79f23c9fbaa19de3a8689706c9a",
+          "chunk_id": 172,
+          "retrieval_score": 0.6822409629821777
+        }
+      ]
+    },
+    {
+      "system_id": "evorag_gguf",
+      "system_name": "EvoRAG (GGUF + Experience Memory)",
+      "backend": "llama.cpp (Q4_K_M) + SQLite/FAISS Memory",
+      "model": "models/selfrag_llama2_7b.Q4_K_M.gguf",
+      "success": true,
+      "error": null,
+      "answer": "Write-ahead logging (WAL) is a technique used in database systems to ensure data integrity and prevent data loss in the event of a system failure or restart.WAL works by writing a log of all changes made to the database to a separate storage area, called the log file.This log is written in advance of the changes being made to the database, hence the name \"write-ahead logging.\"If a system failure or restart occurs, the database can use the log file to recover the changes that were made since the last checkpoint, without having to read the data from the database itself.This means that the database can continue to operate without interruption, even if there is a failure or restart",
+      "answer_status": "Success",
+      "total_query_latency_ms": 9583.55,
+      "retrieval_latency_ms": 41.91,
+      "generation_latency_ms": 9541.64,
+      "model_load_time_ms": 552.88,
+      "is_cold_start": true,
+      "retrieval_decision": "[Retrieval]",
+      "retrieved_passage_count": 1,
+      "routing_path": "Path C (Normal Self-RAG Fallback)",
+      "memory_hit": false,
+      "memory_match_id": null,
+      "memory_match_score": 0.8341,
+      "citations": [
+        "12_database_recovery_logging_wal_and_backup.pdf (page 2, chunk 172)"
+      ],
+      "evidence": [
+        {
+          "text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 2 2. Logging and write-ahead logging A log records enough information to recover the database. A simplified update log record may contain a transaction identifier, page or record identifier, and before/after information. Undo logging uses old values; redo logging uses new values; undo/redo logging retains both or otherwise carries sufficient recovery data. Actual engines use more complex log formats, page identifiers, sequence numbers, checksums, and transaction state. The write-ahead logging principle requires the log record describing a change to be flushed to durable storage before the changed data page is allowed to be written. If a crash occurs after a data page was written but before its log record became durable, recovery might not know how to repair it.",
+          "page": 2,
+          "source": "12_database_recovery_logging_wal_and_backup.pdf",
+          "source_version": "2106972c6103bb9c26548ba3810fe29050532404d66913015e2e2edf94baf343",
+          "chunk_hash": "dcd76e5d33aff4d374efc92edcfc124b7de3d79f23c9fbaa19de3a8689706c9a",
+          "chunk_id": 172,
+          "retrieval_score": 0.6822409629821777
+        }
+      ]
+    },
+    {
+      "system_id": "selfrag_mlx",
+      "system_name": "Original Self-RAG (MLX Base)",
+      "backend": "Apple Silicon MLX (Metal GPU)",
+      "model": "models/mlx/selfrag_llama2_7b_4bit (No Adapter)",
+      "success": true,
+      "error": null,
+      "answer": "Write-ahead logging (WAL) is a technique used in database systems to ensure data integrity and prevent data loss in the event of a system failure or crash.In a WAL system, changes to the database are written to",
+      "answer_status": "Success",
+      "total_query_latency_ms": 2941.67,
+      "retrieval_latency_ms": 353.23,
+      "generation_latency_ms": 2588.43,
+      "model_load_time_ms": 942.04,
+      "is_cold_start": true,
+      "retrieval_decision": "[Retrieval]",
+      "retrieved_passage_count": 1,
+      "routing_path": null,
+      "memory_hit": false,
+      "memory_match_id": null,
+      "memory_match_score": null,
+      "citations": [
+        "12_database_recovery_logging_wal_and_backup.pdf (page 2, chunk 172)"
+      ],
+      "evidence": [
+        {
+          "text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 2 2. Logging and write-ahead logging A log records enough information to recover the database. A simplified update log record may contain a transaction identifier, page or record identifier, and before/after information. Undo logging uses old values; redo logging uses new values; undo/redo logging retains both or otherwise carries sufficient recovery data. Actual engines use more complex log formats, page identifiers, sequence numbers, checksums, and transaction state. The write-ahead logging principle requires the log record describing a change to be flushed to durable storage before the changed data page is allowed to be written. If a crash occurs after a data page was written but before its log record became durable, recovery might not know how to repair it.",
+          "page": 2,
+          "source": "12_database_recovery_logging_wal_and_backup.pdf",
+          "source_version": "2106972c6103bb9c26548ba3810fe29050532404d66913015e2e2edf94baf343",
+          "chunk_hash": "dcd76e5d33aff4d374efc92edcfc124b7de3d79f23c9fbaa19de3a8689706c9a",
+          "chunk_id": 172,
+          "retrieval_score": 0.6822410821914673
+        }
+      ]
+    },
+    {
+      "system_id": "evorag_mlx",
+      "system_name": "Fine-Tuned EvoRAG (MLX QLoRA)",
+      "backend": "Apple Silicon MLX (Metal GPU) + SQLite/FAISS Memory",
+      "model": "models/mlx/selfrag_llama2_7b_4bit + training/qlora_dbms/adapters/full_dbms_v1",
+      "success": true,
+      "error": null,
+      "answer": "Write-ahead logging (WAL) is a logging and write-ahead recovery scheme that records enough information to recover a database.",
+      "answer_status": "Success",
+      "total_query_latency_ms": 2417.67,
+      "retrieval_latency_ms": 5.52,
+      "generation_latency_ms": 2412.16,
+      "model_load_time_ms": 458.25,
+      "is_cold_start": true,
+      "retrieval_decision": "[Retrieval]",
+      "retrieved_passage_count": 1,
+      "routing_path": "Path C (Normal Self-RAG Fallback)",
+      "memory_hit": false,
+      "memory_match_id": null,
+      "memory_match_score": 0.8341,
+      "citations": [
+        "12_database_recovery_logging_wal_and_backup.pdf (page 2, chunk 172)"
+      ],
+      "evidence": [
+        {
+          "text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 2 2. Logging and write-ahead logging A log records enough information to recover the database. A simplified update log record may contain a transaction identifier, page or record identifier, and before/after information. Undo logging uses old values; redo logging uses new values; undo/redo logging retains both or otherwise carries sufficient recovery data. Actual engines use more complex log formats, page identifiers, sequence numbers, checksums, and transaction state. The write-ahead logging principle requires the log record describing a change to be flushed to durable storage before the changed data page is allowed to be written. If a crash occurs after a data page was written but before its log record became durable, recovery might not know how to repair it.",
+          "page": 2,
+          "source": "12_database_recovery_logging_wal_and_backup.pdf",
+          "source_version": "2106972c6103bb9c26548ba3810fe29050532404d66913015e2e2edf94baf343",
+          "chunk_hash": "dcd76e5d33aff4d374efc92edcfc124b7de3d79f23c9fbaa19de3a8689706c9a",
+          "chunk_id": 172,
+          "retrieval_score": 0.6822410821914673
+        }
+      ]
+    }
+  ]
+}

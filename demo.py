@@ -339,17 +339,19 @@ def _pick_mode_interactive() -> str:
     print("  2. Self-RAG (GGUF)      (Original selfrag_llama2_7b via llama.cpp)")
     print("  3. EvoRAG (GGUF)        (Original GGUF + Experience Memory)")
     print("  4. EvoRAG (MLX QLoRA)   (Fine-Tuned MLX 7B + Experience Memory)")
-    print("  5. Compare Both         (Normal RAG vs Self-RAG GGUF)")
-    print("  6. Ollama RAG           (Local Ollama model)")
+    print("  5. Live 5-System Compare (Side-by-side comparison on 1 question)")
+    print("  6. Compare Both         (Normal RAG vs Self-RAG GGUF)")
+    print("  7. Ollama RAG           (Local Ollama model)")
     print(DIVIDER)
-    choice = input("Select mode [1/2/3/4/5/6] (default 2): ").strip() or "2"
+    choice = input("Select mode [1/2/3/4/5/6/7] (default 2): ").strip() or "2"
     mapping = {
         "1": "normal",
         "2": "selfrag",
         "3": "evorag",
         "4": "evorag-mlx",
-        "5": "both",
-        "6": "ollama",
+        "5": "compare",
+        "6": "both",
+        "7": "ollama",
     }
     return mapping.get(choice, "selfrag")
 
@@ -649,6 +651,81 @@ def run_ollama_mode(query: str, args: argparse.Namespace) -> int:
     return 0
 
 
+def run_comparison_mode(args: argparse.Namespace) -> int:
+    """Run interactive or direct 5-system comparative demonstration."""
+    from evaluation.live_comparison import run_live_comparison
+
+    explicit_q = args.question or args.query
+    if explicit_q:
+        run_live_comparison(
+            question=explicit_q,
+            category=args.question_type or "pdf",
+            index_dir=args.index,
+            memory_db=args.memory_db,
+            memory_index=args.memory_index,
+            threshold=args.threshold,
+            model=args.model,
+            mlx_model=args.mlx_model,
+            mlx_adapter=args.mlx_adapter,
+            k=args.k,
+            max_segments=args.max_segments,
+            max_tokens=args.max_tokens,
+        )
+        return 0
+
+    while True:
+        print("\n" + DIVIDER)
+        print("          EVORAG FIVE-SYSTEM LIVE COMPARISON SESSION")
+        print(DIVIDER)
+        print("Select Question Category:")
+        print("  1. PDF-related question (DBMS & SQL Knowledge Corpus)")
+        print("  2. General knowledge question (Parametric vs Retrieval)")
+        print(DIVIDER)
+        try:
+            cat_in = input("Select category [1/2] (default 1): ").strip() or "1"
+        except (KeyboardInterrupt, EOFError):
+            print("\nAborted.")
+            break
+        cat = "pdf" if cat_in == "1" else "general"
+
+        default_q = (
+            "What are ACID properties in database management systems?"
+            if cat == "pdf"
+            else "What is the capital of France?"
+        )
+        try:
+            q_in = input(f"\nEnter question for Category [{cat.upper()}] [Press Enter for default: '{default_q}']: ").strip()
+            question = q_in or default_q
+        except (KeyboardInterrupt, EOFError):
+            print("\nAborted.")
+            break
+
+        run_live_comparison(
+            question=question,
+            category=cat,
+            index_dir=args.index,
+            memory_db=args.memory_db,
+            memory_index=args.memory_index,
+            threshold=args.threshold,
+            model=args.model,
+            mlx_model=args.mlx_model,
+            mlx_adapter=args.mlx_adapter,
+            k=args.k,
+            max_segments=args.max_segments,
+            max_tokens=args.max_tokens,
+        )
+
+        try:
+            cont = input("\nRun another comparison question? [y/N]: ").strip().lower()
+            if cont not in ("y", "yes"):
+                print("Exiting live comparison session.")
+                break
+        except (KeyboardInterrupt, EOFError):
+            print("\nExiting live comparison session.")
+            break
+    return 0
+
+
 def build_arg_parser() -> argparse.ArgumentParser:
     """Construct command-line argument parser."""
     default_index = _detect_default_index()
@@ -666,9 +743,25 @@ def build_arg_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--mode",
-        choices=["normal", "selfrag", "self", "evorag", "evorag-mlx", "both", "ollama"],
+        choices=["normal", "selfrag", "self", "evorag", "evorag-mlx", "compare", "both", "ollama"],
         default=None,
-        help="RAG mode: normal | selfrag | evorag | evorag-mlx | both | ollama",
+        help="RAG mode: normal | selfrag | evorag | evorag-mlx | compare | both | ollama",
+    )
+    parser.add_argument(
+        "--compare",
+        action="store_true",
+        help="Run live 5-system comparative evaluation across one question",
+    )
+    parser.add_argument(
+        "--question-type",
+        choices=["pdf", "general"],
+        default="pdf",
+        help="Question category for --compare: pdf | general (default: pdf)",
+    )
+    parser.add_argument(
+        "--question",
+        default=None,
+        help="Question for non-interactive --compare evaluation (alias for query)",
     )
     parser.add_argument(
         "--index",
@@ -753,9 +846,16 @@ def main() -> int:
     args = parser.parse_args()
 
     # Determine mode
-    mode = args.mode or _pick_mode_interactive()
+    if args.compare:
+        mode = "compare"
+    else:
+        mode = args.mode or _pick_mode_interactive()
     if mode == "self":
         mode = "selfrag"
+
+    # Route to comparison mode if requested
+    if mode == "compare":
+        return run_comparison_mode(args)
 
     # Environment check & dispatch
     dispatch_code = check_and_dispatch_environment(mode, args)

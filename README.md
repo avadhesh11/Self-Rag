@@ -227,7 +227,16 @@ python demo.py --mode evorag-mlx "What is the purpose of a buffer manager?"
 
 # Verbose reflection trace (displays candidate critique scores):
 python demo.py --mode evorag-mlx -v "What are ACID properties?"
+
+# Five-System Live Comparison (evaluates 1 question across all 5 systems):
+python demo.py --compare
+# Or non-interactive:
+python demo.py --compare --question-type pdf --question "What is write-ahead logging (WAL) in database systems?"
+python demo.py --compare --question-type general --question "What is the capital of France?"
 ```
+
+> [!NOTE]
+> The `--compare` command executes an interactive live demonstration comparing latency and outputs across all 5 systems on exactly one question. For formal, frozen 32-question benchmark results, see [Section 12](#12-task-12g-frozen-benchmark-results).
 
 > [!TIP]
 > The unified CLI includes auto-dispatching: running `python demo.py --mode evorag-mlx` while in `.venv` automatically routes to `.venv-mlx` via native ARM64 subprocess.

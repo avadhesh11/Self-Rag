@@ -54,12 +54,61 @@ python demo.py --mode evorag-mlx "What is the purpose of a buffer manager?"
 
 ---
 
-## 3. Command-Line Options Reference
+## 3. Five-System Live Comparison Mode (`--compare`)
+
+Task 13 introduces an interactive, sequential comparison harness that runs **exactly one question** through all five systems and outputs a consolidated latency matrix.
+
+> [!NOTE]
+> This live comparison is an interactive qualitative inspection tool. The formal, double-verified 32-question evaluation is documented in [`docs/EVALUATION.md`](EVALUATION.md).
+
+### Interactive Mode:
+```bash
+python demo.py --compare
+```
+The session interactively prompts for:
+1. Question category:
+   - `1`: **PDF-related question** (evaluates retrieval over `index/dbms_sql_v1`).
+   - `2`: **General knowledge question** (tests adaptive parametric `[No Retrieval]` emission).
+2. The question string (or press Enter for sensible defaults).
+3. Executes all 5 systems sequentially and prints a consolidated comparison table.
+4. Asks whether you would like to run another comparison question.
+
+### Non-Interactive Direct Commands:
+```bash
+# PDF-related question:
+python demo.py --compare --question-type pdf --question "What is write-ahead logging (WAL) in database systems?"
+
+# General knowledge question:
+python demo.py --compare --question-type general --question "What is the capital of France?"
+```
+
+### Consolidated Table Output Example:
+```text
+================================================================================
+                     CONSOLIDATED COMPARISON TABLE
+================================================================================
+| System                            | Query Latency | Retrieval Latency | Generation Latency | Model Load Time | Answer Status | Route / Decision                         |
+|-----------------------------------|---------------|-------------------|--------------------|-----------------|---------------|------------------------------------------|
+| Normal RAG (Gemini)               | 1,148.1 ms    | 258.6 ms          | 889.5 ms           | N/A (API)       | Success       | [Retrieval] (Forced by RAG architecture) |
+| Original Self-RAG (GGUF)          | 9,947.6 ms    | 395.1 ms          | 9,552.6 ms         | 2,629.0 ms      | Success       | [Retrieval]                              |
+| EvoRAG (GGUF + Experience Memory) | 9,583.5 ms    | 41.9 ms           | 9,541.6 ms         | 552.9 ms        | Success       | Path C (Normal Self-RAG Fallback)        |
+| Original Self-RAG (MLX Base)      | 2,941.7 ms    | 353.2 ms          | 2,588.4 ms         | 942.0 ms        | Success       | [Retrieval]                              |
+| Fine-Tuned EvoRAG (MLX QLoRA)     | 2,417.7 ms    | 5.5 ms            | 2,412.2 ms         | 458.2 ms        | Success       | Path C (Normal Self-RAG Fallback)        |
+================================================================================
+```
+Every comparison session is automatically persisted to `evaluation/live_comparisons/comparison_<timestamp>.json` and `.md`.
+
+---
+
+## 4. Command-Line Options Reference
 
 | Argument | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `query` | string | `None` (prompts) | Positional question string. |
-| `--mode` | string | `None` (interactive) | Execution mode: `normal`, `selfrag`, `evorag`, `evorag-mlx`, `both`, `ollama`. |
+| `--mode` | string | `None` (interactive) | Execution mode: `normal`, `selfrag`, `evorag`, `evorag-mlx`, `compare`, `both`, `ollama`. |
+| `--compare` | flag | `False` | Run live 5-system comparative evaluation across one question. |
+| `--question-type` | string | `pdf` | Question category for `--compare`: `pdf` or `general`. |
+| `--question` | string | `None` | Question string for non-interactive `--compare` mode. |
 | `--index` | string | `index/dbms_sql_v1` | Document FAISS index directory containing `faiss.index` and `meta.json`. |
 | `--memory-db` | string | `data/experience_memory.db` | Path to SQLite Experience Memory database. |
 | `--memory-index` | string | `data` | Directory containing `experience_faiss.index` and `experience_meta.json`. |
