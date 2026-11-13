@@ -1,0 +1,125 @@
+{
+  "dataset_name": "EvoRAG DBMS Self-RAG MLX QLoRA Dataset",
+  "created_at": "2026-11-12T11:20:00Z",
+  "random_seed": 42,
+  "total_examples": 260,
+  "split_counts": {
+    "train": 182,
+    "valid": 39,
+    "internal_test": 39
+  },
+  "split_proportions": {
+    "train": 0.7,
+    "valid": 0.15,
+    "internal_test": 0.15
+  },
+  "category_distribution": {
+    "algorithms": 20,
+    "buffer_management": 20,
+    "comparisons": 20,
+    "conceptual_explanations": 20,
+    "concurrency_control": 20,
+    "context_grounded_abstention": 20,
+    "dbms_definitions": 20,
+    "indexing": 20,
+    "query_processing": 20,
+    "recovery_and_logging": 20,
+    "scenario_based_reasoning": 20,
+    "storage_architecture": 20,
+    "transactions": 20
+  },
+  "reflection_token_distribution": {
+    "retrieval_decision": {
+      "[No Retrieval]": 11,
+      "[Retrieval]": 249
+    },
+    "relevance_critique": {
+      "[Irrelevant]": 10,
+      "[Relevant]": 239
+    },
+    "support_critique": {
+      "[Fully supported]": 229,
+      "[No support / Contradictory]": 15,
+      "[Partially supported]": 5
+    },
+    "utility_scores": {
+      "[Utility:1]": 15,
+      "[Utility:3]": 5,
+      "[Utility:4]": 2,
+      "[Utility:5]": 238
+    }
+  },
+  "source_document_distribution": {
+    "01_dbms_fundamentals_and_architecture.pdf": 14,
+    "02_relational_model_keys_and_integrity.pdf": 11,
+    "03_er_modeling_and_database_design.pdf": 2,
+    "04_relational_algebra_and_calculus.pdf": 6,
+    "05_sql_fundamentals_ddl_dml_and_types.pdf": 12,
+    "06_sql_queries_joins_aggregation_subqueries.pdf": 7,
+    "07_functional_dependencies_and_normalization.pdf": 7,
+    "08_database_storage_pages_and_buffer_management.pdf": 47,
+    "09_index_structures_btrees_hashing_and_postgresql.pdf": 30,
+    "10_transactions_and_acid_properties.pdf": 24,
+    "11_concurrency_control_serializability_mvcc.pdf": 27,
+    "12_database_recovery_logging_wal_and_backup.pdf": 27,
+    "13_query_processing_and_execution_algorithms.pdf": 16,
+    "14_query_optimization_cost_models_and_explain.pdf": 10,
+    "15_distributed_databases_nosql_security_and_administration.pdf": 9
+  },
+  "token_length_statistics": {
+    "prompt_tokens": {
+      "min": 7,
+      "max": 73,
+      "mean": 18.98,
+      "median": 17,
+      "p95": 37
+    },
+    "completion_tokens": {
+      "min": 39,
+      "max": 369,
+      "mean": 219.52,
+      "median": 238,
+      "p95": 312
+    },
+    "total_sequence_tokens": {
+      "min": 51,
+      "max": 421,
+      "mean": 238.5,
+      "median": 254,
+      "p95": 331
+    }
+  },
+  "file_manifest": {
+    "candidate_examples.jsonl": {
+      "rows": 260,
+      "sha256": "0dbf5b779426054c3f818bfd05e332db5f998420282f8178a33fd9e9586b3a22"
+    },
+    "approved_examples.jsonl": {
+      "rows": 260,
+      "sha256": "0dbf5b779426054c3f818bfd05e332db5f998420282f8178a33fd9e9586b3a22"
+    },
+    "train.jsonl": {
+      "rows": 182,
+      "sha256": "7eb1636d755cb183042a13d76229c6044267e2bc5ba591cfe029f3ab9dcf7274"
+    },
+    "valid.jsonl": {
+      "rows": 39,
+      "sha256": "51737f90a25f725b71065739160a6473dc5868534c330d02267bd5b5c68fcf89"
+    },
+    "internal_test.jsonl": {
+      "rows": 39,
+      "sha256": "c305a1492a97955bf38c97c7eb0420e0786847760bcdf72ce14c59fbba568f80"
+    },
+    "test.jsonl": {
+      "rows": 39,
+      "sha256": "c305a1492a97955bf38c97c7eb0420e0786847760bcdf72ce14c59fbba568f80"
+    }
+  },
+  "contamination_safeguards": {
+    "held_out_questions_checked": 32,
+    "exact_matches": 0,
+    "normalized_matches": 0,
+    "near_duplicates_above_threshold": 0,
+    "status": "CLEAN_ZERO_CONTAMINATION"
+  }
+}

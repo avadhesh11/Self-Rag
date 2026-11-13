@@ -1,0 +1,303 @@
+{
+  "timestamp": "20261113_135405Z",
+  "question": "What is write-ahead logging (WAL) in database systems?",
+  "category": "pdf",
+  "index_dir": "/Users/devj/code/self-rag/self-rag-demo/index/dbms_sql_v1",
+  "results": [
+    {
+      "system_id": "normal",
+      "system_name": "Normal RAG (Gemini)",
+      "backend": "Google Gemini API (google-genai)",
+      "model": "gemini-3.5-flash-lite",
+      "success": true,
+      "error": null,
+      "answer": "Based on the provided context, write-ahead logging (WAL) is a rule and principle requiring that the log record describing a change (or record of transaction events/data changes needed for recovery) must be flushed to durable storage before the changed data page is allowed to be written [1, 4]. It separates the timing of data-page writes from the durability of transaction commits [3].",
+      "answer_status": "Success",
+      "total_query_latency_ms": 1935.82,
+      "retrieval_latency_ms": 257.34,
+      "generation_latency_ms": 1678.48,
+      "model_load_time_ms": 265.52,
+      "is_cold_start": true,
+      "retrieval_decision": "[Retrieval] (Forced by RAG architecture)",
+      "retrieved_passage_count": 5,
+      "routing_path": null,
+      "memory_hit": false,
+      "memory_match_id": null,
+      "memory_match_score": null,
+      "citations": [
+        "12_database_recovery_logging_wal_and_backup.pdf (page 2, chunk 172)",
+        "12_database_recovery_logging_wal_and_backup.pdf (page 4, chunk 176)",
+        "12_database_recovery_logging_wal_and_backup.pdf (page 2, chunk 173)",
+        "12_database_recovery_logging_wal_and_backup.pdf (page 1, chunk 171)",
+        "12_database_recovery_logging_wal_and_backup.pdf (page 1, chunk 170)"
+      ],
+      "evidence": [
+        {
+          "text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 2 2. Logging and write-ahead logging A log records enough information to recover the database. A simplified update log record may contain a transaction identifier, page or record identifier, and before/after information. Undo logging uses old values; redo logging uses new values; undo/redo logging retains both or otherwise carries sufficient recovery data. Actual engines use more complex log formats, page identifiers, sequence numbers, checksums, and transaction state. The write-ahead logging principle requires the log record describing a change to be flushed to durable storage before the changed data page is allowed to be written. If a crash occurs after a data page was written but before its log record became durable, recovery might not know how to repair it.",
+          "page": 2,
+          "source": "12_database_recovery_logging_wal_and_backup.pdf",
+          "source_version": "2106972c6103bb9c26548ba3810fe29050532404d66913015e2e2edf94baf343",
+          "chunk_hash": "dcd76e5d33aff4d374efc92edcfc124b7de3d79f23c9fbaa19de3a8689706c9a",
+          "chunk_id": 172,
+          "retrieval_score": 0.6776012182235718
+        },
+        {
+          "text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 4 4. PostgreSQL WAL and durability PostgreSQL uses Write-Ahead Logging. WAL records changes to database pages. The server can flush WAL to durable storage and later write changed data pages. During crash recovery, PostgreSQL replays WAL as necessary to make data files consistent with the recorded history. The pg_wal directory contains WAL segments; it is managed by PostgreSQL and should not be edited manually. The configuration parameter synchronous_commit influences when a transaction reports success relative to WAL flushing and replication acknowledgment. Turning durability-related settings down may improve apparent performance but can risk losing recently acknowledged commits in specified failure scenarios. Such changes must be intentional and documented.",
+          "page": 4,
+          "source": "12_database_recovery_logging_wal_and_backup.pdf",
+          "source_version": "2106972c6103bb9c26548ba3810fe29050532404d66913015e2e2edf94baf343",
+          "chunk_hash": "180f7af7433e695882a5e34fc9e11ce247230531af2a91111ecd6bb0687d5605",
+          "chunk_id": 176,
+          "retrieval_score": 0.6623374819755554
+        },
+        {
+          "text": "If a crash occurs after a data page was written but before its log record became durable, recovery might not know how to repair it. WAL separates the timing of data-page writes from the durability of transaction commits. A commit typically requires the relevant log records to become durable according to configured guarantees. Data pages can be written later. This allows group commit and background flushing while preserving recovery. Exact mechanics and durability settings are DBMS-specific.",
+          "page": 2,
+          "source": "12_database_recovery_logging_wal_and_backup.pdf",
+          "source_version": "2106972c6103bb9c26548ba3810fe29050532404d66913015e2e2edf94baf343",
+          "chunk_hash": "f53c76b0694370a2a93ba2d486892f07a80a8d85ed1b74add4e07386a6f49647",
+          "chunk_id": 173,
+          "retrieval_score": 0.6493460536003113
+        },
+        {
+          "text": "Recovery vocabulary \u2022 Log record: describes a transaction event or data change needed for recovery. \u2022 Undo: remove the effect of an uncommitted change. \u2022 Redo: reapply a change that belongs in the recovered state. \u2022 Checkpoint: records recovery progress and limits how far back the engine must inspect during restart. \u2022 WAL: write-ahead logging, a rule that required log records reach durable storage before corresponding data pages are written.",
+          "page": 1,
+          "source": "12_database_recovery_logging_wal_and_backup.pdf",
+          "source_version": "2106972c6103bb9c26548ba3810fe29050532404d66913015e2e2edf94baf343",
+          "chunk_hash": "8bb8fa568be2cfe08a99fd78da1eb30b75980ec9741c929d406331f44db5d71b",
+          "chunk_id": 171,
+          "retrieval_score": 0.6442589163780212
+        },
+        {
+          "text": "A process crash may leave persistent files intact but memory lost; media failure may destroy part of the database files and require restoring backups. Recovery is linked to transaction atomicity and durability. A committed transaction must not disappear under the promised failure model. An uncommitted transaction must not leave partial effects as if it had committed. The DBMS therefore maintains recovery information, often in a log, and coordinates log and data-page writes. Recovery vocabulary \u2022 Log record: describes a transaction event or data change needed for recovery. \u2022 Undo: remove the effect of an uncommitted change. \u2022 Redo: reapply a change that belongs in the recovered state. \u2022 Checkpoint: records recovery progress and limits how far back the engine must inspect during restart. \u2022 WAL: write-ahead logging, a rule that required log records reach durable storage before corresponding data pages are written.",
+          "page": 1,
+          "source": "12_database_recovery_logging_wal_and_backup.pdf",
+          "source_version": "2106972c6103bb9c26548ba3810fe29050532404d66913015e2e2edf94baf343",
+          "chunk_hash": "8c5592fba7594de1354a95b4ffef7614f2130c43386a18f927ece59754b98b19",
+          "chunk_id": 170,
+          "retrieval_score": 0.6201812028884888
+        }
+      ]
+    },
+    {
+      "system_id": "selfrag_gguf",
+      "system_name": "Original Self-RAG (GGUF)",
+      "backend": "llama.cpp (Q4_K_M)",
+      "model": "models/selfrag_llama2_7b.Q4_K_M.gguf",
+      "success": true,
+      "error": null,
+      "answer": "Write-ahead logging (WAL) is a technique used in database systems to ensure data integrity and prevent data loss in the event of a system failure or restart. WAL is a form of transactional logging where changes to the database are written to a log before they are committed to the main data store. This means that if there is a system failure or restart, the database can recover the changes that were made since the last checkpoint, without having to replay the entire transaction log.WAL is typically implemented using a two-phase commit protocol, where the first phase writes the changes to the log, and the second phase commits the changes to the main data store.",
+      "answer_status": "Success",
+      "total_query_latency_ms": 29295.52,
+      "retrieval_latency_ms": 108.04,
+      "generation_latency_ms": 29187.48,
+      "model_load_time_ms": 2225.73,
+      "is_cold_start": true,
+      "retrieval_decision": "[Retrieval]",
+      "retrieved_passage_count": 5,
+      "routing_path": null,
+      "memory_hit": false,
+      "memory_match_id": null,
+      "memory_match_score": null,
+      "citations": [
+        "12_database_recovery_logging_wal_and_backup.pdf (page 2, chunk 172)",
+        "12_database_recovery_logging_wal_and_backup.pdf (page 4, chunk 176)",
+        "12_database_recovery_logging_wal_and_backup.pdf (page 2, chunk 173)",
+        "12_database_recovery_logging_wal_and_backup.pdf (page 1, chunk 171)",
+        "12_database_recovery_logging_wal_and_backup.pdf (page 1, chunk 170)"
+      ],
+      "evidence": [
+        {
+          "text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 2 2. Logging and write-ahead logging A log records enough information to recover the database. A simplified update log record may contain a transaction identifier, page or record identifier, and before/after information. Undo logging uses old values; redo logging uses new values; undo/redo logging retains both or otherwise carries sufficient recovery data. Actual engines use more complex log formats, page identifiers, sequence numbers, checksums, and transaction state. The write-ahead logging principle requires the log record describing a change to be flushed to durable storage before the changed data page is allowed to be written. If a crash occurs after a data page was written but before its log record became durable, recovery might not know how to repair it.",
+          "page": 2,
+          "source": "12_database_recovery_logging_wal_and_backup.pdf",
+          "source_version": "2106972c6103bb9c26548ba3810fe29050532404d66913015e2e2edf94baf343",
+          "chunk_hash": "dcd76e5d33aff4d374efc92edcfc124b7de3d79f23c9fbaa19de3a8689706c9a",
+          "chunk_id": 172,
+          "retrieval_score": 0.6822409629821777
+        },
+        {
+          "text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 4 4. PostgreSQL WAL and durability PostgreSQL uses Write-Ahead Logging. WAL records changes to database pages. The server can flush WAL to durable storage and later write changed data pages. During crash recovery, PostgreSQL replays WAL as necessary to make data files consistent with the recorded history. The pg_wal directory contains WAL segments; it is managed by PostgreSQL and should not be edited manually. The configuration parameter synchronous_commit influences when a transaction reports success relative to WAL flushing and replication acknowledgment. Turning durability-related settings down may improve apparent performance but can risk losing recently acknowledged commits in specified failure scenarios. Such changes must be intentional and documented.",
+          "page": 4,
+          "source": "12_database_recovery_logging_wal_and_backup.pdf",
+          "source_version": "2106972c6103bb9c26548ba3810fe29050532404d66913015e2e2edf94baf343",
+          "chunk_hash": "180f7af7433e695882a5e34fc9e11ce247230531af2a91111ecd6bb0687d5605",
+          "chunk_id": 176,
+          "retrieval_score": 0.668091893196106
+        },
+        {
+          "text": "If a crash occurs after a data page was written but before its log record became durable, recovery might not know how to repair it. WAL separates the timing of data-page writes from the durability of transaction commits. A commit typically requires the relevant log records to become durable according to configured guarantees. Data pages can be written later. This allows group commit and background flushing while preserving recovery. Exact mechanics and durability settings are DBMS-specific.",
+          "page": 2,
+          "source": "12_database_recovery_logging_wal_and_backup.pdf",
+          "source_version": "2106972c6103bb9c26548ba3810fe29050532404d66913015e2e2edf94baf343",
+          "chunk_hash": "f53c76b0694370a2a93ba2d486892f07a80a8d85ed1b74add4e07386a6f49647",
+          "chunk_id": 173,
+          "retrieval_score": 0.6502091288566589
+        },
+        {
+          "text": "Recovery vocabulary \u2022 Log record: describes a transaction event or data change needed for recovery. \u2022 Undo: remove the effect of an uncommitted change. \u2022 Redo: reapply a change that belongs in the recovered state. \u2022 Checkpoint: records recovery progress and limits how far back the engine must inspect during restart. \u2022 WAL: write-ahead logging, a rule that required log records reach durable storage before corresponding data pages are written.",
+          "page": 1,
+          "source": "12_database_recovery_logging_wal_and_backup.pdf",
+          "source_version": "2106972c6103bb9c26548ba3810fe29050532404d66913015e2e2edf94baf343",
+          "chunk_hash": "8bb8fa568be2cfe08a99fd78da1eb30b75980ec9741c929d406331f44db5d71b",
+          "chunk_id": 171,
+          "retrieval_score": 0.6431359052658081
+        },
+        {
+          "text": "A process crash may leave persistent files intact but memory lost; media failure may destroy part of the database files and require restoring backups. Recovery is linked to transaction atomicity and durability. A committed transaction must not disappear under the promised failure model. An uncommitted transaction must not leave partial effects as if it had committed. The DBMS therefore maintains recovery information, often in a log, and coordinates log and data-page writes. Recovery vocabulary \u2022 Log record: describes a transaction event or data change needed for recovery. \u2022 Undo: remove the effect of an uncommitted change. \u2022 Redo: reapply a change that belongs in the recovered state. \u2022 Checkpoint: records recovery progress and limits how far back the engine must inspect during restart. \u2022 WAL: write-ahead logging, a rule that required log records reach durable storage before corresponding data pages are written.",
+          "page": 1,
+          "source": "12_database_recovery_logging_wal_and_backup.pdf",
+          "source_version": "2106972c6103bb9c26548ba3810fe29050532404d66913015e2e2edf94baf343",
+          "chunk_hash": "8c5592fba7594de1354a95b4ffef7614f2130c43386a18f927ece59754b98b19",
+          "chunk_id": 170,
+          "retrieval_score": 0.6227656602859497
+        }
+      ]
+    },
+    {
+      "system_id": "evorag_gguf",
+      "system_name": "EvoRAG (GGUF + Experience Memory)",
+      "backend": "llama.cpp (Q4_K_M) + SQLite/FAISS Memory",
+      "model": "models/selfrag_llama2_7b.Q4_K_M.gguf",
+      "success": true,
+      "error": null,
+      "answer": "Write-ahead logging (WAL) is a technique used in database systems to ensure data integrity and prevent data loss in the event of a system failure or restart. WAL is a form of transactional logging where changes to the database are written to a log before they are committed to the main data store. This means that if there is a system failure or restart, the database can recover the changes that were made since the last checkpoint, without having to replay the entire transaction log.WAL is typically implemented using a two-phase commit protocol, where the first phase writes the changes to the log, and the second phase commits the changes to the main data store.",
+      "answer_status": "Success",
+      "total_query_latency_ms": 29322.54,
+      "retrieval_latency_ms": 38.5,
+      "generation_latency_ms": 29284.04,
+      "model_load_time_ms": 519.79,
+      "is_cold_start": true,
+      "retrieval_decision": "[Retrieval]",
+      "retrieved_passage_count": 1,
+      "routing_path": "Path C (Normal Self-RAG Fallback)",
+      "memory_hit": false,
+      "memory_match_id": null,
+      "memory_match_score": 0.8341,
+      "citations": [
+        "12_database_recovery_logging_wal_and_backup.pdf (page 4, chunk 176)"
+      ],
+      "evidence": [
+        {
+          "text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 4 4. PostgreSQL WAL and durability PostgreSQL uses Write-Ahead Logging. WAL records changes to database pages. The server can flush WAL to durable storage and later write changed data pages. During crash recovery, PostgreSQL replays WAL as necessary to make data files consistent with the recorded history. The pg_wal directory contains WAL segments; it is managed by PostgreSQL and should not be edited manually. The configuration parameter synchronous_commit influences when a transaction reports success relative to WAL flushing and replication acknowledgment. Turning durability-related settings down may improve apparent performance but can risk losing recently acknowledged commits in specified failure scenarios. Such changes must be intentional and documented.",
+          "page": 4,
+          "source": "12_database_recovery_logging_wal_and_backup.pdf",
+          "source_version": "2106972c6103bb9c26548ba3810fe29050532404d66913015e2e2edf94baf343",
+          "chunk_hash": "180f7af7433e695882a5e34fc9e11ce247230531af2a91111ecd6bb0687d5605",
+          "chunk_id": 176,
+          "retrieval_score": 0.668091893196106
+        }
+      ]
+    },
+    {
+      "system_id": "selfrag_mlx",
+      "system_name": "Original Self-RAG (MLX Base)",
+      "backend": "Apple Silicon MLX (Metal GPU)",
+      "model": "models/mlx/selfrag_llama2_7b_4bit (No Adapter)",
+      "success": true,
+      "error": null,
+      "answer": "Write-ahead logging (WAL) is a technique used in database systems to ensure data integrity and prevent data loss in the event of a system failure or crash. In a WAL system, changes to the database are written to a log file in advance of the changes being written to the actual database. This means that if there is a system failure or crash, the database can be restored to a consistent state by reading the log file and applying the changes that were written to the database.This technique is particularly useful in systems that require strict consistency, such as transactional databases.",
+      "answer_status": "Success",
+      "total_query_latency_ms": 22064.08,
+      "retrieval_latency_ms": 361.6,
+      "generation_latency_ms": 21702.48,
+      "model_load_time_ms": 969.61,
+      "is_cold_start": true,
+      "retrieval_decision": "[Retrieval]",
+      "retrieved_passage_count": 5,
+      "routing_path": null,
+      "memory_hit": false,
+      "memory_match_id": null,
+      "memory_match_score": null,
+      "citations": [
+        "12_database_recovery_logging_wal_and_backup.pdf (page 2, chunk 172)",
+        "12_database_recovery_logging_wal_and_backup.pdf (page 4, chunk 176)",
+        "12_database_recovery_logging_wal_and_backup.pdf (page 2, chunk 173)",
+        "12_database_recovery_logging_wal_and_backup.pdf (page 1, chunk 171)",
+        "12_database_recovery_logging_wal_and_backup.pdf (page 1, chunk 170)"
+      ],
+      "evidence": [
+        {
+          "text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 2 2. Logging and write-ahead logging A log records enough information to recover the database. A simplified update log record may contain a transaction identifier, page or record identifier, and before/after information. Undo logging uses old values; redo logging uses new values; undo/redo logging retains both or otherwise carries sufficient recovery data. Actual engines use more complex log formats, page identifiers, sequence numbers, checksums, and transaction state. The write-ahead logging principle requires the log record describing a change to be flushed to durable storage before the changed data page is allowed to be written. If a crash occurs after a data page was written but before its log record became durable, recovery might not know how to repair it.",
+          "page": 2,
+          "source": "12_database_recovery_logging_wal_and_backup.pdf",
+          "source_version": "2106972c6103bb9c26548ba3810fe29050532404d66913015e2e2edf94baf343",
+          "chunk_hash": "dcd76e5d33aff4d374efc92edcfc124b7de3d79f23c9fbaa19de3a8689706c9a",
+          "chunk_id": 172,
+          "retrieval_score": 0.6822410821914673
+        },
+        {
+          "text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 4 4. PostgreSQL WAL and durability PostgreSQL uses Write-Ahead Logging. WAL records changes to database pages. The server can flush WAL to durable storage and later write changed data pages. During crash recovery, PostgreSQL replays WAL as necessary to make data files consistent with the recorded history. The pg_wal directory contains WAL segments; it is managed by PostgreSQL and should not be edited manually. The configuration parameter synchronous_commit influences when a transaction reports success relative to WAL flushing and replication acknowledgment. Turning durability-related settings down may improve apparent performance but can risk losing recently acknowledged commits in specified failure scenarios. Such changes must be intentional and documented.",
+          "page": 4,
+          "source": "12_database_recovery_logging_wal_and_backup.pdf",
+          "source_version": "2106972c6103bb9c26548ba3810fe29050532404d66913015e2e2edf94baf343",
+          "chunk_hash": "180f7af7433e695882a5e34fc9e11ce247230531af2a91111ecd6bb0687d5605",
+          "chunk_id": 176,
+          "retrieval_score": 0.668091893196106
+        },
+        {
+          "text": "If a crash occurs after a data page was written but before its log record became durable, recovery might not know how to repair it. WAL separates the timing of data-page writes from the durability of transaction commits. A commit typically requires the relevant log records to become durable according to configured guarantees. Data pages can be written later. This allows group commit and background flushing while preserving recovery. Exact mechanics and durability settings are DBMS-specific.",
+          "page": 2,
+          "source": "12_database_recovery_logging_wal_and_backup.pdf",
+          "source_version": "2106972c6103bb9c26548ba3810fe29050532404d66913015e2e2edf94baf343",
+          "chunk_hash": "f53c76b0694370a2a93ba2d486892f07a80a8d85ed1b74add4e07386a6f49647",
+          "chunk_id": 173,
+          "retrieval_score": 0.6502091288566589
+        },
+        {
+          "text": "Recovery vocabulary \u2022 Log record: describes a transaction event or data change needed for recovery. \u2022 Undo: remove the effect of an uncommitted change. \u2022 Redo: reapply a change that belongs in the recovered state. \u2022 Checkpoint: records recovery progress and limits how far back the engine must inspect during restart. \u2022 WAL: write-ahead logging, a rule that required log records reach durable storage before corresponding data pages are written.",
+          "page": 1,
+          "source": "12_database_recovery_logging_wal_and_backup.pdf",
+          "source_version": "2106972c6103bb9c26548ba3810fe29050532404d66913015e2e2edf94baf343",
+          "chunk_hash": "8bb8fa568be2cfe08a99fd78da1eb30b75980ec9741c929d406331f44db5d71b",
+          "chunk_id": 171,
+          "retrieval_score": 0.6431359052658081
+        },
+        {
+          "text": "A process crash may leave persistent files intact but memory lost; media failure may destroy part of the database files and require restoring backups. Recovery is linked to transaction atomicity and durability. A committed transaction must not disappear under the promised failure model. An uncommitted transaction must not leave partial effects as if it had committed. The DBMS therefore maintains recovery information, often in a log, and coordinates log and data-page writes. Recovery vocabulary \u2022 Log record: describes a transaction event or data change needed for recovery. \u2022 Undo: remove the effect of an uncommitted change. \u2022 Redo: reapply a change that belongs in the recovered state. \u2022 Checkpoint: records recovery progress and limits how far back the engine must inspect during restart. \u2022 WAL: write-ahead logging, a rule that required log records reach durable storage before corresponding data pages are written.",
+          "page": 1,
+          "source": "12_database_recovery_logging_wal_and_backup.pdf",
+          "source_version": "2106972c6103bb9c26548ba3810fe29050532404d66913015e2e2edf94baf343",
+          "chunk_hash": "8c5592fba7594de1354a95b4ffef7614f2130c43386a18f927ece59754b98b19",
+          "chunk_id": 170,
+          "retrieval_score": 0.6227656602859497
+        }
+      ]
+    },
+    {
+      "system_id": "evorag_mlx",
+      "system_name": "Fine-Tuned EvoRAG (MLX QLoRA)",
+      "backend": "Apple Silicon MLX (Metal GPU) + SQLite/FAISS Memory",
+      "model": "models/mlx/selfrag_llama2_7b_4bit + training/qlora_dbms/adapters/full_dbms_v1",
+      "success": true,
+      "error": null,
+      "answer": "Write-ahead logging (WAL) is a logging and write-ahead recovery scheme that records enough information to recover a database.",
+      "answer_status": "Success",
+      "total_query_latency_ms": 10594.99,
+      "retrieval_latency_ms": 5.8,
+      "generation_latency_ms": 10589.19,
+      "model_load_time_ms": 383.85,
+      "is_cold_start": true,
+      "retrieval_decision": "[Retrieval]",
+      "retrieved_passage_count": 1,
+      "routing_path": "Path C (Normal Self-RAG Fallback)",
+      "memory_hit": false,
+      "memory_match_id": null,
+      "memory_match_score": 0.8341,
+      "citations": [
+        "12_database_recovery_logging_wal_and_backup.pdf (page 2, chunk 172)"
+      ],
+      "evidence": [
+        {
+          "text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 2 2. Logging and write-ahead logging A log records enough information to recover the database. A simplified update log record may contain a transaction identifier, page or record identifier, and before/after information. Undo logging uses old values; redo logging uses new values; undo/redo logging retains both or otherwise carries sufficient recovery data. Actual engines use more complex log formats, page identifiers, sequence numbers, checksums, and transaction state. The write-ahead logging principle requires the log record describing a change to be flushed to durable storage before the changed data page is allowed to be written. If a crash occurs after a data page was written but before its log record became durable, recovery might not know how to repair it.",
+          "page": 2,
+          "source": "12_database_recovery_logging_wal_and_backup.pdf",
+          "source_version": "2106972c6103bb9c26548ba3810fe29050532404d66913015e2e2edf94baf343",
+          "chunk_hash": "dcd76e5d33aff4d374efc92edcfc124b7de3d79f23c9fbaa19de3a8689706c9a",
+          "chunk_id": 172,
+          "retrieval_score": 0.6822410821914673
+        }
+      ]
+    }
+  ]
+}

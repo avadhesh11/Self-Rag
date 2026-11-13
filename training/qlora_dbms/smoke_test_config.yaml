@@ -1,0 +1,25 @@
+# EvoRAG Task 12D: QLoRA Smoke Test Configuration
+model: models/mlx/selfrag_llama2_7b_4bit
+train: true
+data: training/qlora_dbms/mlx_dataset
+seed: 42
+fine_tune_type: lora
+num_layers: 16
+batch_size: 1
+iters: 10
+val_batches: 5
+learning_rate: 1.0e-5
+steps_per_report: 1
+steps_per_eval: 5
+save_every: 10
+adapter_path: training/qlora_dbms/adapters/smoke_test
+max_seq_length: 1024
+mask_prompt: true
+grad_checkpoint: false
+grad_accumulation_steps: 1
+optimizer: adam
+lora_parameters:
+  rank: 8
+  scale: 16.0
+  dropout: 0.0
+

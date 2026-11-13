@@ -1,0 +1,137 @@
+[
+  {
+    "document_id": "DBMS-01",
+    "filename": "01_dbms_fundamentals_and_architecture.pdf",
+    "title": "DBMS Fundamentals and Architecture",
+    "pages": 6,
+    "extractable_characters": 11667,
+    "sha256": "a7e3dc970655f502f95ab157ceb43b2ce1a3be4d2d4e2ee3bbf8833840034356",
+    "baseline": "PostgreSQL 18.6; DBMS theory is vendor-neutral unless stated"
+  },
+  {
+    "document_id": "DBMS-02",
+    "filename": "02_relational_model_keys_and_integrity.pdf",
+    "title": "Relational Model, Keys, and Integrity Constraints",
+    "pages": 6,
+    "extractable_characters": 11403,
+    "sha256": "30abbaf7a2fa07e3a57787a79ce7b45b1569f7d58756ef8f8d78aec25aab6792",
+    "baseline": "PostgreSQL 18.6; DBMS theory is vendor-neutral unless stated"
+  },
+  {
+    "document_id": "DBMS-03",
+    "filename": "03_er_modeling_and_database_design.pdf",
+    "title": "ER Modeling and Conceptual Database Design",
+    "pages": 6,
+    "extractable_characters": 9053,
+    "sha256": "e769687159711001e87a0e67d8fe9fc0ec34e6c13aba7653be03dfcd99ae3629",
+    "baseline": "PostgreSQL 18.6; DBMS theory is vendor-neutral unless stated"
+  },
+  {
+    "document_id": "DBMS-04",
+    "filename": "04_relational_algebra_and_calculus.pdf",
+    "title": "Relational Algebra and Relational Calculus",
+    "pages": 6,
+    "extractable_characters": 8184,
+    "sha256": "3c9875d58477315508114e77ad202f714385cf71f66ad17821013834e24b8d98",
+    "baseline": "PostgreSQL 18.6; DBMS theory is vendor-neutral unless stated"
+  },
+  {
+    "document_id": "DBMS-05",
+    "filename": "05_sql_fundamentals_ddl_dml_and_types.pdf",
+    "title": "SQL Fundamentals: DDL, DML, and Data Types",
+    "pages": 6,
+    "extractable_characters": 8972,
+    "sha256": "315dd2480af6231e3eadec20c71f7bdcacd35b1c09c816b0151377fd915dd20d",
+    "baseline": "PostgreSQL 18.6; DBMS theory is vendor-neutral unless stated"
+  },
+  {
+    "document_id": "DBMS-06",
+    "filename": "06_sql_queries_joins_aggregation_subqueries.pdf",
+    "title": "SQL Querying: Joins, Aggregation, and Subqueries",
+    "pages": 6,
+    "extractable_characters": 8118,
+    "sha256": "231c06286cd3806cb332e959d57e0b884d6ed0d6c726ce4b8e05c28d4188c216",
+    "baseline": "PostgreSQL 18.6; DBMS theory is vendor-neutral unless stated"
+  },
+  {
+    "document_id": "DBMS-07",
+    "filename": "07_functional_dependencies_and_normalization.pdf",
+    "title": "Functional Dependencies and Normalization",
+    "pages": 6,
+    "extractable_characters": 8362,
+    "sha256": "a8c0147821ddbc621bc408c6ff632d09370df3aa46d7ce6f246c47a3a615cccb",
+    "baseline": "PostgreSQL 18.6; DBMS theory is vendor-neutral unless stated"
+  },
+  {
+    "document_id": "DBMS-08",
+    "filename": "08_database_storage_pages_and_buffer_management.pdf",
+    "title": "Database Storage, Pages, and Buffer Management",
+    "pages": 6,
+    "extractable_characters": 8844,
+    "sha256": "facb23b0082ba64de78c501f9bbc528752cfdc253766578b5e226fe0d2bc51c5",
+    "baseline": "PostgreSQL 18.6; DBMS theory is vendor-neutral unless stated"
+  },
+  {
+    "document_id": "DBMS-09",
+    "filename": "09_index_structures_btrees_hashing_and_postgresql.pdf",
+    "title": "Index Structures: B-Trees, Hashing, and PostgreSQL Indexes",
+    "pages": 6,
+    "extractable_characters": 8296,
+    "sha256": "88fa521f4ce6de2650bcc61d01197d7448a64feb0d680f58c30e59e688925d23",
+    "baseline": "PostgreSQL 18.6; DBMS theory is vendor-neutral unless stated"
+  },
+  {
+    "document_id": "DBMS-10",
+    "filename": "10_transactions_and_acid_properties.pdf",
+    "title": "Transactions and ACID Properties",
+    "pages": 6,
+    "extractable_characters": 8639,
+    "sha256": "591c0270e8017c3833ee4457a48f1d7ac270b87cb3c53f4442377e6fd4acb00d",
+    "baseline": "PostgreSQL 18.6; DBMS theory is vendor-neutral unless stated"
+  },
+  {
+    "document_id": "DBMS-11",
+    "filename": "11_concurrency_control_serializability_mvcc.pdf",
+    "title": "Concurrency Control: Serializability, Locking, and MVCC",
+    "pages": 6,
+    "extractable_characters": 7943,
+    "sha256": "1f03aacb6f7079649cef8063dcb1856811527cda742f91fbd6dd7193890d0776",
+    "baseline": "PostgreSQL 18.6; DBMS theory is vendor-neutral unless stated"
+  },
+  {
+    "document_id": "DBMS-12",
+    "filename": "12_database_recovery_logging_wal_and_backup.pdf",
+    "title": "Database Recovery, Logging, WAL, and Backup",
+    "pages": 6,
+    "extractable_characters": 8549,
+    "sha256": "2106972c6103bb9c26548ba3810fe29050532404d66913015e2e2edf94baf343",
+    "baseline": "PostgreSQL 18.6; DBMS theory is vendor-neutral unless stated"
+  },
+  {
+    "document_id": "DBMS-13",
+    "filename": "13_query_processing_and_execution_algorithms.pdf",
+    "title": "Query Processing and Execution Algorithms",
+    "pages": 6,
+    "extractable_characters": 8229,
+    "sha256": "827d243c34aeb92527733d35907bda5d08025c6627a5e10be990766bacc8a96b",
+    "baseline": "PostgreSQL 18.6; DBMS theory is vendor-neutral unless stated"
+  },
+  {
+    "document_id": "DBMS-14",
+    "filename": "14_query_optimization_cost_models_and_explain.pdf",
+    "title": "Query Optimization: Cost Models, Statistics, and EXPLAIN",
+    "pages": 6,
+    "extractable_characters": 8438,
+    "sha256": "3a7c14c7effdbbf0c1dd6e6600e4ee943cebead0f711164042072cb701e7566c",
+    "baseline": "PostgreSQL 18.6; DBMS theory is vendor-neutral unless stated"
+  },
+  {
+    "document_id": "DBMS-15",
+    "filename": "15_distributed_databases_nosql_security_and_administration.pdf",
+    "title": "Distributed Databases, NoSQL, Security, and Administration",
+    "pages": 6,
+    "extractable_characters": 12971,
+    "sha256": "c0cd1a8faa6a560e6eba970246fca63181486c46278231b359eec124a0b62a0e",
+    "baseline": "PostgreSQL 18.6; DBMS theory is vendor-neutral unless stated"
+  }
+]

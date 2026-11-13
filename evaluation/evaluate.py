@@ -1,4 +1,4 @@
-﻿"""
+"""
 Evaluation CLI: run questions from evaluation/questions.json through
 Normal RAG and/or Self-RAG and print (or save) a comparison table.
 
@@ -44,7 +44,7 @@ from comparison.runner import run_rag
 
 def load_questions(path: Path, category: str | None = None) -> list[dict]:
     """Return flat list of {category, question} dicts from questions.json."""
-    with open(path) as f:
+    with open(path, encoding="utf-8-sig") as f:
         data = json.load(f)
 
     rows = []

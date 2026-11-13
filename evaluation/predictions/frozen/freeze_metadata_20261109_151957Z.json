@@ -1,0 +1,31 @@
+{
+  "configuration": {
+    "timestamp_utc": "20261109_151957Z",
+    "questions_file": "EvoRAG_Blind_Test_Questions/held_out_test_questions_only.jsonl",
+    "num_questions": 32,
+    "systems": [
+      "normal_rag",
+      "self_rag",
+      "evorag"
+    ],
+    "document_index": "index/dbms_sql_v1",
+    "k": 5,
+    "max_segments": 3,
+    "similarity_threshold": 0.85,
+    "blind_evaluation_mode": true,
+    "answer_key_loaded": false,
+    "experience_saving_enabled": false
+  },
+  "prediction_counts": {
+    "total_rows": 96,
+    "per_system": {
+      "normal_rag": 32,
+      "self_rag": 32,
+      "evorag": 32
+    }
+  },
+  "output_files": {
+    "detailed_jsonl": "evaluation/predictions/frozen/predictions_20261109_151957Z.jsonl",
+    "predictions_csv": "evaluation/predictions/frozen/predictions_20261109_151957Z.csv"
+  }
+}

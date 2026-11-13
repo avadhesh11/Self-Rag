@@ -37,7 +37,7 @@ class PassageRetriever:
 
         results = []
         for score, idx in zip(scores[0], indices[0]):
-            if idx == -1:
+            if idx == -1 or idx >= len(self.corpus):
                 continue
             passage = dict(self.corpus[idx])
             passage["retrieval_score"] = float(score)

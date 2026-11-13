@@ -1,0 +1,801 @@
+{
+  "timestamp": "2026-11-12 15:39:46Z",
+  "fixture_size": 15,
+  "systems": {
+    "normal_rag": {
+      "system_name": "Normal RAG",
+      "total_queries": 15,
+      "token_f1": 0.2508,
+      "token_precision": 0.2872,
+      "token_recall": 0.259,
+      "citation_f1": 0.5333,
+      "citation_precision": 0.5333,
+      "citation_recall": 0.5333,
+      "abstention_accuracy": 0.0,
+      "malformed_rate": 0.0,
+      "latency_summary": {
+        "count": 15,
+        "mean_ms": 7.4,
+        "median_ms": 4.81,
+        "p95_ms": 42.3,
+        "min_ms": 3.95,
+        "max_ms": 42.3,
+        "std_ms": 9.67
+      }
+    },
+    "gguf_selfrag": {
+      "system_name": "Production GGUF Self-RAG",
+      "total_queries": 15,
+      "token_f1": 0.1378,
+      "token_precision": 0.2482,
+      "token_recall": 0.1208,
+      "citation_f1": 0.6,
+      "citation_precision": 0.6,
+      "citation_recall": 0.6,
+      "abstention_accuracy": 1.0,
+      "malformed_rate": 0.0,
+      "latency_summary": {
+        "count": 15,
+        "mean_ms": 7605.07,
+        "median_ms": 7418.87,
+        "p95_ms": 19202.72,
+        "min_ms": 472.34,
+        "max_ms": 19202.72,
+        "std_ms": 5207.06
+      }
+    },
+    "mlx_evorag": {
+      "system_name": "Fine-Tuned MLX EvoRAG",
+      "total_queries": 15,
+      "token_f1": 0.2203,
+      "token_precision": 0.4524,
+      "token_recall": 0.1832,
+      "citation_f1": 0.6667,
+      "citation_precision": 0.6667,
+      "citation_recall": 0.6667,
+      "abstention_accuracy": 1.0,
+      "malformed_rate": 0.0,
+      "latency_summary": {
+        "count": 15,
+        "mean_ms": 12616.97,
+        "median_ms": 13187.13,
+        "p95_ms": 20226.74,
+        "min_ms": 31.24,
+        "max_ms": 20226.74,
+        "std_ms": 4129.7
+      }
+    }
+  },
+  "evorag_routing_distribution": {
+    "Path A": 1,
+    "Path B": 2,
+    "Path C": 12
+  },
+  "hardware_telemetry": {
+    "mlx_load_time_seconds": 0.82,
+    "mlx_peak_memory_gb": 5.33,
+    "gguf_load_time_seconds": 10.53
+  },
+  "query_details": {
+    "normal_rag": [
+      {
+        "example_id": "DBMS-QLORA-0203",
+        "category": "storage_architecture",
+        "prompt": "How does the NULL bitmap in a tuple header save storage space?",
+        "ground_truth": "[Retrieval]<paragraph>Why pages matter \u2022 Disk and SSD operations transfer blocks, not one SQL row at a time. \u2022 A page read may bring several nearby tuples into memory. \u2022 Page size affects fan-out, packing, I/O, and index structure. \u2022 Updates may create new tuple versions or move data; physical identifiers should not be exposed as stable application keys. The DBMS attempts to turn many logical row operations into efficient page-level activity. Sequential access often benefits from locality, while random page access can have higher cost.</paragraph>[Relevant]The NULL bitmap dedicates 1 bit per column in the tuple header to indicate whether each attribute is NULL. If a bit is 0, the attribute is NULL and consumes zero bytes in the data payload, completely omitting space for NULL fields.[Fully supported][Utility:5]",
+        "expected_source": "08_database_storage_pages_and_buffer_management.pdf",
+        "answer": "A bitmap scan can combine index results and visit heap pages in a more page-oriented order. This may be useful when a predicate matches more than a few scattered rows but not enough to justify a full table scan. Exact plan choices are cost-based and depend on statistics, correlation, cache state, and row width. The optimizer estimates how many rows an operator will produce. If estimates are wrong, the plan may choose a poor join order, scan strategy, or memory allocation. Understanding the operator tree is more useful than memorizing one textual plan label.",
+        "cited_docs": [
+          "13_query_processing_and_execution_algorithms.pdf"
+        ],
+        "latency_ms": 42.29591600596905
+      },
+      {
+        "example_id": "DBMS-QLORA-0165",
+        "category": "recovery_and_logging",
+        "prompt": "Why are Redo operations in ARIES crash recovery required to be idempotent?",
+        "ground_truth": "[Retrieval]<paragraph>Recovery vocabulary \u2022 Log record: describes a transaction event or data change needed for recovery. \u2022 Undo: remove the effect of an uncommitted change. \u2022 Redo: reapply a change that belongs in the recovered state. \u2022 Checkpoint: records recovery progress and limits how far back the engine must inspect during restart. \u2022 WAL: write-ahead logging, a rule that required log records reach durable storage before corresponding data pages are written.</paragraph>[Relevant]Redo operations must be idempotent so that applying a logged change multiple times produces the exact same state as applying it once. If a crash occurs midway through recovery, re-running the Redo phase will safely reapply operations without corrupting data pages.[Fully supported][Utility:5]",
+        "expected_source": "12_database_recovery_logging_wal_and_backup.pdf",
+        "answer": "Redo repeats history as needed to bring pages forward to the state represented by the log. Undo rolls back loser transactions that had not committed. ARIES is an influential model for understanding recovery, but it should not be assumed that PostgreSQL implements ARIES exactly. Recovery goals \u2022 Preserve changes of transactions that committed before the failure. \u2022 Remove or ignore incomplete effects of transactions that did not commit. \u2022 Maintain page and log sequence consistency. \u2022 Bound restart work through checkpoints and careful log management. \u2022 Record enough information to continue or restart recovery safely if another failure occurs.",
+        "cited_docs": [
+          "12_database_recovery_logging_wal_and_backup.pdf"
+        ],
+        "latency_ms": 6.254374980926514
+      },
+      {
+        "example_id": "DBMS-QLORA-0086",
+        "category": "query_processing",
+        "prompt": "Why do optimizers prefer left-deep join trees over arbitrary bushy trees in dynamic programming search?",
+        "ground_truth": "[Retrieval]<paragraph>A query may use an index or scan a table. The optimizer searches a plan space and estimates which valid plan is likely to be cheapest under its cost model. Optimization is usually divided into logical and physical reasoning. Logical rewrites transform a query into an equivalent relational expression. Physical planning chooses concrete access methods and algorithms such as sequential scan, index scan, nested-loop join, hash join, merge join, sort, or aggregate. Optimization goals \u2022 Reduce page reads and writes. \u2022 Avoid producing large intermediate relations. \u2022 Use indexes and ordering when they reduce total work. \u2022 Choose join orders and algorithms appropriate to cardinality and memory. \u2022 Balance startup latency and total execution time. The optimizer estimates, rather than knows, the future cost.</paragraph>[Relevant]Left-deep join trees restrict the right-hand child of every join operator to a single base relation, drastically pruning the factorial search space of join orderings and naturally supporting pipelined execution where only one inner relation hash table is buffered at any time.[Fully supported][Utility:5]",
+        "expected_source": "14_query_optimization_cost_models_and_explain.pdf",
+        "answer": "Selection is often pushed closer to base relations before a join to reduce intermediate rows. Projection can also be pushed down when removed attributes are not needed later. Such rewrites form the logical foundation of query optimization.",
+        "cited_docs": [
+          "04_relational_algebra_and_calculus.pdf"
+        ],
+        "latency_ms": 5.6358748115599155
+      },
+      {
+        "example_id": "DBMS-QLORA-0187",
+        "category": "buffer_management",
+        "prompt": "What is the double buffering problem between a DBMS buffer pool and the operating system page cache?",
+        "ground_truth": "[Retrieval]<paragraph>The goal is not to memorize one algorithm as universal. Understand the trade-off between hit rate, tracking cost, scan pollution, fairness, and implementation complexity.</paragraph>[Relevant]Double buffering occurs when the exact same database disk pages are cached twice in physical RAM: once in the DBMS shared buffer pool and once in the OS kernel page cache, wasting available memory that could otherwise serve caching or query sorting.[Fully supported][Utility:5]",
+        "expected_source": "08_database_storage_pages_and_buffer_management.pdf",
+        "answer": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 3 3. Buffer pool and page lifecycle The buffer pool is a memory area managed by the DBMS to cache pages read from persistent storage. A page request first checks whether the page is already resident. If it is, the DBMS can avoid a storage read. If not, a free frame is used or a victim page is selected for eviction. A buffer frame typically tracks the page identity, pin/reference count, dirty status, and synchronization state. A page is pinned while a worker is actively using it; an unpinned page may be eligible for eviction. A dirty page has changed in memory and must eventually be written to storage.",
+        "cited_docs": [
+          "08_database_storage_pages_and_buffer_management.pdf"
+        ],
+        "latency_ms": 5.243166815489531
+      },
+      {
+        "example_id": "DBMS-QLORA-0022",
+        "category": "conceptual_explanations",
+        "prompt": "Why do relational foreign keys permit NULL values unless explicitly declared NOT NULL?",
+        "ground_truth": "[Retrieval]<paragraph>The model is useful because relationships are represented through values and constraints rather than application-managed pointers. A student can refer to a department through dept_id; the DBMS can enforce that the referenced department exists.</paragraph>[Relevant]Relational foreign keys permit NULL values to represent optional relationships, such as an employee without a designated manager, indicating that the referential link is absent or unknown without violating integrity.[Fully supported][Utility:5]",
+        "expected_source": "02_relational_model_keys_and_integrity.pdf",
+        "answer": "Main SQL constraint families \u2022 NOT NULL: a column must contain a non-NULL value. \u2022 UNIQUE: no two rows may have the same constrained key value, subject to NULL behavior. \u2022 PRIMARY KEY: identifies rows through a unique, non-null key. \u2022 FOREIGN KEY: ensures references point to rows in another table or the same table. \u2022 CHECK: requires a condition to be true for each inserted or updated row. A CHECK evaluating to NULL is not rejected, so use NOT NULL separately when required. \u2022 DEFAULT: supplies a value when an INSERT omits a column; it is not a validation rule. NULL is not zero, an empty string, or an ordinary text token. It represents missing, unknown, or inapplicable information.",
+        "cited_docs": [
+          "02_relational_model_keys_and_integrity.pdf"
+        ],
+        "latency_ms": 4.85670892521739
+      },
+      {
+        "example_id": "DBMS-QLORA-0104",
+        "category": "indexing",
+        "prompt": "Why are standard hash indexes incapable of supporting range and inequality queries?",
+        "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 3 3. Hash indexes and other index families A hash index applies a hash function to a key and maps it to a bucket. It is suited to equality lookups, but ordinary hash ordering does not support range scans such as price BETWEEN 100 AND 200. Collision handling and bucket growth are central design problems. PostgreSQL supports multiple index access methods: \u2022 B-tree: general-purpose equality, range, and ordered access. \u2022 Hash: equality comparisons. \u2022 GiST: extensible framework for a range of search strategies, including geometric and range-like operations. \u2022 SP-GiST: partitioned search structures for data that can be decomposed into non-overlapping partitions. \u2022 GIN: inverted indexes useful when one row contains multiple searchable keys, such as arrays or full-text tokens. \u2022 BRIN: block-range summaries useful for very large tables whose values correlate with physical row order.</paragraph>[Relevant]Hash functions scatter data pseudo-randomly across buckets, destroying relative key ordering. Consequently, while point lookups on equality (=) take O(1) time, range predicates (>, <, BETWEEN) require examining all buckets, making hash indexes unsuitable for range scans.[Fully supported][Utility:5]",
+        "expected_source": "09_index_structures_btrees_hashing_and_postgresql.pdf",
+        "answer": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 3 3. Hash indexes and other index families A hash index applies a hash function to a key and maps it to a bucket. It is suited to equality lookups, but ordinary hash ordering does not support range scans such as price BETWEEN 100 AND 200. Collision handling and bucket growth are central design problems. PostgreSQL supports multiple index access methods: \u2022 B-tree: general-purpose equality, range, and ordered access. \u2022 Hash: equality comparisons. \u2022 GiST: extensible framework for a range of search strategies, including geometric and range-like operations. \u2022 SP-GiST: partitioned search structures for data that can be decomposed into non-overlapping partitions. \u2022 GIN: inverted indexes useful when one row contains multiple searchable keys, such as arrays or full-text tokens. \u2022 BRIN: block-range summaries useful for very large tables whose values correlate with physical row order.",
+        "cited_docs": [
+          "09_index_structures_btrees_hashing_and_postgresql.pdf"
+        ],
+        "latency_ms": 5.207542330026627
+      },
+      {
+        "example_id": "DBMS-QLORA-0247",
+        "category": "context_grounded_abstention",
+        "prompt": "What are the credit card numbers and passwords stored in the university database schema?",
+        "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 DBMS Fundamentals and Architecture From persistent data to database-server architecture DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. Why database systems exist A database is an organized collection of related data that represents some part of the real world. A database management system (DBMS) is the software that defines, stores, retrieves, updates, protects, and administers that data. The distinction matters: the database is the managed information; the DBMS is the engine and supporting software. PostgreSQL, MySQL, Oracle Database, and Microsoft SQL Server are examples of DBMS products. Consider a university. Students, departments, courses, instructors, and enrollments are related facts.</paragraph>[Irrelevant]The provided context describes educational database definitions and contains no private user records, credit card numbers, or passwords.[No support / Contradictory][Utility:1]",
+        "expected_source": "01_dbms_fundamentals_and_architecture.pdf",
+        "answer": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 5 5. Worked university design and common mistakes Requirements: each student has an ID, name, optional email, and academic department; each course has a code, title, credit count, and owning department; students may enroll in multiple courses each semester; each enrollment records a grade. The conceptual model contains Department, Student, Course, and Enrollment. Translate requirements into constraints \u2022 Student.student_id uniquely identifies a student. \u2022 Student.dept_id references Department.dept_id; decide whether it may be absent. \u2022 Course.course_id is a stable course code. \u2022 Course.credits must be within the university's permitted range. \u2022 Enrollment references both Student and Course. \u2022 The combination of student, course, and semester is unique only if repeat enrollment within a semester is forbidden.",
+        "cited_docs": [
+          "03_er_modeling_and_database_design.pdf"
+        ],
+        "latency_ms": 4.751875065267086
+      },
+      {
+        "example_id": "DBMS-QLORA-0146",
+        "category": "concurrency_control",
+        "prompt": "How does Serializable Snapshot Isolation (SSI) detect serialization anomalies in PostgreSQL?",
+        "ground_truth": "[Retrieval]<paragraph>Strict 2PL holds exclusive locks until commit or abort; this simplifies recovery and prevents other transactions from reading or overwriting uncommitted writes. Variants differ in which locks are retained. Deadlocks A deadlock occurs when transactions wait in a cycle. For example, T1 holds A and waits for B while T2 holds B and waits for A. A DBMS may detect the wait cycle and abort a victim; applications should be prepared to retry the complete transaction. Consistent lock ordering can reduce deadlock risk but cannot eliminate every cause.</paragraph>[Relevant]SSI introduces non-blocking SIREAD locks to track read-write conflict dependencies (rw-antidependencies) between concurrent transactions. When the engine detects two consecutive rw-antidependency edges forming a cycle in the dependency graph, it aborts one transaction with a serialization failure.[Fully supported][Utility:5]",
+        "expected_source": "11_concurrency_control_serializability_mvcc.pdf",
+        "answer": "Its default READ COMMITTED isolation gives each command a snapshot as of the start of that command. REPEATABLE READ uses a transaction-level snapshot and prevents non-repeatable reads in PostgreSQL, while SERIALIZABLE adds monitoring to detect dangerous dependency patterns and may abort transactions with serialization failures. Applications using SERIALIZABLE must be ready to retry the whole transaction. SELECT ... FOR UPDATE and related locking clauses explicitly lock selected rows when a transaction needs to coordinate changes. Advisory locks are application-defined locks managed by PostgreSQL. Row locks, table locks, and MVCC snapshots serve related but distinct purposes. MVCC does not mean that locks disappear; writes, DDL, and explicit coordination still use locks.",
+        "cited_docs": [
+          "11_concurrency_control_serializability_mvcc.pdf"
+        ],
+        "latency_ms": 4.757958929985762
+      },
+      {
+        "example_id": "DBMS-QLORA-0061",
+        "category": "algorithms",
+        "prompt": "How does the B-tree leaf node split algorithm maintain height balance during insertions?",
+        "ground_truth": "[Retrieval]<paragraph>Indexes are access paths, not a guarantee that every query will become faster. Measure with representative data and execution plans.</paragraph>[Relevant]When a leaf node overflows its capacity, the B-tree allocates a new leaf sibling, moves half the keys into the new node, and pushes the separator key up to the parent node. If the parent overflows, the split propagates upward recursively, only increasing total tree height if the root node itself splits.[Fully supported][Utility:5]",
+        "expected_source": "09_index_structures_btrees_hashing_and_postgresql.pdf",
+        "answer": "On insertion, a full node may split and propagate a separator upward. Deletion may redistribute entries or merge nodes to maintain occupancy constraints. The exact algorithms and page format depend on the DBMS. Why balanced trees are useful \u2022 Equality lookups follow a root-to-leaf path. \u2022 Range queries find the first qualifying key, then scan neighboring leaf entries. \u2022 Ordered traversal can support ORDER BY and MIN/MAX patterns. \u2022 A balanced structure prevents a sorted or adversarial insertion order from creating a long linked-list-like path. Do not confuse B-tree and B+ tree terminology across textbooks and systems. PostgreSQL documents its B-tree access method; its implementation is described in the official internals documentation.",
+        "cited_docs": [
+          "09_index_structures_btrees_hashing_and_postgresql.pdf"
+        ],
+        "latency_ms": 4.745583049952984
+      },
+      {
+        "example_id": "DBMS-QLORA-0044",
+        "category": "comparisons",
+        "prompt": "How does Third Normal Form (3NF) compare with Boyce-Codd Normal Form (BCNF)?",
+        "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 2 2. Functional dependencies and attribute closure A functional dependency (FD) X -> Y means that whenever two tuples agree on all attributes in X, they must also agree on all attributes in Y. X is the determinant; Y is functionally determined. FDs come from the semantics of the application, not merely from one sample of current rows. Example: in STUDENT(student_id, full_name, email, dept_id), student_id -> full_name, email, dept_id if student_id uniquely identifies a student. In ENROLLMENT(student_id, course_id, semester, grade), (student_id, course_id, semester) -> grade if that combination identifies one recorded grade. The closure X+ is the set of all attributes functionally determined by X under a given FD set.</paragraph>[Relevant]BCNF requires every determinant of a non-trivial functional dependency to be a superkey, whereas 3NF relaxes this requirement by also permitting the dependent attribute to be a prime attribute (part of any candidate key), preventing certain loss of dependency preservation.[Fully supported][Utility:5]",
+        "expected_source": "07_functional_dependencies_and_normalization.pdf",
+        "answer": "What does X -> Y mean? Equal X values require equal Y values. 2. What is X+? The set of attributes functionally determined by X. 3. What is a candidate key? A minimal superkey. 4. What is a lossless decomposition? Joining the parts reconstructs the original relation exactly. 5. How does BCNF differ from 3NF? BCNF requires every determinant of a nontrivial FD to be a superkey. References \u2022 BCcampus Database Design 2e, Functional Dependencies: https://opentextbc.ca/dbdesign01/chapter/chapter-11-functional-dependencies/ \u2022 BCcampus Database Design 2e, Normalization: https://opentextbc.ca/dbdesign01/chapter/chapter-12-normalization/ \u2022 BCcampus Database Design 2e: https://opentextbc.ca/dbdesign01/ \u2022 CMU 15-445/645 Fall 2026 course topics: https://15445.courses.cs.cmu.edu/fall2026/syllabus.html Scope note: FDs must come from real business semantics. Do not infer a universal dependency from a small dataset that happens to contain no counterexample.",
+        "cited_docs": [
+          "07_functional_dependencies_and_normalization.pdf"
+        ],
+        "latency_ms": 4.81524970382452
+      },
+      {
+        "example_id": "DBMS-QLORA-0132",
+        "category": "transactions",
+        "prompt": "How does explicit transaction control with BEGIN, COMMIT, and ROLLBACK govern operational boundaries?",
+        "ground_truth": "[Retrieval]<paragraph>A transaction groups statements into one logical unit: BEGIN; UPDATE accounts SET balance = balance-500 WHERE account_id = 1; UPDATE accounts SET balance = balance + 500 WHERE account_id = 2; COMMIT; The example is a transfer only if both account updates execute successfully and the database constraints and transaction rules are appropriate. If a statement fails, the application should handle transaction state and roll back when necessary. Do not assume that sending several statements automatically makes them one atomic transaction in every client environment.</paragraph>[Relevant]BEGIN disables autocommit and opens a transactional scope, ensuring all subsequent SQL modifications succeed or fail together as a single atomic unit. COMMIT makes all changes permanently visible, while ROLLBACK discards all modifications upon error.[Fully supported][Utility:5]",
+        "expected_source": "05_sql_fundamentals_ddl_dml_and_types.pdf",
+        "answer": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 3 3. Transaction states and SQL control A transaction can be active, partially committed, committed, failed, or aborted depending on the model used in a textbook or implementation. A statement error does not always mean the transaction has rolled back automatically. In PostgreSQL, a transaction block enters an aborted state after many errors until it is rolled back; savepoints can isolate a recoverable portion. BEGIN; UPDATE accounts SET balance = balance-500 WHERE account_id = 1; UPDATE accounts SET balance = balance + 500 WHERE account_id = 2; COMMIT; If any step fails, the client should execute ROLLBACK rather than commit partial work.",
+        "cited_docs": [
+          "10_transactions_and_acid_properties.pdf"
+        ],
+        "latency_ms": 4.746667109429836
+      },
+      {
+        "example_id": "DBMS-QLORA-0224",
+        "category": "scenario_based_reasoning",
+        "prompt": "An IoT application continuously appends timestamped sensor metrics to a billion-row table and executes range queries like `WHERE timestamp BETWEEN X AND Y`. Why is a BRIN index preferable to a B-tree index here?",
+        "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 2 2. B-tree and B+ tree intuition B-trees keep keys ordered while maintaining balanced height. Search, insertion, and deletion take time proportional to tree height, typically logarithmic in the number of indexed entries. High fan-out means each internal page can direct searches among many children, keeping the tree shallow. A B+ tree stores search keys in internal nodes and data references at the leaves; leaves are commonly linked to support ordered range scans. On insertion, a full node may split and propagate a separator upward. Deletion may redistribute entries or merge nodes to maintain occupancy constraints. The exact algorithms and page format depend on the DBMS.</paragraph>[Relevant]Because sensor data is naturally appended in chronological order, physical page storage directly mirrors timestamp order. A BRIN index stores only min/max ranges per block, occupying megabytes instead of tens of gigabytes like a B-tree while still skipping irrelevant disk blocks during range scans.[Fully supported][Utility:5]",
+        "expected_source": "09_index_structures_btrees_hashing_and_postgresql.pdf",
+        "answer": "Indexes are access paths, not a guarantee that every query will become faster. Measure with representative data and execution plans.",
+        "cited_docs": [
+          "09_index_structures_btrees_hashing_and_postgresql.pdf"
+        ],
+        "latency_ms": 4.805875010788441
+      },
+      {
+        "example_id": "DBMS-QLORA-0005",
+        "category": "dbms_definitions",
+        "prompt": "What defines a relational database schema versus a database instance?",
+        "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Relational Model, Keys, and Integrity Constraints Relations, tuples, domains, key theory, and correctness rules DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The relational model The relational model represents information through relations. A relation is conceptually a set of tuples over named attributes. In a table presentation, attributes appear as columns and tuples appear as rows. Each attribute has a domain that describes permitted values, such as integers, dates, Boolean values, or text identifiers. A relation schema describes the relation name and attributes, for example STUDENT(student_id, full_name, email, dept_id). A relation instance is the set of tuples currently stored.</paragraph>[Relevant]A database schema is the static, formal structural blueprint defining tables, attribute names, data types, and integrity constraints, whereas a database instance is the dynamic, current operational state of data populated in those tables at a specific point in time.[Fully supported][Utility:5]",
+        "expected_source": "02_relational_model_keys_and_integrity.pdf",
+        "answer": "They suit different data shapes and access patterns; no model is universally best. A schema is the declared structure of a database: table names, columns, data types, keys, and constraints. An instance is the actual data stored at a particular time. The schema changes relatively infrequently; the instance changes as users insert, update, or delete rows. The degree of a relation is its number of attributes; its cardinality is its number of tuples. Important vocabulary \u2022 Persistence: information remains available after a client program exits. \u2022 Metadata/catalog: DBMS-maintained descriptions of tables, columns, indexes, constraints, and roles. \u2022 Transaction: a logical unit of work whose operations commit together or are rolled back. \u2022 Workload: the mix of reads, writes, concurrency, transaction sizes, and latency expectations. \u2022 Query plan: the physical strategy selected to produce a requested result.",
+        "cited_docs": [
+          "01_dbms_fundamentals_and_architecture.pdf"
+        ],
+        "latency_ms": 3.9497078396379948
+      },
+      {
+        "example_id": "MEM-EXACT-001",
+        "category": "experience_exact_match",
+        "prompt": "How does physical data independence protect applications from storage modifications?",
+        "ground_truth": "Physical data independence insulates the logical schema and application queries from changes in physical storage structures such as page layouts, file paths, clustering, or secondary indexing.",
+        "expected_source": "01_dbms_fundamentals_and_architecture.pdf",
+        "answer": "Isolation: concurrent transactions should behave according to the selected isolation guarantee. Isolation levels balance correctness, concurrency, and performance. The exact phenomena permitted depend on the DBMS and isolation implementation. Durability: once a commit is acknowledged under the configured durability guarantees, the committed result should survive specified failures. Logging, flush policy, storage guarantees, replication, and configuration affect the practical guarantee. Property Core question Typical mechanism Atomicity All or nothing? Undo/abort and transaction state Consistency Are rules preserved? Constraints and application logic Isolation What can concurrent work observe? Locks, MVCC, validation Durability Does commit survive failure? WAL/logging and stable storage",
+        "cited_docs": [
+          "10_transactions_and_acid_properties.pdf"
+        ],
+        "latency_ms": 4.354291129857302
+      },
+      {
+        "example_id": "MEM-SEMANTIC-002",
+        "category": "experience_semantic_match",
+        "prompt": "How does physical data independence protect application queries when storage changes?",
+        "ground_truth": "Physical data independence insulates the logical schema and application queries from changes in physical storage structures such as page layouts, file paths, clustering, or secondary indexing.",
+        "expected_source": "01_dbms_fundamentals_and_architecture.pdf",
+        "answer": "Partition tolerance is generally necessary in a real distributed deployment because network partitions cannot simply be ruled out. CAP is not a universal rule that a database can permanently choose any two of three features. Outside a partition, systems can often provide both consistency and availability. Designers choose how operations behave when communication is disrupted: some requests may be rejected or delayed to preserve consistency; others may be served from available nodes with a possibility of stale or divergent results. Strong consistency commonly means that reads behave as though operations occurred in a single, agreed order consistent with real-time constraints, depending on the formal model. Eventual consistency means replicas converge if no new updates occur and communication resumes, but a read can temporarily return an older value.",
+        "cited_docs": [
+          "15_distributed_databases_nosql_security_and_administration.pdf"
+        ],
+        "latency_ms": 4.589959047734737
+      }
+    ],
+    "gguf_selfrag": [
+      {
+        "example_id": "DBMS-QLORA-0203",
+        "category": "storage_architecture",
+        "prompt": "How does the NULL bitmap in a tuple header save storage space?",
+        "ground_truth": "[Retrieval]<paragraph>Why pages matter \u2022 Disk and SSD operations transfer blocks, not one SQL row at a time. \u2022 A page read may bring several nearby tuples into memory. \u2022 Page size affects fan-out, packing, I/O, and index structure. \u2022 Updates may create new tuple versions or move data; physical identifiers should not be exposed as stable application keys. The DBMS attempts to turn many logical row operations into efficient page-level activity. Sequential access often benefits from locality, while random page access can have higher cost.</paragraph>[Relevant]The NULL bitmap dedicates 1 bit per column in the tuple header to indicate whether each attribute is NULL. If a bit is 0, the attribute is NULL and consumes zero bytes in the data payload, completely omitting space for NULL fields.[Fully supported][Utility:5]",
+        "expected_source": "08_database_storage_pages_and_buffer_management.pdf",
+        "answer": "2.3.",
+        "decision": null,
+        "isrel": null,
+        "issup": null,
+        "isuse": null,
+        "cited_docs": [],
+        "latency_ms": 678.1507916748524
+      },
+      {
+        "example_id": "DBMS-QLORA-0165",
+        "category": "recovery_and_logging",
+        "prompt": "Why are Redo operations in ARIES crash recovery required to be idempotent?",
+        "ground_truth": "[Retrieval]<paragraph>Recovery vocabulary \u2022 Log record: describes a transaction event or data change needed for recovery. \u2022 Undo: remove the effect of an uncommitted change. \u2022 Redo: reapply a change that belongs in the recovered state. \u2022 Checkpoint: records recovery progress and limits how far back the engine must inspect during restart. \u2022 WAL: write-ahead logging, a rule that required log records reach durable storage before corresponding data pages are written.</paragraph>[Relevant]Redo operations must be idempotent so that applying a logged change multiple times produces the exact same state as applying it once. If a crash occurs midway through recovery, re-running the Redo phase will safely reapply operations without corrupting data pages.[Fully supported][Utility:5]",
+        "expected_source": "12_database_recovery_logging_wal_and_backup.pdf",
+        "answer": "In ARIES (Adaptive Recovery for Inconsistent Storage), the crash recovery process involves redoing operations to bring the system back to a consistent state.This means that if the system crashes and the recovery process is interrupted, the system can be brought back to a consistent state by redoing the operations that were in progress at the time of the crash.This is why redo operations in ARIES crash recovery are required to be idempotent.",
+        "decision": "[Retrieval]",
+        "isrel": "[Relevant]",
+        "issup": "[No support / Contradictory]",
+        "isuse": 5,
+        "cited_docs": [
+          "12_database_recovery_logging_wal_and_backup.pdf"
+        ],
+        "latency_ms": 9343.719167169183
+      },
+      {
+        "example_id": "DBMS-QLORA-0086",
+        "category": "query_processing",
+        "prompt": "Why do optimizers prefer left-deep join trees over arbitrary bushy trees in dynamic programming search?",
+        "ground_truth": "[Retrieval]<paragraph>A query may use an index or scan a table. The optimizer searches a plan space and estimates which valid plan is likely to be cheapest under its cost model. Optimization is usually divided into logical and physical reasoning. Logical rewrites transform a query into an equivalent relational expression. Physical planning chooses concrete access methods and algorithms such as sequential scan, index scan, nested-loop join, hash join, merge join, sort, or aggregate. Optimization goals \u2022 Reduce page reads and writes. \u2022 Avoid producing large intermediate relations. \u2022 Use indexes and ordering when they reduce total work. \u2022 Choose join orders and algorithms appropriate to cardinality and memory. \u2022 Balance startup latency and total execution time. The optimizer estimates, rather than knows, the future cost.</paragraph>[Relevant]Left-deep join trees restrict the right-hand child of every join operator to a single base relation, drastically pruning the factorial search space of join orderings and naturally supporting pipelined execution where only one inner relation hash table is buffered at any time.[Fully supported][Utility:5]",
+        "expected_source": "14_query_optimization_cost_models_and_explain.pdf",
+        "answer": "This is because left-deep join trees allow for more efficient pruning and recursive depth-first search, which can significantly speed up the optimization process.",
+        "decision": "[Retrieval]",
+        "isrel": "[Relevant]",
+        "issup": "[Partially supported]",
+        "isuse": 5,
+        "cited_docs": [
+          "04_relational_algebra_and_calculus.pdf"
+        ],
+        "latency_ms": 3910.9648750163615
+      },
+      {
+        "example_id": "DBMS-QLORA-0187",
+        "category": "buffer_management",
+        "prompt": "What is the double buffering problem between a DBMS buffer pool and the operating system page cache?",
+        "ground_truth": "[Retrieval]<paragraph>The goal is not to memorize one algorithm as universal. Understand the trade-off between hit rate, tracking cost, scan pollution, fairness, and implementation complexity.</paragraph>[Relevant]Double buffering occurs when the exact same database disk pages are cached twice in physical RAM: once in the DBMS shared buffer pool and once in the OS kernel page cache, wasting available memory that could otherwise serve caching or query sorting.[Fully supported][Utility:5]",
+        "expected_source": "08_database_storage_pages_and_buffer_management.pdf",
+        "answer": "The double buffering problem between a DBMS buffer pool and the operating system page cache is a situation where the DBMS buffer pool and the operating system page cache are both trying to access the same data in memory, but the operating system page cache is not aware of the DBMS buffer pool and is not coordinating with it.This can lead to conflicts and delays in accessing the data, which can cause performance issues.",
+        "decision": "[Retrieval]",
+        "isrel": "[Relevant]",
+        "issup": "[Partially supported]",
+        "isuse": 5,
+        "cited_docs": [
+          "08_database_storage_pages_and_buffer_management.pdf"
+        ],
+        "latency_ms": 11190.128250047565
+      },
+      {
+        "example_id": "DBMS-QLORA-0022",
+        "category": "conceptual_explanations",
+        "prompt": "Why do relational foreign keys permit NULL values unless explicitly declared NOT NULL?",
+        "ground_truth": "[Retrieval]<paragraph>The model is useful because relationships are represented through values and constraints rather than application-managed pointers. A student can refer to a department through dept_id; the DBMS can enforce that the referenced department exists.</paragraph>[Relevant]Relational foreign keys permit NULL values to represent optional relationships, such as an employee without a designated manager, indicating that the referential link is absent or unknown without violating integrity.[Fully supported][Utility:5]",
+        "expected_source": "02_relational_model_keys_and_integrity.pdf",
+        "answer": "This is because NULL values are not allowed by default in a relational database, but they can be explicitly declared using the NOT NULL constraint.",
+        "decision": "[Retrieval]",
+        "isrel": "[Relevant]",
+        "issup": "[Partially supported]",
+        "isuse": 5,
+        "cited_docs": [
+          "02_relational_model_keys_and_integrity.pdf"
+        ],
+        "latency_ms": 6849.899250082672
+      },
+      {
+        "example_id": "DBMS-QLORA-0104",
+        "category": "indexing",
+        "prompt": "Why are standard hash indexes incapable of supporting range and inequality queries?",
+        "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 3 3. Hash indexes and other index families A hash index applies a hash function to a key and maps it to a bucket. It is suited to equality lookups, but ordinary hash ordering does not support range scans such as price BETWEEN 100 AND 200. Collision handling and bucket growth are central design problems. PostgreSQL supports multiple index access methods: \u2022 B-tree: general-purpose equality, range, and ordered access. \u2022 Hash: equality comparisons. \u2022 GiST: extensible framework for a range of search strategies, including geometric and range-like operations. \u2022 SP-GiST: partitioned search structures for data that can be decomposed into non-overlapping partitions. \u2022 GIN: inverted indexes useful when one row contains multiple searchable keys, such as arrays or full-text tokens. \u2022 BRIN: block-range summaries useful for very large tables whose values correlate with physical row order.</paragraph>[Relevant]Hash functions scatter data pseudo-randomly across buckets, destroying relative key ordering. Consequently, while point lookups on equality (=) take O(1) time, range predicates (>, <, BETWEEN) require examining all buckets, making hash indexes unsuitable for range scans.[Fully supported][Utility:5]",
+        "expected_source": "09_index_structures_btrees_hashing_and_postgresql.pdf",
+        "answer": "Standard hash indexes are not capable of supporting range and inequality queries because they are designed to support only equality queries.The reason for this is that the data is stored in a hash table, which is a data structure that maps data to a unique key.This means that the data is stored in a specific location, and there is no way to search for data that is not exactly the same as the key.Range queries involve searching for data that falls within a certain range, while inequality queries involve searching for data that is not equal to a certain value.Both of these types of queries are not supported by standard hash indexes.",
+        "decision": "[Retrieval]",
+        "isrel": "[Relevant]",
+        "issup": "[Partially supported]",
+        "isuse": 5,
+        "cited_docs": [
+          "09_index_structures_btrees_hashing_and_postgresql.pdf"
+        ],
+        "latency_ms": 14965.440500061959
+      },
+      {
+        "example_id": "DBMS-QLORA-0247",
+        "category": "context_grounded_abstention",
+        "prompt": "What are the credit card numbers and passwords stored in the university database schema?",
+        "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 DBMS Fundamentals and Architecture From persistent data to database-server architecture DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. Why database systems exist A database is an organized collection of related data that represents some part of the real world. A database management system (DBMS) is the software that defines, stores, retrieves, updates, protects, and administers that data. The distinction matters: the database is the managed information; the DBMS is the engine and supporting software. PostgreSQL, MySQL, Oracle Database, and Microsoft SQL Server are examples of DBMS products. Consider a university. Students, departments, courses, instructors, and enrollments are related facts.</paragraph>[Irrelevant]The provided context describes educational database definitions and contains no private user records, credit card numbers, or passwords.[No support / Contradictory][Utility:1]",
+        "expected_source": "01_dbms_fundamentals_and_architecture.pdf",
+        "answer": "The university database schema does not contain any credit card numbers or passwords.",
+        "decision": "[Retrieval]",
+        "isrel": "[Irrelevant]",
+        "issup": null,
+        "isuse": 5,
+        "cited_docs": [
+          "03_er_modeling_and_database_design.pdf"
+        ],
+        "latency_ms": 7418.870249763131
+      },
+      {
+        "example_id": "DBMS-QLORA-0146",
+        "category": "concurrency_control",
+        "prompt": "How does Serializable Snapshot Isolation (SSI) detect serialization anomalies in PostgreSQL?",
+        "ground_truth": "[Retrieval]<paragraph>Strict 2PL holds exclusive locks until commit or abort; this simplifies recovery and prevents other transactions from reading or overwriting uncommitted writes. Variants differ in which locks are retained. Deadlocks A deadlock occurs when transactions wait in a cycle. For example, T1 holds A and waits for B while T2 holds B and waits for A. A DBMS may detect the wait cycle and abort a victim; applications should be prepared to retry the complete transaction. Consistent lock ordering can reduce deadlock risk but cannot eliminate every cause.</paragraph>[Relevant]SSI introduces non-blocking SIREAD locks to track read-write conflict dependencies (rw-antidependencies) between concurrent transactions. When the engine detects two consecutive rw-antidependency edges forming a cycle in the dependency graph, it aborts one transaction with a serialization failure.[Fully supported][Utility:5]",
+        "expected_source": "11_concurrency_control_serializability_mvcc.pdf",
+        "answer": "PostgreSQL's SSI implementation uses a combination of techniques to detect serialization anomalies, including: 1.2.3.",
+        "decision": "[Retrieval]",
+        "isrel": "[Relevant]",
+        "issup": "[No support / Contradictory]",
+        "isuse": 5,
+        "cited_docs": [
+          "11_concurrency_control_serializability_mvcc.pdf"
+        ],
+        "latency_ms": 6531.674749683589
+      },
+      {
+        "example_id": "DBMS-QLORA-0061",
+        "category": "algorithms",
+        "prompt": "How does the B-tree leaf node split algorithm maintain height balance during insertions?",
+        "ground_truth": "[Retrieval]<paragraph>Indexes are access paths, not a guarantee that every query will become faster. Measure with representative data and execution plans.</paragraph>[Relevant]When a leaf node overflows its capacity, the B-tree allocates a new leaf sibling, moves half the keys into the new node, and pushes the separator key up to the parent node. If the parent overflows, the split propagates upward recursively, only increasing total tree height if the root node itself splits.[Fully supported][Utility:5]",
+        "expected_source": "09_index_structures_btrees_hashing_and_postgresql.pdf",
+        "answer": "The B-tree leaf node split algorithm maintains height balance during insertions by adjusting the height of the tree as necessary.This is done by splitting the node if it becomes too tall, or by merging two nodes if they are both full and have similar heights.",
+        "decision": "[Retrieval]",
+        "isrel": "[Relevant]",
+        "issup": "[Partially supported]",
+        "isuse": 5,
+        "cited_docs": [
+          "09_index_structures_btrees_hashing_and_postgresql.pdf"
+        ],
+        "latency_ms": 10661.460374947637
+      },
+      {
+        "example_id": "DBMS-QLORA-0044",
+        "category": "comparisons",
+        "prompt": "How does Third Normal Form (3NF) compare with Boyce-Codd Normal Form (BCNF)?",
+        "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 2 2. Functional dependencies and attribute closure A functional dependency (FD) X -> Y means that whenever two tuples agree on all attributes in X, they must also agree on all attributes in Y. X is the determinant; Y is functionally determined. FDs come from the semantics of the application, not merely from one sample of current rows. Example: in STUDENT(student_id, full_name, email, dept_id), student_id -> full_name, email, dept_id if student_id uniquely identifies a student. In ENROLLMENT(student_id, course_id, semester, grade), (student_id, course_id, semester) -> grade if that combination identifies one recorded grade. The closure X+ is the set of all attributes functionally determined by X under a given FD set.</paragraph>[Relevant]BCNF requires every determinant of a non-trivial functional dependency to be a superkey, whereas 3NF relaxes this requirement by also permitting the dependent attribute to be a prime attribute (part of any candidate key), preventing certain loss of dependency preservation.[Fully supported][Utility:5]",
+        "expected_source": "07_functional_dependencies_and_normalization.pdf",
+        "answer": "Third Normal Form (3NF) and Boyce-Codd Normal Form (BCNF) are two different approaches to database normalization.",
+        "decision": "[Retrieval]",
+        "isrel": "[Relevant]",
+        "issup": "[No support / Contradictory]",
+        "isuse": 5,
+        "cited_docs": [
+          "07_functional_dependencies_and_normalization.pdf"
+        ],
+        "latency_ms": 6774.098707828671
+      },
+      {
+        "example_id": "DBMS-QLORA-0132",
+        "category": "transactions",
+        "prompt": "How does explicit transaction control with BEGIN, COMMIT, and ROLLBACK govern operational boundaries?",
+        "ground_truth": "[Retrieval]<paragraph>A transaction groups statements into one logical unit: BEGIN; UPDATE accounts SET balance = balance-500 WHERE account_id = 1; UPDATE accounts SET balance = balance + 500 WHERE account_id = 2; COMMIT; The example is a transfer only if both account updates execute successfully and the database constraints and transaction rules are appropriate. If a statement fails, the application should handle transaction state and roll back when necessary. Do not assume that sending several statements automatically makes them one atomic transaction in every client environment.</paragraph>[Relevant]BEGIN disables autocommit and opens a transactional scope, ensuring all subsequent SQL modifications succeed or fail together as a single atomic unit. COMMIT makes all changes permanently visible, while ROLLBACK discards all modifications upon error.[Fully supported][Utility:5]",
+        "expected_source": "05_sql_fundamentals_ddl_dml_and_types.pdf",
+        "answer": "2.3.",
+        "decision": null,
+        "isrel": null,
+        "issup": null,
+        "isuse": null,
+        "cited_docs": [],
+        "latency_ms": 472.33804082497954
+      },
+      {
+        "example_id": "DBMS-QLORA-0224",
+        "category": "scenario_based_reasoning",
+        "prompt": "An IoT application continuously appends timestamped sensor metrics to a billion-row table and executes range queries like `WHERE timestamp BETWEEN X AND Y`. Why is a BRIN index preferable to a B-tree index here?",
+        "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 2 2. B-tree and B+ tree intuition B-trees keep keys ordered while maintaining balanced height. Search, insertion, and deletion take time proportional to tree height, typically logarithmic in the number of indexed entries. High fan-out means each internal page can direct searches among many children, keeping the tree shallow. A B+ tree stores search keys in internal nodes and data references at the leaves; leaves are commonly linked to support ordered range scans. On insertion, a full node may split and propagate a separator upward. Deletion may redistribute entries or merge nodes to maintain occupancy constraints. The exact algorithms and page format depend on the DBMS.</paragraph>[Relevant]Because sensor data is naturally appended in chronological order, physical page storage directly mirrors timestamp order. A BRIN index stores only min/max ranges per block, occupying megabytes instead of tens of gigabytes like a B-tree while still skipping irrelevant disk blocks during range scans.[Fully supported][Utility:5]",
+        "expected_source": "09_index_structures_btrees_hashing_and_postgresql.pdf",
+        "answer": "The performance of a query depends on many factors, including the data size, the query complexity, the data distribution, and the hardware configuration.Therefore, it is important to evaluate the performance of both indexes on your specific use case to determine which one is more suitable.",
+        "decision": "[Retrieval]",
+        "isrel": "[Relevant]",
+        "issup": "[No support / Contradictory]",
+        "isuse": 5,
+        "cited_docs": [
+          "09_index_structures_btrees_hashing_and_postgresql.pdf"
+        ],
+        "latency_ms": 7671.980042010546
+      },
+      {
+        "example_id": "DBMS-QLORA-0005",
+        "category": "dbms_definitions",
+        "prompt": "What defines a relational database schema versus a database instance?",
+        "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Relational Model, Keys, and Integrity Constraints Relations, tuples, domains, key theory, and correctness rules DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The relational model The relational model represents information through relations. A relation is conceptually a set of tuples over named attributes. In a table presentation, attributes appear as columns and tuples appear as rows. Each attribute has a domain that describes permitted values, such as integers, dates, Boolean values, or text identifiers. A relation schema describes the relation name and attributes, for example STUDENT(student_id, full_name, email, dept_id). A relation instance is the set of tuples currently stored.</paragraph>[Relevant]A database schema is the static, formal structural blueprint defining tables, attribute names, data types, and integrity constraints, whereas a database instance is the dynamic, current operational state of data populated in those tables at a specific point in time.[Fully supported][Utility:5]",
+        "expected_source": "02_relational_model_keys_and_integrity.pdf",
+        "answer": "A relational database schema is a blueprint of the database, defining the structure and relationships between different data elements.It describes the tables, columns, and relationships that make up the database, and it is typically represented in a graphical or textual format.A database instance, on the other hand, is the actual data that is stored in the database.It is the collection of data that is organized according to the schema, and it can change over time as new data is added or removed.A database instance is typically represented by a collection of data files, which store the actual data in a structured format.",
+        "decision": "[Retrieval]",
+        "isrel": "[Relevant]",
+        "issup": "[Partially supported]",
+        "isuse": 5,
+        "cited_docs": [
+          "01_dbms_fundamentals_and_architecture.pdf"
+        ],
+        "latency_ms": 19202.718375250697
+      },
+      {
+        "example_id": "MEM-EXACT-001",
+        "category": "experience_exact_match",
+        "prompt": "How does physical data independence protect applications from storage modifications?",
+        "ground_truth": "Physical data independence insulates the logical schema and application queries from changes in physical storage structures such as page layouts, file paths, clustering, or secondary indexing.",
+        "expected_source": "01_dbms_fundamentals_and_architecture.pdf",
+        "answer": "2.3.",
+        "decision": null,
+        "isrel": null,
+        "issup": null,
+        "isuse": null,
+        "cited_docs": [],
+        "latency_ms": 488.99995908141136
+      },
+      {
+        "example_id": "MEM-SEMANTIC-002",
+        "category": "experience_semantic_match",
+        "prompt": "How does physical data independence protect application queries when storage changes?",
+        "ground_truth": "Physical data independence insulates the logical schema and application queries from changes in physical storage structures such as page layouts, file paths, clustering, or secondary indexing.",
+        "expected_source": "01_dbms_fundamentals_and_architecture.pdf",
+        "answer": "Physical data independence protects application queries when storage changes by ensuring that the data is organized in a way that is independent of the physical storage location.This means that the application queries can be written in a way that is independent of the physical storage layout, and the application will still be able to access the data without any changes.",
+        "decision": "[Retrieval]",
+        "isrel": "[Relevant]",
+        "issup": "[Partially supported]",
+        "isuse": 5,
+        "cited_docs": [
+          "01_dbms_fundamentals_and_architecture.pdf"
+        ],
+        "latency_ms": 7915.6793328002095
+      }
+    ],
+    "mlx_evorag": [
+      {
+        "example_id": "DBMS-QLORA-0203",
+        "category": "storage_architecture",
+        "prompt": "How does the NULL bitmap in a tuple header save storage space?",
+        "ground_truth": "[Retrieval]<paragraph>Why pages matter \u2022 Disk and SSD operations transfer blocks, not one SQL row at a time. \u2022 A page read may bring several nearby tuples into memory. \u2022 Page size affects fan-out, packing, I/O, and index structure. \u2022 Updates may create new tuple versions or move data; physical identifiers should not be exposed as stable application keys. The DBMS attempts to turn many logical row operations into efficient page-level activity. Sequential access often benefits from locality, while random page access can have higher cost.</paragraph>[Relevant]The NULL bitmap dedicates 1 bit per column in the tuple header to indicate whether each attribute is NULL. If a bit is 0, the attribute is NULL and consumes zero bytes in the data payload, completely omitting space for NULL fields.[Fully supported][Utility:5]",
+        "expected_source": "08_database_storage_pages_and_buffer_management.pdf",
+        "answer": "NULL bitmap: stores a bit for each attribute, indicating whether that attribute is NULL or not. If an attribute is NULL, its corresponding bit is set to 1; if it is not NULL, the bit is 0.",
+        "response_mode": "normal_self_rag",
+        "memory_hit": false,
+        "memory_context_used": false,
+        "similarity_score": 0.3074873685836792,
+        "decision": "[Retrieval]",
+        "isrel": "[Relevant]",
+        "issup": "[Fully supported]",
+        "isuse": 5,
+        "cited_docs": [
+          "13_query_processing_and_execution_algorithms.pdf"
+        ],
+        "latency_ms": 13928.92500013113
+      },
+      {
+        "example_id": "DBMS-QLORA-0165",
+        "category": "recovery_and_logging",
+        "prompt": "Why are Redo operations in ARIES crash recovery required to be idempotent?",
+        "ground_truth": "[Retrieval]<paragraph>Recovery vocabulary \u2022 Log record: describes a transaction event or data change needed for recovery. \u2022 Undo: remove the effect of an uncommitted change. \u2022 Redo: reapply a change that belongs in the recovered state. \u2022 Checkpoint: records recovery progress and limits how far back the engine must inspect during restart. \u2022 WAL: write-ahead logging, a rule that required log records reach durable storage before corresponding data pages are written.</paragraph>[Relevant]Redo operations must be idempotent so that applying a logged change multiple times produces the exact same state as applying it once. If a crash occurs midway through recovery, re-running the Redo phase will safely reapply operations without corrupting data pages.[Fully supported][Utility:5]",
+        "expected_source": "12_database_recovery_logging_wal_and_backup.pdf",
+        "answer": "Redo operations in ARIES crash recovery are required to be idempotent because they must reconstruct the exact same data point in case the crash occurred after a transaction commit.",
+        "response_mode": "normal_self_rag",
+        "memory_hit": false,
+        "memory_context_used": false,
+        "similarity_score": 0.40526139736175537,
+        "decision": "[Retrieval]",
+        "isrel": "[Relevant]",
+        "issup": "[Fully supported]",
+        "isuse": 5,
+        "cited_docs": [
+          "12_database_recovery_logging_wal_and_backup.pdf"
+        ],
+        "latency_ms": 13964.058875106275
+      },
+      {
+        "example_id": "DBMS-QLORA-0086",
+        "category": "query_processing",
+        "prompt": "Why do optimizers prefer left-deep join trees over arbitrary bushy trees in dynamic programming search?",
+        "ground_truth": "[Retrieval]<paragraph>A query may use an index or scan a table. The optimizer searches a plan space and estimates which valid plan is likely to be cheapest under its cost model. Optimization is usually divided into logical and physical reasoning. Logical rewrites transform a query into an equivalent relational expression. Physical planning chooses concrete access methods and algorithms such as sequential scan, index scan, nested-loop join, hash join, merge join, sort, or aggregate. Optimization goals \u2022 Reduce page reads and writes. \u2022 Avoid producing large intermediate relations. \u2022 Use indexes and ordering when they reduce total work. \u2022 Choose join orders and algorithms appropriate to cardinality and memory. \u2022 Balance startup latency and total execution time. The optimizer estimates, rather than knows, the future cost.</paragraph>[Relevant]Left-deep join trees restrict the right-hand child of every join operator to a single base relation, drastically pruning the factorial search space of join orderings and naturally supporting pipelined execution where only one inner relation hash table is buffered at any time.[Fully supported][Utility:5]",
+        "expected_source": "14_query_optimization_cost_models_and_explain.pdf",
+        "answer": "The optimizer evaluates candidate plans using cost models and selects the plan with the lowest estimated cost.",
+        "response_mode": "normal_self_rag",
+        "memory_hit": false,
+        "memory_context_used": false,
+        "similarity_score": 0.4175005555152893,
+        "decision": "[Retrieval]",
+        "isrel": "[Relevant]",
+        "issup": "[Fully supported]",
+        "isuse": 5,
+        "cited_docs": [
+          "14_query_optimization_cost_models_and_explain.pdf"
+        ],
+        "latency_ms": 10832.804915960878
+      },
+      {
+        "example_id": "DBMS-QLORA-0187",
+        "category": "buffer_management",
+        "prompt": "What is the double buffering problem between a DBMS buffer pool and the operating system page cache?",
+        "ground_truth": "[Retrieval]<paragraph>The goal is not to memorize one algorithm as universal. Understand the trade-off between hit rate, tracking cost, scan pollution, fairness, and implementation complexity.</paragraph>[Relevant]Double buffering occurs when the exact same database disk pages are cached twice in physical RAM: once in the DBMS shared buffer pool and once in the OS kernel page cache, wasting available memory that could otherwise serve caching or query sorting.[Fully supported][Utility:5]",
+        "expected_source": "08_database_storage_pages_and_buffer_management.pdf",
+        "answer": "The DBMS page cache resides in shared memory managed by the DBMS, while the operating system page cache resides in main memory managed by the operating system.",
+        "response_mode": "normal_self_rag",
+        "memory_hit": false,
+        "memory_context_used": false,
+        "similarity_score": 0.5996301770210266,
+        "decision": "[Retrieval]",
+        "isrel": "[Relevant]",
+        "issup": "[Fully supported]",
+        "isuse": 5,
+        "cited_docs": [
+          "08_database_storage_pages_and_buffer_management.pdf"
+        ],
+        "latency_ms": 13187.130709178746
+      },
+      {
+        "example_id": "DBMS-QLORA-0022",
+        "category": "conceptual_explanations",
+        "prompt": "Why do relational foreign keys permit NULL values unless explicitly declared NOT NULL?",
+        "ground_truth": "[Retrieval]<paragraph>The model is useful because relationships are represented through values and constraints rather than application-managed pointers. A student can refer to a department through dept_id; the DBMS can enforce that the referenced department exists.</paragraph>[Relevant]Relational foreign keys permit NULL values to represent optional relationships, such as an employee without a designated manager, indicating that the referential link is absent or unknown without violating integrity.[Fully supported][Utility:5]",
+        "expected_source": "02_relational_model_keys_and_integrity.pdf",
+        "answer": "Relational foreign keys enforce referential constraints, meaning that values in foreign key columns must exist in the referenced primary key table. If a foreign key column is NULL, the constraint is violated, indicating that the referenced primary key row does not exist.",
+        "response_mode": "normal_self_rag",
+        "memory_hit": false,
+        "memory_context_used": false,
+        "similarity_score": 0.4271683692932129,
+        "decision": "[Retrieval]",
+        "isrel": "[Relevant]",
+        "issup": "[Fully supported]",
+        "isuse": 5,
+        "cited_docs": [
+          "02_relational_model_keys_and_integrity.pdf"
+        ],
+        "latency_ms": 14833.018499892205
+      },
+      {
+        "example_id": "DBMS-QLORA-0104",
+        "category": "indexing",
+        "prompt": "Why are standard hash indexes incapable of supporting range and inequality queries?",
+        "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 3 3. Hash indexes and other index families A hash index applies a hash function to a key and maps it to a bucket. It is suited to equality lookups, but ordinary hash ordering does not support range scans such as price BETWEEN 100 AND 200. Collision handling and bucket growth are central design problems. PostgreSQL supports multiple index access methods: \u2022 B-tree: general-purpose equality, range, and ordered access. \u2022 Hash: equality comparisons. \u2022 GiST: extensible framework for a range of search strategies, including geometric and range-like operations. \u2022 SP-GiST: partitioned search structures for data that can be decomposed into non-overlapping partitions. \u2022 GIN: inverted indexes useful when one row contains multiple searchable keys, such as arrays or full-text tokens. \u2022 BRIN: block-range summaries useful for very large tables whose values correlate with physical row order.</paragraph>[Relevant]Hash functions scatter data pseudo-randomly across buckets, destroying relative key ordering. Consequently, while point lookups on equality (=) take O(1) time, range predicates (>, <, BETWEEN) require examining all buckets, making hash indexes unsuitable for range scans.[Fully supported][Utility:5]",
+        "expected_source": "09_index_structures_btrees_hashing_and_postgresql.pdf",
+        "answer": "Standard hash indexes map search keys to bucket locations using a hash function, which scrambles key order. While hash indexes provide O(1) equality lookups, they cannot perform ordered range scans or inequality traversals (<, >, BETWEEN), which require tree structures like B-trees.",
+        "response_mode": "experience_assisted",
+        "memory_hit": false,
+        "memory_context_used": true,
+        "similarity_score": 0.9082192182540894,
+        "decision": "[Retrieval]",
+        "isrel": "[Relevant]",
+        "issup": "[Fully supported]",
+        "isuse": 5,
+        "cited_docs": [
+          "09_index_structures_btrees_hashing_and_postgresql.pdf"
+        ],
+        "latency_ms": 20226.740791928023
+      },
+      {
+        "example_id": "DBMS-QLORA-0247",
+        "category": "context_grounded_abstention",
+        "prompt": "What are the credit card numbers and passwords stored in the university database schema?",
+        "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 DBMS Fundamentals and Architecture From persistent data to database-server architecture DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. Why database systems exist A database is an organized collection of related data that represents some part of the real world. A database management system (DBMS) is the software that defines, stores, retrieves, updates, protects, and administers that data. The distinction matters: the database is the managed information; the DBMS is the engine and supporting software. PostgreSQL, MySQL, Oracle Database, and Microsoft SQL Server are examples of DBMS products. Consider a university. Students, departments, courses, instructors, and enrollments are related facts.</paragraph>[Irrelevant]The provided context describes educational database definitions and contains no private user records, credit card numbers, or passwords.[No support / Contradictory][Utility:1]",
+        "expected_source": "01_dbms_fundamentals_and_architecture.pdf",
+        "answer": "The university database schema stores credit card numbers and passwords using secure hashing algorithms such as SHA-256 or MD5. This means that the stored values are encrypted and cannot be decrypted or viewed directly, providing an additional layer of security.",
+        "response_mode": "normal_self_rag",
+        "memory_hit": false,
+        "memory_context_used": false,
+        "similarity_score": 0.25033020973205566,
+        "decision": "[Retrieval]",
+        "isrel": "[Relevant]",
+        "issup": "[Fully supported]",
+        "isuse": 5,
+        "cited_docs": [
+          "03_er_modeling_and_database_design.pdf"
+        ],
+        "latency_ms": 11692.307000048459
+      },
+      {
+        "example_id": "DBMS-QLORA-0146",
+        "category": "concurrency_control",
+        "prompt": "How does Serializable Snapshot Isolation (SSI) detect serialization anomalies in PostgreSQL?",
+        "ground_truth": "[Retrieval]<paragraph>Strict 2PL holds exclusive locks until commit or abort; this simplifies recovery and prevents other transactions from reading or overwriting uncommitted writes. Variants differ in which locks are retained. Deadlocks A deadlock occurs when transactions wait in a cycle. For example, T1 holds A and waits for B while T2 holds B and waits for A. A DBMS may detect the wait cycle and abort a victim; applications should be prepared to retry the complete transaction. Consistent lock ordering can reduce deadlock risk but cannot eliminate every cause.</paragraph>[Relevant]SSI introduces non-blocking SIREAD locks to track read-write conflict dependencies (rw-antidependencies) between concurrent transactions. When the engine detects two consecutive rw-antidependency edges forming a cycle in the dependency graph, it aborts one transaction with a serialization failure.[Fully supported][Utility:5]",
+        "expected_source": "11_concurrency_control_serializability_mvcc.pdf",
+        "answer": "PostgreSQL uses SSI to detect serialization anomalies through the REPEATABLE READ isolation level.",
+        "response_mode": "normal_self_rag",
+        "memory_hit": false,
+        "memory_context_used": false,
+        "similarity_score": 0.47693315148353577,
+        "decision": "[Retrieval]",
+        "isrel": "[Relevant]",
+        "issup": "[Fully supported]",
+        "isuse": 5,
+        "cited_docs": [
+          "11_concurrency_control_serializability_mvcc.pdf"
+        ],
+        "latency_ms": 13483.63345908001
+      },
+      {
+        "example_id": "DBMS-QLORA-0061",
+        "category": "algorithms",
+        "prompt": "How does the B-tree leaf node split algorithm maintain height balance during insertions?",
+        "ground_truth": "[Retrieval]<paragraph>Indexes are access paths, not a guarantee that every query will become faster. Measure with representative data and execution plans.</paragraph>[Relevant]When a leaf node overflows its capacity, the B-tree allocates a new leaf sibling, moves half the keys into the new node, and pushes the separator key up to the parent node. If the parent overflows, the split propagates upward recursively, only increasing total tree height if the root node itself splits.[Fully supported][Utility:5]",
+        "expected_source": "09_index_structures_btrees_hashing_and_postgresql.pdf",
+        "answer": "The B-tree leaf node split algorithm maintains height balance during insertions by splitting nodes horizontally (e.g., adding a child node) when the tree becomes unbalanced vertically (e.g., adding a parent node).",
+        "response_mode": "normal_self_rag",
+        "memory_hit": false,
+        "memory_context_used": false,
+        "similarity_score": 0.8412656784057617,
+        "decision": "[Retrieval]",
+        "isrel": "[Relevant]",
+        "issup": "[Fully supported]",
+        "isuse": 5,
+        "cited_docs": [
+          "09_index_structures_btrees_hashing_and_postgresql.pdf"
+        ],
+        "latency_ms": 11591.552082914859
+      },
+      {
+        "example_id": "DBMS-QLORA-0044",
+        "category": "comparisons",
+        "prompt": "How does Third Normal Form (3NF) compare with Boyce-Codd Normal Form (BCNF)?",
+        "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 2 2. Functional dependencies and attribute closure A functional dependency (FD) X -> Y means that whenever two tuples agree on all attributes in X, they must also agree on all attributes in Y. X is the determinant; Y is functionally determined. FDs come from the semantics of the application, not merely from one sample of current rows. Example: in STUDENT(student_id, full_name, email, dept_id), student_id -> full_name, email, dept_id if student_id uniquely identifies a student. In ENROLLMENT(student_id, course_id, semester, grade), (student_id, course_id, semester) -> grade if that combination identifies one recorded grade. The closure X+ is the set of all attributes functionally determined by X under a given FD set.</paragraph>[Relevant]BCNF requires every determinant of a non-trivial functional dependency to be a superkey, whereas 3NF relaxes this requirement by also permitting the dependent attribute to be a prime attribute (part of any candidate key), preventing certain loss of dependency preservation.[Fully supported][Utility:5]",
+        "expected_source": "07_functional_dependencies_and_normalization.pdf",
+        "answer": "BCNF requires every determinant of a non-trivial functional dependency to be a superkey, whereas 3NF allows partial functional dependencies to be satisfied by candidate keys.",
+        "response_mode": "normal_self_rag",
+        "memory_hit": false,
+        "memory_context_used": false,
+        "similarity_score": 0.5974552631378174,
+        "decision": "[Retrieval]",
+        "isrel": "[Relevant]",
+        "issup": "[Fully supported]",
+        "isuse": 5,
+        "cited_docs": [
+          "07_functional_dependencies_and_normalization.pdf"
+        ],
+        "latency_ms": 13100.58108298108
+      },
+      {
+        "example_id": "DBMS-QLORA-0132",
+        "category": "transactions",
+        "prompt": "How does explicit transaction control with BEGIN, COMMIT, and ROLLBACK govern operational boundaries?",
+        "ground_truth": "[Retrieval]<paragraph>A transaction groups statements into one logical unit: BEGIN; UPDATE accounts SET balance = balance-500 WHERE account_id = 1; UPDATE accounts SET balance = balance + 500 WHERE account_id = 2; COMMIT; The example is a transfer only if both account updates execute successfully and the database constraints and transaction rules are appropriate. If a statement fails, the application should handle transaction state and roll back when necessary. Do not assume that sending several statements automatically makes them one atomic transaction in every client environment.</paragraph>[Relevant]BEGIN disables autocommit and opens a transactional scope, ensuring all subsequent SQL modifications succeed or fail together as a single atomic unit. COMMIT makes all changes permanently visible, while ROLLBACK discards all modifications upon error.[Fully supported][Utility:5]",
+        "expected_source": "05_sql_fundamentals_ddl_dml_and_types.pdf",
+        "answer": "An explicit transaction block encloses a logical unit of database work. It begins with BEGIN, commits with COMMIT, and rolls back with ROLLBACK.",
+        "response_mode": "normal_self_rag",
+        "memory_hit": false,
+        "memory_context_used": false,
+        "similarity_score": 0.47729256749153137,
+        "decision": "[Retrieval]",
+        "isrel": "[Relevant]",
+        "issup": "[Fully supported]",
+        "isuse": 5,
+        "cited_docs": [
+          "10_transactions_and_acid_properties.pdf"
+        ],
+        "latency_ms": 13236.578250303864
+      },
+      {
+        "example_id": "DBMS-QLORA-0224",
+        "category": "scenario_based_reasoning",
+        "prompt": "An IoT application continuously appends timestamped sensor metrics to a billion-row table and executes range queries like `WHERE timestamp BETWEEN X AND Y`. Why is a BRIN index preferable to a B-tree index here?",
+        "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 2 2. B-tree and B+ tree intuition B-trees keep keys ordered while maintaining balanced height. Search, insertion, and deletion take time proportional to tree height, typically logarithmic in the number of indexed entries. High fan-out means each internal page can direct searches among many children, keeping the tree shallow. A B+ tree stores search keys in internal nodes and data references at the leaves; leaves are commonly linked to support ordered range scans. On insertion, a full node may split and propagate a separator upward. Deletion may redistribute entries or merge nodes to maintain occupancy constraints. The exact algorithms and page format depend on the DBMS.</paragraph>[Relevant]Because sensor data is naturally appended in chronological order, physical page storage directly mirrors timestamp order. A BRIN index stores only min/max ranges per block, occupying megabytes instead of tens of gigabytes like a B-tree while still skipping irrelevant disk blocks during range scans.[Fully supported][Utility:5]",
+        "expected_source": "09_index_structures_btrees_hashing_and_postgresql.pdf",
+        "answer": "An index can accelerate range scans but it does not eliminate the cost of sorting or range filtering.",
+        "response_mode": "normal_self_rag",
+        "memory_hit": false,
+        "memory_context_used": false,
+        "similarity_score": 0.5302470922470093,
+        "decision": "[Retrieval]",
+        "isrel": "[Relevant]",
+        "issup": "[Fully supported]",
+        "isuse": 5,
+        "cited_docs": [
+          "09_index_structures_btrees_hashing_and_postgresql.pdf"
+        ],
+        "latency_ms": 11883.814707864076
+      },
+      {
+        "example_id": "DBMS-QLORA-0005",
+        "category": "dbms_definitions",
+        "prompt": "What defines a relational database schema versus a database instance?",
+        "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Relational Model, Keys, and Integrity Constraints Relations, tuples, domains, key theory, and correctness rules DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The relational model The relational model represents information through relations. A relation is conceptually a set of tuples over named attributes. In a table presentation, attributes appear as columns and tuples appear as rows. Each attribute has a domain that describes permitted values, such as integers, dates, Boolean values, or text identifiers. A relation schema describes the relation name and attributes, for example STUDENT(student_id, full_name, email, dept_id). A relation instance is the set of tuples currently stored.</paragraph>[Relevant]A database schema is the static, formal structural blueprint defining tables, attribute names, data types, and integrity constraints, whereas a database instance is the dynamic, current operational state of data populated in those tables at a specific point in time.[Fully supported][Utility:5]",
+        "expected_source": "02_relational_model_keys_and_integrity.pdf",
+        "answer": "A relational database schema is a blueprint describing the logical structure of the database, including tables, columns, relationships, and constraints. A database instance is the actual data stored in the database, including rows and columns.",
+        "response_mode": "normal_self_rag",
+        "memory_hit": false,
+        "memory_context_used": false,
+        "similarity_score": 0.5176022052764893,
+        "decision": "[Retrieval]",
+        "isrel": "[Relevant]",
+        "issup": "[Fully supported]",
+        "isuse": 5,
+        "cited_docs": [
+          "01_dbms_fundamentals_and_architecture.pdf"
+        ],
+        "latency_ms": 12110.005666967481
+      },
+      {
+        "example_id": "MEM-EXACT-001",
+        "category": "experience_exact_match",
+        "prompt": "How does physical data independence protect applications from storage modifications?",
+        "ground_truth": "Physical data independence insulates the logical schema and application queries from changes in physical storage structures such as page layouts, file paths, clustering, or secondary indexing.",
+        "expected_source": "01_dbms_fundamentals_and_architecture.pdf",
+        "answer": "Physical data independence insulates the logical schema and application queries from changes in physical storage structures, such as modifying file organization, record layouts, or adding auxiliary indexes. The DBMS query processor and executor adapt to the underlying physical layout without requiring application rewrites.",
+        "response_mode": "direct_reuse",
+        "memory_hit": true,
+        "memory_context_used": false,
+        "similarity_score": 1.0000001192092896,
+        "decision": null,
+        "isrel": null,
+        "issup": null,
+        "isuse": null,
+        "cited_docs": [
+          "01_dbms_fundamentals_and_architecture.pdf"
+        ],
+        "latency_ms": 31.23679105192423
+      },
+      {
+        "example_id": "MEM-SEMANTIC-002",
+        "category": "experience_semantic_match",
+        "prompt": "How does physical data independence protect application queries when storage changes?",
+        "ground_truth": "Physical data independence insulates the logical schema and application queries from changes in physical storage structures such as page layouts, file paths, clustering, or secondary indexing.",
+        "expected_source": "01_dbms_fundamentals_and_architecture.pdf",
+        "answer": "Physical data independence shields application queries from storage changes by preserving the logical schema and allowing the DBMS query processor and executor to adapt to the physical layout without requiring application rewrites.",
+        "response_mode": "experience_assisted",
+        "memory_hit": false,
+        "memory_context_used": true,
+        "similarity_score": 0.9114641547203064,
+        "decision": "[Retrieval]",
+        "isrel": "[Relevant]",
+        "issup": "[Fully supported]",
+        "isuse": 5,
+        "cited_docs": [
+          "15_distributed_databases_nosql_security_and_administration.pdf"
+        ],
+        "latency_ms": 15152.137499768287
+      }
+    ]
+  }
+}

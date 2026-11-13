@@ -1,0 +1,40 @@
+{
+  "embed_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "num_chunks": 232,
+  "target_words": 120,
+  "overlap_words": 30,
+  "sources": [
+    "01_dbms_fundamentals_and_architecture.pdf",
+    "02_relational_model_keys_and_integrity.pdf",
+    "03_er_modeling_and_database_design.pdf",
+    "04_relational_algebra_and_calculus.pdf",
+    "05_sql_fundamentals_ddl_dml_and_types.pdf",
+    "06_sql_queries_joins_aggregation_subqueries.pdf",
+    "07_functional_dependencies_and_normalization.pdf",
+    "08_database_storage_pages_and_buffer_management.pdf",
+    "09_index_structures_btrees_hashing_and_postgresql.pdf",
+    "10_transactions_and_acid_properties.pdf",
+    "11_concurrency_control_serializability_mvcc.pdf",
+    "12_database_recovery_logging_wal_and_backup.pdf",
+    "13_query_processing_and_execution_algorithms.pdf",
+    "14_query_optimization_cost_models_and_explain.pdf",
+    "15_distributed_databases_nosql_security_and_administration.pdf"
+  ],
+  "source_versions": {
+    "01_dbms_fundamentals_and_architecture.pdf": "a7e3dc970655f502f95ab157ceb43b2ce1a3be4d2d4e2ee3bbf8833840034356",
+    "02_relational_model_keys_and_integrity.pdf": "30abbaf7a2fa07e3a57787a79ce7b45b1569f7d58756ef8f8d78aec25aab6792",
+    "03_er_modeling_and_database_design.pdf": "e769687159711001e87a0e67d8fe9fc0ec34e6c13aba7653be03dfcd99ae3629",
+    "04_relational_algebra_and_calculus.pdf": "3c9875d58477315508114e77ad202f714385cf71f66ad17821013834e24b8d98",
+    "05_sql_fundamentals_ddl_dml_and_types.pdf": "315dd2480af6231e3eadec20c71f7bdcacd35b1c09c816b0151377fd915dd20d",
+    "06_sql_queries_joins_aggregation_subqueries.pdf": "231c06286cd3806cb332e959d57e0b884d6ed0d6c726ce4b8e05c28d4188c216",
+    "07_functional_dependencies_and_normalization.pdf": "a8c0147821ddbc621bc408c6ff632d09370df3aa46d7ce6f246c47a3a615cccb",
+    "08_database_storage_pages_and_buffer_management.pdf": "facb23b0082ba64de78c501f9bbc528752cfdc253766578b5e226fe0d2bc51c5",
+    "09_index_structures_btrees_hashing_and_postgresql.pdf": "88fa521f4ce6de2650bcc61d01197d7448a64feb0d680f58c30e59e688925d23",
+    "10_transactions_and_acid_properties.pdf": "591c0270e8017c3833ee4457a48f1d7ac270b87cb3c53f4442377e6fd4acb00d",
+    "11_concurrency_control_serializability_mvcc.pdf": "1f03aacb6f7079649cef8063dcb1856811527cda742f91fbd6dd7193890d0776",
+    "12_database_recovery_logging_wal_and_backup.pdf": "2106972c6103bb9c26548ba3810fe29050532404d66913015e2e2edf94baf343",
+    "13_query_processing_and_execution_algorithms.pdf": "827d243c34aeb92527733d35907bda5d08025c6627a5e10be990766bacc8a96b",
+    "14_query_optimization_cost_models_and_explain.pdf": "3a7c14c7effdbbf0c1dd6e6600e4ee943cebead0f711164042072cb701e7566c",
+    "15_distributed_databases_nosql_security_and_administration.pdf": "c0cd1a8faa6a560e6eba970246fca63181486c46278231b359eec124a0b62a0e"
+  }
+}

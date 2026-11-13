@@ -13,3 +13,6 @@ python-dotenv
 
 # --- Benchmark testbench PDF generation (benchmark_addon/testbench) ---
 reportlab
+
+# --- Testing ---
+pytest

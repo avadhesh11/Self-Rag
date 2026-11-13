@@ -1,0 +1,31 @@
+# EvoRAG Task 12E: Controlled Full DBMS QLoRA Training Configuration
+base_model: "models/mlx/selfrag_llama2_7b_4bit"
+adapter_output_dir: "training/qlora_dbms/adapters/full_dbms_v1"
+dataset_dir: "training/qlora_dbms/mlx_dataset"
+
+lora_parameters:
+  rank: 8
+  scale: 16.0
+  dropout: 0.0
+
+training_parameters:
+  num_layers: 16
+  batch_size: 1
+  learning_rate: 1.0e-5
+  max_seq_length: 1024
+  mask_prompt: true
+  epochs: 3
+  iters: 546                  # 182 train examples * 3 epochs = 546 iterations
+  val_batches: -1             # Evaluate entire validation set (39 examples)
+  steps_per_report: 10        # Report training loss every 10 steps
+  steps_per_eval: 91          # Evaluate validation loss every half-epoch (7 evals across 3 epochs)
+  steps_per_save: 182         # Save checkpoint at each epoch boundary (182, 364, 546)
+  grad_checkpoint: false
+  grad_accumulation_steps: 1
+
+safeguards:
+  preserve_smoke_test: true
+  early_stop_patience: 4      # Stop if val loss worsens for 4 consecutive evals
+  assert_finite_loss: true
+  verify_base_model_hash: true
+
