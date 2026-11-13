@@ -8,6 +8,7 @@ data
 /index/meta.json
 .venv
 .venv-mlx
+.claude/
 models
 .DS_Store
 
@@ -17,6 +18,10 @@ models
 *.csv
 *.patch
 *.zip
+*.safetensors
+
+# Evaluation runs
+evaluation/predictions/real_model_warm_cache_*/
 
 # Environment / secrets -- never commit this
 .env

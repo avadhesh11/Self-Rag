@@ -1,0 +1,534 @@
+{
+  "total_inspected": 39,
+  "total_passed": 39,
+  "total_issues": 0,
+  "inspected_records": [
+    {
+      "sample_num": 1,
+      "example_id": "DBMS-QLORA-0061",
+      "category": "algorithms",
+      "question": "How does the B-tree leaf node split algorithm maintain height balance during insertions?",
+      "retrieval": "[Retrieval]",
+      "source": "09_index_structures_btrees_hashing_and_postgresql.pdf",
+      "chunk_ids": [
+        130
+      ],
+      "reflection_labels": "[Relevant] | [Fully supported] | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 2,
+      "example_id": "DBMS-QLORA-0070",
+      "category": "algorithms",
+      "question": "How does the Wait-For Graph (WFG) algorithm detect database deadlocks?",
+      "retrieval": "[Retrieval]",
+      "source": "10_transactions_and_acid_properties.pdf",
+      "chunk_ids": [
+        145
+      ],
+      "reflection_labels": "[Relevant] | [Fully supported] | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 3,
+      "example_id": "DBMS-QLORA-0080",
+      "category": "algorithms",
+      "question": "How does the basic SQL evaluation pipeline translate an input query string into results?",
+      "retrieval": "[No Retrieval]",
+      "source": null,
+      "chunk_ids": [],
+      "reflection_labels": "None | None | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 4,
+      "example_id": "DBMS-QLORA-0181",
+      "category": "buffer_management",
+      "question": "How do the buffer pool frame table and hash table coordinate page requests?",
+      "retrieval": "[Retrieval]",
+      "source": "08_database_storage_pages_and_buffer_management.pdf",
+      "chunk_ids": [
+        118
+      ],
+      "reflection_labels": "[Relevant] | [Fully supported] | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 5,
+      "example_id": "DBMS-QLORA-0190",
+      "category": "buffer_management",
+      "question": "Why is setting PostgreSQL shared_buffers to 25% of total system RAM a standard baseline?",
+      "retrieval": "[Retrieval]",
+      "source": "08_database_storage_pages_and_buffer_management.pdf",
+      "chunk_ids": [
+        121
+      ],
+      "reflection_labels": "[Relevant] | [Fully supported] | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 6,
+      "example_id": "DBMS-QLORA-0200",
+      "category": "buffer_management",
+      "question": "Does allocating more memory to the buffer pool eliminate the need for disk writes?",
+      "retrieval": "[No Retrieval]",
+      "source": null,
+      "chunk_ids": [],
+      "reflection_labels": "None | None | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 7,
+      "example_id": "DBMS-QLORA-0041",
+      "category": "comparisons",
+      "question": "How does file-based storage compare with DBMS-managed data management regarding concurrent updates?",
+      "retrieval": "[Retrieval]",
+      "source": "01_dbms_fundamentals_and_architecture.pdf",
+      "chunk_ids": [
+        1
+      ],
+      "reflection_labels": "[Relevant] | [Fully supported] | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 8,
+      "example_id": "DBMS-QLORA-0050",
+      "category": "comparisons",
+      "question": "What is the difference between Strict Two-Phase Locking (Strict 2PL) and Standard Two-Phase Locking (2PL)?",
+      "retrieval": "[Retrieval]",
+      "source": "10_transactions_and_acid_properties.pdf",
+      "chunk_ids": [
+        144
+      ],
+      "reflection_labels": "[Relevant] | [Fully supported] | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 9,
+      "example_id": "DBMS-QLORA-0060",
+      "category": "comparisons",
+      "question": "What is the difference between a natural join and an inner join with an ON condition?",
+      "retrieval": "[No Retrieval]",
+      "source": null,
+      "chunk_ids": [],
+      "reflection_labels": "None | None | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 10,
+      "example_id": "DBMS-QLORA-0021",
+      "category": "conceptual_explanations",
+      "question": "How does the ANSI-SPARC Three-Schema Architecture separate user views from storage?",
+      "retrieval": "[Retrieval]",
+      "source": "01_dbms_fundamentals_and_architecture.pdf",
+      "chunk_ids": [
+        2
+      ],
+      "reflection_labels": "[Relevant] | [Fully supported] | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 11,
+      "example_id": "DBMS-QLORA-0030",
+      "category": "conceptual_explanations",
+      "question": "What is the three-valued logic (3VL) model in SQL evaluation?",
+      "retrieval": "[Retrieval]",
+      "source": "05_sql_fundamentals_ddl_dml_and_types.pdf",
+      "chunk_ids": [
+        73
+      ],
+      "reflection_labels": "[Relevant] | [Fully supported] | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 12,
+      "example_id": "DBMS-QLORA-0040",
+      "category": "conceptual_explanations",
+      "question": "What is the concept of database sharding in distributed systems?",
+      "retrieval": "[Retrieval]",
+      "source": "15_distributed_databases_nosql_security_and_administration.pdf",
+      "chunk_ids": [
+        213
+      ],
+      "reflection_labels": "[Relevant] | [Fully supported] | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 13,
+      "example_id": "DBMS-QLORA-0141",
+      "category": "concurrency_control",
+      "question": "What are the rules governing the growing and shrinking phases in Two-Phase Locking (2PL)?",
+      "retrieval": "[Retrieval]",
+      "source": "11_concurrency_control_serializability_mvcc.pdf",
+      "chunk_ids": [
+        156
+      ],
+      "reflection_labels": "[Relevant] | [Fully supported] | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 14,
+      "example_id": "DBMS-QLORA-0150",
+      "category": "concurrency_control",
+      "question": "Why does PostgreSQL not support automatic lock escalation from row locks to table locks?",
+      "retrieval": "[Retrieval]",
+      "source": "11_concurrency_control_serializability_mvcc.pdf",
+      "chunk_ids": [
+        163
+      ],
+      "reflection_labels": "[Relevant] | [Fully supported] | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 15,
+      "example_id": "DBMS-QLORA-0160",
+      "category": "concurrency_control",
+      "question": "Can concurrent transactions read the same data page simultaneously without blocking?",
+      "retrieval": "[No Retrieval]",
+      "source": null,
+      "chunk_ids": [],
+      "reflection_labels": "None | None | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 16,
+      "example_id": "DBMS-QLORA-0241",
+      "category": "context_grounded_abstention",
+      "question": "What is the capital city of France?",
+      "retrieval": "[Retrieval]",
+      "source": "09_index_structures_btrees_hashing_and_postgresql.pdf",
+      "chunk_ids": [
+        128
+      ],
+      "reflection_labels": "[Irrelevant] | [No support / Contradictory] | [Utility:1]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 17,
+      "example_id": "DBMS-QLORA-0250",
+      "category": "context_grounded_abstention",
+      "question": "Explain why B-tree index leaf nodes do not contain sibling pointers to adjacent leaves.",
+      "retrieval": "[Retrieval]",
+      "source": "09_index_structures_btrees_hashing_and_postgresql.pdf",
+      "chunk_ids": [
+        129
+      ],
+      "reflection_labels": "[Relevant] | [No support / Contradictory] | [Utility:1]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 18,
+      "example_id": "DBMS-QLORA-0260",
+      "category": "context_grounded_abstention",
+      "question": "What is the recipe for baking traditional Italian sourdough bread?",
+      "retrieval": "[Retrieval]",
+      "source": "05_sql_fundamentals_ddl_dml_and_types.pdf",
+      "chunk_ids": [
+        69
+      ],
+      "reflection_labels": "[Irrelevant] | [No support / Contradictory] | [Utility:1]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 19,
+      "example_id": "DBMS-QLORA-0001",
+      "category": "dbms_definitions",
+      "question": "What is the primary difference between a database and a database management system (DBMS)?",
+      "retrieval": "[Retrieval]",
+      "source": "01_dbms_fundamentals_and_architecture.pdf",
+      "chunk_ids": [
+        0
+      ],
+      "reflection_labels": "[Relevant] | [Fully supported] | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 20,
+      "example_id": "DBMS-QLORA-0010",
+      "category": "dbms_definitions",
+      "question": "What is declarative query specification in relational systems?",
+      "retrieval": "[No Retrieval]",
+      "source": null,
+      "chunk_ids": [],
+      "reflection_labels": "None | None | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 21,
+      "example_id": "DBMS-QLORA-0020",
+      "category": "dbms_definitions",
+      "question": "What is a foreign key constraint action such as ON DELETE CASCADE?",
+      "retrieval": "[Retrieval]",
+      "source": "05_sql_fundamentals_ddl_dml_and_types.pdf",
+      "chunk_ids": [
+        72
+      ],
+      "reflection_labels": "[Relevant] | [Fully supported] | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 22,
+      "example_id": "DBMS-QLORA-0101",
+      "category": "indexing",
+      "question": "How do B-tree interior nodes guide search queries to target leaf pages?",
+      "retrieval": "[Retrieval]",
+      "source": "09_index_structures_btrees_hashing_and_postgresql.pdf",
+      "chunk_ids": [
+        129
+      ],
+      "reflection_labels": "[Relevant] | [Fully supported] | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 23,
+      "example_id": "DBMS-QLORA-0110",
+      "category": "indexing",
+      "question": "What is the purpose of the fillfactor parameter on B-tree indexes?",
+      "retrieval": "[Retrieval]",
+      "source": "09_index_structures_btrees_hashing_and_postgresql.pdf",
+      "chunk_ids": [
+        136
+      ],
+      "reflection_labels": "[Relevant] | [Fully supported] | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 24,
+      "example_id": "DBMS-QLORA-0120",
+      "category": "indexing",
+      "question": "Is an index automatically generated when a UNIQUE constraint is added to an SQL table?",
+      "retrieval": "[No Retrieval]",
+      "source": null,
+      "chunk_ids": [],
+      "reflection_labels": "None | None | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 25,
+      "example_id": "DBMS-QLORA-0081",
+      "category": "query_processing",
+      "question": "How does semantic analysis validate an Abstract Syntax Tree (AST) against catalog metadata?",
+      "retrieval": "[Retrieval]",
+      "source": "13_query_processing_and_execution_algorithms.pdf",
+      "chunk_ids": [
+        184
+      ],
+      "reflection_labels": "[Relevant] | [Fully supported] | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 26,
+      "example_id": "DBMS-QLORA-0090",
+      "category": "query_processing",
+      "question": "How do outdated catalog statistics cause query plan degradation?",
+      "retrieval": "[Retrieval]",
+      "source": "14_query_optimization_cost_models_and_explain.pdf",
+      "chunk_ids": [
+        201
+      ],
+      "reflection_labels": "[Relevant] | [Fully supported] | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 27,
+      "example_id": "DBMS-QLORA-0100",
+      "category": "query_processing",
+      "question": "What is constant folding in query plan rewriting?",
+      "retrieval": "[No Retrieval]",
+      "source": null,
+      "chunk_ids": [],
+      "reflection_labels": "None | None | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 28,
+      "example_id": "DBMS-QLORA-0161",
+      "category": "recovery_and_logging",
+      "question": "What is the core write-ahead logging (WAL) protocol invariant during dirty page flushing?",
+      "retrieval": "[Retrieval]",
+      "source": "12_database_recovery_logging_wal_and_backup.pdf",
+      "chunk_ids": [
+        169
+      ],
+      "reflection_labels": "[Relevant] | [Fully supported] | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 29,
+      "example_id": "DBMS-QLORA-0170",
+      "category": "recovery_and_logging",
+      "question": "How does page checksumming in data page headers detect silent storage corruption?",
+      "retrieval": "[Retrieval]",
+      "source": "08_database_storage_pages_and_buffer_management.pdf",
+      "chunk_ids": [
+        114
+      ],
+      "reflection_labels": "[Relevant] | [Fully supported] | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 30,
+      "example_id": "DBMS-QLORA-0180",
+      "category": "recovery_and_logging",
+      "question": "Is a database crash recovery required if a database server shuts down cleanly?",
+      "retrieval": "[No Retrieval]",
+      "source": null,
+      "chunk_ids": [],
+      "reflection_labels": "None | None | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 31,
+      "example_id": "DBMS-QLORA-0221",
+      "category": "scenario_based_reasoning",
+      "question": "A high-concurrency payment processing service experiences severe lock contention on an accounts table when updating balances. What database design technique alleviates this bottleneck?",
+      "retrieval": "[Retrieval]",
+      "source": "10_transactions_and_acid_properties.pdf",
+      "chunk_ids": [
+        146
+      ],
+      "reflection_labels": "[Relevant] | [Fully supported] | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 32,
+      "example_id": "DBMS-QLORA-0230",
+      "category": "scenario_based_reasoning",
+      "question": "A 500 GB audit table has become unmanageable to query and vacuum. How does declarative table partitioning by date range solve this administrative challenge?",
+      "retrieval": "[Retrieval]",
+      "source": "08_database_storage_pages_and_buffer_management.pdf",
+      "chunk_ids": [
+        116
+      ],
+      "reflection_labels": "[Relevant] | [Fully supported] | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 33,
+      "example_id": "DBMS-QLORA-0240",
+      "category": "scenario_based_reasoning",
+      "question": "How can an engineering team enforce an immutable, tamper-evident audit trail for modifications to a critical financial transactions table?",
+      "retrieval": "[Retrieval]",
+      "source": "01_dbms_fundamentals_and_architecture.pdf",
+      "chunk_ids": [
+        1
+      ],
+      "reflection_labels": "[Relevant] | [Fully supported] | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 34,
+      "example_id": "DBMS-QLORA-0201",
+      "category": "storage_architecture",
+      "question": "What are the core structural sections inside a standard 8 KB slotted disk page?",
+      "retrieval": "[Retrieval]",
+      "source": "08_database_storage_pages_and_buffer_management.pdf",
+      "chunk_ids": [
+        113
+      ],
+      "reflection_labels": "[Relevant] | [Fully supported] | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 35,
+      "example_id": "DBMS-QLORA-0210",
+      "category": "storage_architecture",
+      "question": "What is the function of the Visibility Map (VM) in PostgreSQL storage management?",
+      "retrieval": "[Retrieval]",
+      "source": "08_database_storage_pages_and_buffer_management.pdf",
+      "chunk_ids": [
+        117
+      ],
+      "reflection_labels": "[Relevant] | [Fully supported] | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 36,
+      "example_id": "DBMS-QLORA-0220",
+      "category": "storage_architecture",
+      "question": "What is the default page block size in standard PostgreSQL installations?",
+      "retrieval": "[No Retrieval]",
+      "source": null,
+      "chunk_ids": [],
+      "reflection_labels": "None | None | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 37,
+      "example_id": "DBMS-QLORA-0121",
+      "category": "transactions",
+      "question": "What are the states in the standard transaction execution lifecycle?",
+      "retrieval": "[Retrieval]",
+      "source": "10_transactions_and_acid_properties.pdf",
+      "chunk_ids": [
+        142
+      ],
+      "reflection_labels": "[Relevant] | [Fully supported] | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 38,
+      "example_id": "DBMS-QLORA-0130",
+      "category": "transactions",
+      "question": "What condition must a schedule satisfy to be cascadeless?",
+      "retrieval": "[Retrieval]",
+      "source": "10_transactions_and_acid_properties.pdf",
+      "chunk_ids": [
+        147
+      ],
+      "reflection_labels": "[Relevant] | [Fully supported] | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    },
+    {
+      "sample_num": 39,
+      "example_id": "DBMS-QLORA-0140",
+      "category": "transactions",
+      "question": "What does transaction isolation level SERIALIZABLE guarantee under the SQL standard?",
+      "retrieval": "[No Retrieval]",
+      "source": null,
+      "chunk_ids": [],
+      "reflection_labels": "None | None | [Utility:5]",
+      "status": "PASS",
+      "notes": "Valid & factually verified"
+    }
+  ],
+  "issues": []
+}

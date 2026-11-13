@@ -1,0 +1,1632 @@
+{
+  "evaluation_name": "EvoRAG Task 12E Internal Test Evaluation",
+  "timestamp": "2026-11-12 13:46:37Z",
+  "dataset": {
+    "internal_test_file": "/Users/devj/code/self-rag/self-rag-demo/training/qlora_dbms/mlx_dataset/internal_test.jsonl",
+    "total_examples": 39,
+    "categories_evaluated": 13
+  },
+  "quantitative_loss_metrics": {
+    "base_model_loss": 6.3655,
+    "base_model_perplexity": 581.43,
+    "fine_tuned_model_loss": 1.0922,
+    "fine_tuned_model_perplexity": 2.98,
+    "loss_reduction": 5.2733,
+    "loss_reduction_percent": 82.84
+  },
+  "fidelity_and_generation_metrics": {
+    "fine_tuned_model": {
+      "retrieval_decision_rate": 1.0,
+      "utility_token_rate": 0.3333,
+      "complete_sentence_rate": 0.0769,
+      "malformed_token_count": 0
+    },
+    "base_model": {
+      "retrieval_decision_rate": 0.9487,
+      "utility_token_rate": 0.641,
+      "complete_sentence_rate": 0.4103,
+      "malformed_token_count": 0
+    }
+  },
+  "category_breakdown": {
+    "concurrency_control": {
+      "total": 3,
+      "ft_has_retrieval_decision": 3,
+      "ft_has_utility": 1,
+      "ft_complete_sentence": 0,
+      "base_has_retrieval_decision": 3,
+      "base_has_utility": 3,
+      "base_complete_sentence": 2
+    },
+    "storage_architecture": {
+      "total": 3,
+      "ft_has_retrieval_decision": 3,
+      "ft_has_utility": 1,
+      "ft_complete_sentence": 0,
+      "base_has_retrieval_decision": 3,
+      "base_has_utility": 1,
+      "base_complete_sentence": 0
+    },
+    "query_processing": {
+      "total": 3,
+      "ft_has_retrieval_decision": 3,
+      "ft_has_utility": 1,
+      "ft_complete_sentence": 1,
+      "base_has_retrieval_decision": 3,
+      "base_has_utility": 1,
+      "base_complete_sentence": 0
+    },
+    "recovery_and_logging": {
+      "total": 3,
+      "ft_has_retrieval_decision": 3,
+      "ft_has_utility": 1,
+      "ft_complete_sentence": 0,
+      "base_has_retrieval_decision": 3,
+      "base_has_utility": 2,
+      "base_complete_sentence": 2
+    },
+    "scenario_based_reasoning": {
+      "total": 3,
+      "ft_has_retrieval_decision": 3,
+      "ft_has_utility": 0,
+      "ft_complete_sentence": 0,
+      "base_has_retrieval_decision": 3,
+      "base_has_utility": 1,
+      "base_complete_sentence": 1
+    },
+    "buffer_management": {
+      "total": 3,
+      "ft_has_retrieval_decision": 3,
+      "ft_has_utility": 1,
+      "ft_complete_sentence": 0,
+      "base_has_retrieval_decision": 3,
+      "base_has_utility": 0,
+      "base_complete_sentence": 1
+    },
+    "indexing": {
+      "total": 3,
+      "ft_has_retrieval_decision": 3,
+      "ft_has_utility": 0,
+      "ft_complete_sentence": 0,
+      "base_has_retrieval_decision": 2,
+      "base_has_utility": 3,
+      "base_complete_sentence": 1
+    },
+    "dbms_definitions": {
+      "total": 3,
+      "ft_has_retrieval_decision": 3,
+      "ft_has_utility": 2,
+      "ft_complete_sentence": 0,
+      "base_has_retrieval_decision": 2,
+      "base_has_utility": 3,
+      "base_complete_sentence": 2
+    },
+    "context_grounded_abstention": {
+      "total": 3,
+      "ft_has_retrieval_decision": 3,
+      "ft_has_utility": 2,
+      "ft_complete_sentence": 1,
+      "base_has_retrieval_decision": 3,
+      "base_has_utility": 3,
+      "base_complete_sentence": 2
+    },
+    "conceptual_explanations": {
+      "total": 3,
+      "ft_has_retrieval_decision": 3,
+      "ft_has_utility": 2,
+      "ft_complete_sentence": 0,
+      "base_has_retrieval_decision": 3,
+      "base_has_utility": 2,
+      "base_complete_sentence": 2
+    },
+    "transactions": {
+      "total": 3,
+      "ft_has_retrieval_decision": 3,
+      "ft_has_utility": 0,
+      "ft_complete_sentence": 1,
+      "base_has_retrieval_decision": 3,
+      "base_has_utility": 2,
+      "base_complete_sentence": 0
+    },
+    "algorithms": {
+      "total": 3,
+      "ft_has_retrieval_decision": 3,
+      "ft_has_utility": 2,
+      "ft_complete_sentence": 0,
+      "base_has_retrieval_decision": 3,
+      "base_has_utility": 2,
+      "base_complete_sentence": 0
+    },
+    "comparisons": {
+      "total": 3,
+      "ft_has_retrieval_decision": 3,
+      "ft_has_utility": 0,
+      "ft_complete_sentence": 0,
+      "base_has_retrieval_decision": 3,
+      "base_has_utility": 2,
+      "base_complete_sentence": 3
+    }
+  },
+  "sample_comparisons": [
+    {
+      "example_id": "DBMS-QLORA-0160",
+      "category": "concurrency_control",
+      "prompt": "Can concurrent transactions read the same data page simultaneously without blocking?",
+      "ground_truth": "[No Retrieval]Yes, multiple concurrent transactions can read the exact same data page simultaneously without blocking because Shared locks and Shared page latches are mutually compatible, allowing concurrent read operations without conflict.[Utility:5]",
+      "base_model": {
+        "output": "Yes, concurrent transactions can read the same data page simultaneously without blocking.[Retrieval]<paragraph><paragraph><paragraph><paragraph>\nConcurrent transactions can read the same data page simultaneously without blocking.[No Retrieval]This is because the data page is not being modified by any of the transactions, so there is no need for any of the transactions to block each other.[Utility:5]",
+        "duration_seconds": 3.04,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 323,
+          "is_complete_sentence": true,
+          "has_malformed_token": false,
+          "clean_text": "Yes, concurrent transactions can read the same data page simultaneously without blocking. Concurrent transactions can read the same data page simultaneously without blocking. This is because the data page is not being modified by any of the transactions, so there is no need for any of the transactions to block each other."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Concurrency Control: Serializability, Locking, and MVCC Correct concurrent access under multiple sessions DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. Concurrency control: serializability, locking, and MVCC Correct concurrent access under many sessions Concurrency control aims to allow many users to work on the same logical data set while preserving the chosen result. Concurrency control is not magic: the DBMS must track locks and know how to repair conflicts.</paragraph>[Relevant]Yes, concurrent transactions can read the same data page simultaneously without blocking, provided that the page is already unlocked (e.g., the page is marked all-visible or is pinned all-frozen).[Fully supported][Utility:5]<unk>Concurrent transactions can read the same data",
+        "duration_seconds": 8.68,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": "[Fully supported]",
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 886,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Concurrency Control: Serializability, Locking, and MVCC Correct concurrent access under multiple sessions DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. Concurrency control: serializability, locking, and MVCC Correct concurrent access under many sessions Concurrency control aims to allow many users to work on the same logical data set while preserving the chosen result. Concurrency control is not magic: the DBMS must track locks and know how to repair conflicts. Yes, concurrent transactions can read the same data page simultaneously without blocking, provided that the page is already unlocked (e.g., the page is marked all-visible or is pinned all-frozen). <unk>Concurrent transactions can read the same data"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0203",
+      "category": "storage_architecture",
+      "prompt": "How does the NULL bitmap in a tuple header save storage space?",
+      "ground_truth": "[Retrieval]<paragraph>Why pages matter \u2022 Disk and SSD operations transfer blocks, not one SQL row at a time. \u2022 A page read may bring several nearby tuples into memory. \u2022 Page size affects fan-out, packing, I/O, and index structure. \u2022 Updates may create new tuple versions or move data; physical identifiers should not be exposed as stable application keys. The DBMS attempts to turn many logical row operations into efficient page-level activity. Sequential access often benefits from locality, while random page access can have higher cost.</paragraph>[Relevant]The NULL bitmap dedicates 1 bit per column in the tuple header to indicate whether each attribute is NULL. If a bit is 0, the attribute is NULL and consumes zero bytes in the data payload, completely omitting space for NULL fields.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "Here's how:\n\n1.[Retrieval]<paragraph><paragraph><paragraph><paragraph><paragraph>\nThe NULL bitmap in a tuple header saves storage space by indicating which fields in a row are NULL.[No Retrieval]The NULL bitmap is a bitmask that indicates which fields in a row are NULL.[No Retrieval]The NULL bitmap is a bitmask that indicates which fields in a row are NULL.[No Retrieval]The NULL bitmap is a bitmask that indicates which fields in a row are NULL.[No Retrieval]The NULL bitmap is a bitmask that indicates which fields in a row are NULL.[No Retrieval]The NULL bitmap is a bitmask that indicates which fields in a row are NULL.[No Retrieval]The NULL bitmap is a bitmask that indicates which fields in a row are NULL.[No Retrieval]The NULL bitmap is a bitmask that indicates which fields in a row are NULL.[No Retrieval]The NULL bitmap is a bitmask that indicates which fields in a row are NULL.[No Retrieval]The NULL bitmap is a bitmask that indicates which fields in a row are NULL.[No Retrieval]The NULL bitmap is a bitmask that indicates which fields in a row are NULL.[No Retrieval]The NULL bitmap",
+        "duration_seconds": 7.02,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 890,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "Here's how: 1. The NULL bitmap in a tuple header saves storage space by indicating which fields in a row are NULL. The NULL bitmap is a bitmask that indicates which fields in a row are NULL. The NULL bitmap is a bitmask that indicates which fields in a row are NULL. The NULL bitmap is a bitmask that indicates which fields in a row are NULL. The NULL bitmap is a bitmask that indicates which fields in a row are NULL. The NULL bitmap is a bitmask that indicates which fields in a row are NULL. The NULL bitmap is a bitmask that indicates which fields in a row are NULL. The NULL bitmap is a bitmask that indicates which fields in a row are NULL. The NULL bitmap is a bitmask that indicates which fields in a row are NULL. The NULL bitmap is a bitmask that indicates which fields in a row are NULL. The NULL bitmap is a bitmask that indicates which fields in a row are NULL. The NULL bitmap"
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory.</paragraph>[Relevant]The NULL bitmap is a 1-bit flag that indicates whether each tuple in a table is NULL or not. By storing",
+        "duration_seconds": 8.56,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 894,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory. The NULL bitmap is a 1-bit flag that indicates whether each tuple in a table is NULL or not. By storing"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0097",
+      "category": "query_processing",
+      "prompt": "How does relational selection commutativity permit filter reordering?",
+      "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 3 3. Joins, division, and extended operators A theta join combines tuples satisfying a comparison predicate. An equi-join is a theta join using equality. A natural join matches attributes with the same names and removes duplicate join columns; it can be concise but is risky when unrelated attributes share a name. In practical SQL, explicit JOIN ... ON is generally clearer. A division operator expresses a for-all condition. If ENROLLMENT(student_id, course_id) is divided by REQUIRED(course_id), the result is student IDs enrolled in every required course. Division is useful for universal conditions but is often expressed in SQL through nested NOT EXISTS or grouping and HAVING.</paragraph>[Relevant]Relational selection operations commute ($\\sigma_{p_1}(\\sigma_{p_2}(R)) = \\sigma_{p_2}(\\sigma_{p_1}(R))$), allowing query optimizers to reorder multiple filter predicates so that highly selective and computationally cheap predicates are evaluated first.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "Great question![Retrieval]<paragraph><paragraph><paragraph>",
+        "duration_seconds": 0.39,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 15,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "Great question!"
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Relational algebra and relational calculus Fundamental relational operators and their meaning Algebraic operations and constraints Selection, projection, and filter operations Selection filters rows satisfying a predicate. If the predicate evaluates to TRUE, the row is selected; if it evaluates to FALSE, the row is not selected. The selection predicate may compare multiple attributes. In an ENROLLMENT relation, students are enrolled in courses. STUDENT_ID, COURSE_ID, ENROLLMENT_STATUS, and CREDIT transfer credit. The DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The selection predicate may compare multiple attributes. If a row has student_id=101 and course_id=CS101, the engine selects that",
+        "duration_seconds": 8.58,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 870,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Relational algebra and relational calculus Fundamental relational operators and their meaning Algebraic operations and constraints Selection, projection, and filter operations Selection filters rows satisfying a predicate. If the predicate evaluates to TRUE, the row is selected; if it evaluates to FALSE, the row is not selected. The selection predicate may compare multiple attributes. In an ENROLLMENT relation, students are enrolled in courses. STUDENT_ID, COURSE_ID, ENROLLMENT_STATUS, and CREDIT transfer credit. The DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The selection predicate may compare multiple attributes. If a row has student_id=101 and course_id=CS101, the engine selects that"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0165",
+      "category": "recovery_and_logging",
+      "prompt": "Why are Redo operations in ARIES crash recovery required to be idempotent?",
+      "ground_truth": "[Retrieval]<paragraph>Recovery vocabulary \u2022 Log record: describes a transaction event or data change needed for recovery. \u2022 Undo: remove the effect of an uncommitted change. \u2022 Redo: reapply a change that belongs in the recovered state. \u2022 Checkpoint: records recovery progress and limits how far back the engine must inspect during restart. \u2022 WAL: write-ahead logging, a rule that required log records reach durable storage before corresponding data pages are written.</paragraph>[Relevant]Redo operations must be idempotent so that applying a logged change multiple times produces the exact same state as applying it once. If a crash occurs midway through recovery, re-running the Redo phase will safely reapply operations without corrupting data pages.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "Idempotence:[Retrieval]<paragraph>[Irrelevant]Idempotence is a property of functions that states that when a function is applied multiple times to the same argument, the result of the function is the same as if it were applied only once.[No Retrieval]In the context of ARIES crash recovery, idempotence is a property of the Redo operation that states that if the same data is applied to the Redo operation multiple times, the result of the operation should be the same as if it were applied only once.[Continue to Use Evidence]This property is important in the context of ARIES crash recovery because it ensures that the Redo operation is consistent and that the data is not corrupted during the recovery process.[No Retrieval]Without idempotence, the Redo operation could potentially produce different results each time it is applied, which could lead to data loss or corruption.[Utility:5]",
+        "duration_seconds": 5.88,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Irrelevant]",
+          "support_label": null,
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 821,
+          "is_complete_sentence": true,
+          "has_malformed_token": false,
+          "clean_text": "Idempotence: Idempotence is a property of functions that states that when a function is applied multiple times to the same argument, the result of the function is the same as if it were applied only once. In the context of ARIES crash recovery, idempotence is a property of the Redo operation that states that if the same data is applied to the Redo operation multiple times, the result of the operation should be the same as if it were applied only once.[Continue to Use Evidence]This property is important in the context of ARIES crash recovery because it ensures that the Redo operation is consistent and that the data is not corrupted during the recovery process. Without idempotence, the Redo operation could potentially produce different results each time it is applied, which could lead to data loss or corruption."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>A transaction is more than a group of SQL statements. Isolation and durability depend on DBMS mechanisms, transaction boundaries, logging, locks or versions, and the configured commit behavior.</paragraph>[Relevant]Redo operations in ARIES crash recovery are required to be idempotent because they are transactional operations that may be applied repeatedly during recovery. If an operation is idempotent, applying it repeatedly has no observable effect on the database.[Fully supported][Utility:5]<unk>[Utility:5]<unk>Isolation: concurrent transactions should behave according to selected isolation guarantee. Isolation levels balance correctness, concurrency, and performance. The exact phenomena permitted depend on the DBMS and isolation implementation.</paragraph>[Relevant]Isolation levels balance correctness, concurrency, and performance. The exact phenomena permitted depend on the DBMS and isolation implementation.[Fully supported][Utility:5]<unk>Concurrent transactions should behave according to selected isolation guarantee. Isolation levels balance correctness, concurrency, and performance. The exact phenomena permitted depend on the DBMS and isolation implementation.[Utility:5]<unk>Concurrent",
+        "duration_seconds": 8.75,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": "[Fully supported]",
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 1095,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "A transaction is more than a group of SQL statements. Isolation and durability depend on DBMS mechanisms, transaction boundaries, logging, locks or versions, and the configured commit behavior. Redo operations in ARIES crash recovery are required to be idempotent because they are transactional operations that may be applied repeatedly during recovery. If an operation is idempotent, applying it repeatedly has no observable effect on the database. <unk> <unk>Isolation: concurrent transactions should behave according to selected isolation guarantee. Isolation levels balance correctness, concurrency, and performance. The exact phenomena permitted depend on the DBMS and isolation implementation. Isolation levels balance correctness, concurrency, and performance. The exact phenomena permitted depend on the DBMS and isolation implementation. <unk>Concurrent transactions should behave according to selected isolation guarantee. Isolation levels balance correctness, concurrency, and performance. The exact phenomena permitted depend on the DBMS and isolation implementation. <unk>Concurrent"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0228",
+      "category": "scenario_based_reasoning",
+      "prompt": "A web application experiences connection exhaustion when traffic spikes from 100 to 5,000 concurrent web clients, crashing the PostgreSQL server. What architectural middleware component prevents this?",
+      "ground_truth": "[Retrieval]<paragraph>The distinction matters: the database is the managed information; the DBMS is the engine and supporting software. PostgreSQL, MySQL, Oracle Database, and Microsoft SQL Server are examples of DBMS products. Consider a university. Students, departments, courses, instructors, and enrollments are related facts. A flat-file approach might put each fact in CSV files and require every application to parse, validate, search, and update those files. This creates duplicated logic, inconsistent formats, unsafe concurrent updates, weak integrity checks, and difficult crash recovery. A DBMS centralizes these responsibilities and exposes a stable interface. Problems addressed by a DBMS \u2022 Redundancy and inconsistency: the same fact should not be updated independently in many files. \u2022 Integrity: rules such as unique student IDs, valid credit values, and existing foreign-key targets must be enforced. \u2022 Concurrent access: many users may read and change data at the same time. \u2022 Security: users need different privileges over objects and operations. \u2022 Failure handling: a crash during an update should not leave a half-completed operation. \u2022 Efficient access: users should describe the required result without manually scanning every file.</paragraph>[Relevant]The architecture requires a dedicated connection pooler (such as PgBouncer) operating in transaction pooling mode. PgBouncer multiplexes thousands of external client connections over a small, fixed pool of active PostgreSQL backend worker processes (e.g., 50-100 processes), preventing memory exhaustion and context-switching thrashing.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "Load balancer:[Retrieval]<paragraph><paragraph><paragraph>",
+        "duration_seconds": 0.49,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 14,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "Load balancer:"
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory.</paragraph>[Relevant]A web application experiences connection exhaustion when traffic spikes from 100 to 5,000 concurrent web",
+        "duration_seconds": 8.65,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 895,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory. A web application experiences connection exhaustion when traffic spikes from 100 to 5,000 concurrent web"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0200",
+      "category": "buffer_management",
+      "prompt": "Does allocating more memory to the buffer pool eliminate the need for disk writes?",
+      "ground_truth": "[No Retrieval]No, while expanding the buffer pool drastically reduces read disk I/O by caching data in memory, write operations (WAL logging and dirty page checkpoint flushes) must still be written to persistent non-volatile media to guarantee ACID durability.[Utility:5]",
+      "base_model": {
+        "output": "Yes, it can.[Retrieval]<paragraph><paragraph><paragraph>",
+        "duration_seconds": 0.45,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 12,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "Yes, it can."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory.</paragraph>[Relevant]No, allocating more memory to the buffer pool does not eliminate the need for disk writes.[Fully supported][Utility:5]<unk>The buffer pool is a memory area",
+        "duration_seconds": 8.54,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": "[Fully supported]",
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 890,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory. No, allocating more memory to the buffer pool does not eliminate the need for disk writes. <unk>The buffer pool is a memory area"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0109",
+      "category": "indexing",
+      "prompt": "How do secondary indexes impose write overhead on table updates?",
+      "ground_truth": "[Retrieval]<paragraph>An index-only scan may return needed values from the index when visibility information and query shape allow it. CREATE INDEX enrollments_student_semester_idx ON enrollments(student_id, semester); CREATE INDEX active_students_email_idx ON students(email) WHERE email IS NOT NULL; CREATE INDEX students_lower_email_idx ON students(LOWER(email)); These are examples, not universal prescriptions. Confirm that queries use the same expressions and predicates, and inspect actual plans. An index that is rarely used may be an avoidable write and storage cost.</paragraph>[Relevant]Every INSERT, DELETE, or UPDATE modifying indexed columns requires updating every associated secondary index structure, generating additional disk I/O, potential leaf node splits, and increased WAL logging volume.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "Here's how:\n\n1.[Retrieval]<paragraph><paragraph><paragraph><paragraph><paragraph>\n2.[Utility:5]",
+        "duration_seconds": 0.74,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 17,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "Here's how: 1. 2."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory.</paragraph>[Relevant]A sequential scan visits table pages sequentially in physical order, whereas an index scan visits index entries in logical order",
+        "duration_seconds": 8.58,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 919,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory. A sequential scan visits table pages sequentially in physical order, whereas an index scan visits index entries in logical order"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0017",
+      "category": "dbms_definitions",
+      "prompt": "What is the primary role of an active DBMS transaction manager?",
+      "ground_truth": "[Retrieval]<paragraph>It is a query processor, transaction manager, concurrency manager, recovery system, and security boundary around persistent data. Learning outcomes: distinguish database from DBMS; compare file processing with DBMS-managed storage; identify DBMS subsystems; explain data independence; trace a query at a high level.</paragraph>[Relevant]The transaction manager coordinates transaction lifecycle execution, ensuring ACID compliance by interacting with the lock/concurrency manager for isolation and the recovery log manager for atomicity and durability.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "2.[Retrieval]<paragraph><paragraph><paragraph><paragraph><paragraph>\n3.[Utility:5]",
+        "duration_seconds": 0.53,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 5,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "2. 3."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>The DBMS leases locks for durations appropriate to the lock class. Transaction locks may protect in-memory results or require physical write-coordinated locks. A DBMS can provide serializable execution while preserving the choice of physical or logical isolation levels. A DBMS can provide properties like atomicity, durability, and consistency while preserving the chosen isolation and locking modes. A DBMS is the only component that can ensure that a committed transaction's effects are applied. A DBMS is the only component that can enforce the chosen isolation and locking policies. A DBMS is the only component that can guarantee that a committed transaction's effects survive a crash.</paragraph>[Relevant]The primary role of an active DBMS transaction manager is to manage and coordinate database transactions, ensuring that each transaction is applied according to its defined constraints and rules, while preserving the consistency and integrity of the database.[Fully supported][Utility:5]<unk>[Utility:5]<unk>The DBMS leases locks for durations appropriate to the lock class. Transaction",
+        "duration_seconds": 8.69,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": "[Fully supported]",
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 1041,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "The DBMS leases locks for durations appropriate to the lock class. Transaction locks may protect in-memory results or require physical write-coordinated locks. A DBMS can provide serializable execution while preserving the choice of physical or logical isolation levels. A DBMS can provide properties like atomicity, durability, and consistency while preserving the chosen isolation and locking modes. A DBMS is the only component that can ensure that a committed transaction's effects are applied. A DBMS is the only component that can enforce the chosen isolation and locking policies. A DBMS is the only component that can guarantee that a committed transaction's effects survive a crash. The primary role of an active DBMS transaction manager is to manage and coordinate database transactions, ensuring that each transaction is applied according to its defined constraints and rules, while preserving the consistency and integrity of the database. <unk> <unk>The DBMS leases locks for durations appropriate to the lock class. Transaction"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0239",
+      "category": "scenario_based_reasoning",
+      "prompt": "Why does executing a bulk insert within a single transaction take significantly less time than executing each insert in autocommit mode?",
+      "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 2 2. Logging and write-ahead logging A log records enough information to recover the database. A simplified update log record may contain a transaction identifier, page or record identifier, and before/after information. Undo logging uses old values; redo logging uses new values; undo/redo logging retains both or otherwise carries sufficient recovery data. Actual engines use more complex log formats, page identifiers, sequence numbers, checksums, and transaction state. The write-ahead logging principle requires the log record describing a change to be flushed to durable storage before the changed data page is allowed to be written. If a crash occurs after a data page was written but before its log record became durable, recovery might not know how to repair it.</paragraph>[Relevant]In autocommit mode, every individual insert is a separate transaction that requires a synchronous disk write to flush the commit WAL record before returning. A single multi-row transaction performs a single synchronous flush at the final COMMIT, reducing physical disk syncs from thousands to one.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "1.[Retrieval]<paragraph><paragraph><paragraph><paragraph><paragraph>\nAutocommit is a database system feature that automatically commits a transaction after a set of statements have been executed.\n2.3.[Utility:5]",
+        "duration_seconds": 1.35,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 134,
+          "is_complete_sentence": true,
+          "has_malformed_token": false,
+          "clean_text": "1. Autocommit is a database system feature that automatically commits a transaction after a set of statements have been executed. 2.3."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory.</paragraph>[Relevant]Bulk operations execute in batches and can leverage page cache and memory-to-disk buffering, whereas individual statements",
+        "duration_seconds": 8.71,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 913,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory. Bulk operations execute in batches and can leverage page cache and memory-to-disk buffering, whereas individual statements"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0086",
+      "category": "query_processing",
+      "prompt": "Why do optimizers prefer left-deep join trees over arbitrary bushy trees in dynamic programming search?",
+      "ground_truth": "[Retrieval]<paragraph>A query may use an index or scan a table. The optimizer searches a plan space and estimates which valid plan is likely to be cheapest under its cost model. Optimization is usually divided into logical and physical reasoning. Logical rewrites transform a query into an equivalent relational expression. Physical planning chooses concrete access methods and algorithms such as sequential scan, index scan, nested-loop join, hash join, merge join, sort, or aggregate. Optimization goals \u2022 Reduce page reads and writes. \u2022 Avoid producing large intermediate relations. \u2022 Use indexes and ordering when they reduce total work. \u2022 Choose join orders and algorithms appropriate to cardinality and memory. \u2022 Balance startup latency and total execution time. The optimizer estimates, rather than knows, the future cost.</paragraph>[Relevant]Left-deep join trees restrict the right-hand child of every join operator to a single base relation, drastically pruning the factorial search space of join orderings and naturally supporting pipelined execution where only one inner relation hash table is buffered at any time.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "Here are a few reasons:\n\n1.[Retrieval]<paragraph><paragraph><paragraph><paragraph>",
+        "duration_seconds": 0.63,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 26,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "Here are a few reasons: 1."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>Optimization problem types \u2022 Scan patterns \u2022 Techniques \u2022 Algorithms \u2022 Applications Optimization problem types \u2022 Scan patterns \u2022 Techniques \u2022 Algorithms \u2022 Applications Optimization problem types \u2022 Scan patterns \u2022 Techniques \u2022 Algorithms \u2022 Applications Optimization problem types \u2022 Scan patterns \u2022 Techniques \u2022 Algorithms \u2022 Applications Optimization problem types \u2022 Scan patterns \u2022 Techniques \u2022 Algorithms \u2022 Applications Optimization problem types \u2022 Scan patterns \u2022 Techniques \u2022 Algorithms \u2022 Applications Optimization problem types \u2022 Scan patterns \u2022 Techniques \u2022 Algorithms \u2022 Applications Optimization problem types \u2022 Scan patterns \u2022 Techniques \u2022 Algorithms \u2022 Applications Optimization problem types \u2022 Scan patterns \u2022 Techniques \u2022 Algorithms \u2022 Applications Optimization problem types \u2022 Scan patterns \u2022 Techniques \u2022 Algorithms \u2022 Applications Optimization problem types \u2022 Scan patterns \u2022 Techniques \u2022 Algorithms \u2022 Applications Optimization problem types \u2022 Scan patterns",
+        "duration_seconds": 8.48,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 966,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "Optimization problem types \u2022 Scan patterns \u2022 Techniques \u2022 Algorithms \u2022 Applications Optimization problem types \u2022 Scan patterns \u2022 Techniques \u2022 Algorithms \u2022 Applications Optimization problem types \u2022 Scan patterns \u2022 Techniques \u2022 Algorithms \u2022 Applications Optimization problem types \u2022 Scan patterns \u2022 Techniques \u2022 Algorithms \u2022 Applications Optimization problem types \u2022 Scan patterns \u2022 Techniques \u2022 Algorithms \u2022 Applications Optimization problem types \u2022 Scan patterns \u2022 Techniques \u2022 Algorithms \u2022 Applications Optimization problem types \u2022 Scan patterns \u2022 Techniques \u2022 Algorithms \u2022 Applications Optimization problem types \u2022 Scan patterns \u2022 Techniques \u2022 Algorithms \u2022 Applications Optimization problem types \u2022 Scan patterns \u2022 Techniques \u2022 Algorithms \u2022 Applications Optimization problem types \u2022 Scan patterns \u2022 Techniques \u2022 Algorithms \u2022 Applications Optimization problem types \u2022 Scan patterns \u2022 Techniques \u2022 Algorithms \u2022 Applications Optimization problem types \u2022 Scan patterns"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0187",
+      "category": "buffer_management",
+      "prompt": "What is the double buffering problem between a DBMS buffer pool and the operating system page cache?",
+      "ground_truth": "[Retrieval]<paragraph>The goal is not to memorize one algorithm as universal. Understand the trade-off between hit rate, tracking cost, scan pollution, fairness, and implementation complexity.</paragraph>[Relevant]Double buffering occurs when the exact same database disk pages are cached twice in physical RAM: once in the DBMS shared buffer pool and once in the OS kernel page cache, wasting available memory that could otherwise serve caching or query sorting.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "Great question![Retrieval]<paragraph><paragraph><paragraph>",
+        "duration_seconds": 0.41,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 15,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "Great question!"
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize memory-to-disk storage DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O. Applications normally request logical pages; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory.</paragraph>[Relevant]The DBMS page cache resides in main memory (RAM) and is managed by the DBMS page manager. The OS page cache resides in the OS page table",
+        "duration_seconds": 8.6,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 867,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize memory-to-disk storage DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O. Applications normally request logical pages; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory. The DBMS page cache resides in main memory (RAM) and is managed by the DBMS page manager. The OS page cache resides in the OS page table"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0098",
+      "category": "query_processing",
+      "prompt": "What is the purpose of genetic query optimization (GEQO) in PostgreSQL?",
+      "ground_truth": "[Retrieval]<paragraph>A query may use an index or scan a table. The optimizer searches a plan space and estimates which valid plan is likely to be cheapest under its cost model. Optimization is usually divided into logical and physical reasoning. Logical rewrites transform a query into an equivalent relational expression. Physical planning chooses concrete access methods and algorithms such as sequential scan, index scan, nested-loop join, hash join, merge join, sort, or aggregate. Optimization goals \u2022 Reduce page reads and writes. \u2022 Avoid producing large intermediate relations. \u2022 Use indexes and ordering when they reduce total work. \u2022 Choose join orders and algorithms appropriate to cardinality and memory. \u2022 Balance startup latency and total execution time. The optimizer estimates, rather than knows, the future cost.</paragraph>[Relevant]When a query involves a large number of tables (exceeding geqo_threshold), exhaustive dynamic programming becomes intractable. GEQO applies heuristic genetic algorithms to search the combinatorial join space efficiently in reasonable planning time.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "2.[Retrieval]<paragraph><paragraph><paragraph><paragraph><paragraph>\n\n3.[Utility:5]",
+        "duration_seconds": 0.54,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 5,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "2. 3."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Query Optimization: Cost Models, Statistics, and EXPLAIN Choosing an index or query plan \u2022 Scan and index selection \u2022 Sort orders and block size \u2022 Avoid Nested Loops and Merge Joins \u2022 Avoid selective filters and aggregation \u2022 Avoid subqueries and transitive closures \u2022 Avoid unlogical ORDER BY and DISTINCT \u2022 Avoid wildcards and range queries \u2022 Avoid correlated subqueries \u2022 Avoid repeated queries \u2022 Avoid SELECT * in stable schema \u2022 Avoid SELECT DISTINCT for large data sets \u2022 Avoid EXPLAIN (ANALYZE, VERBOSE:ON). It is not guaranteed to work as intended.</paragraph>[Relevant]GEQO builds an index of genetic sequences and uses it to accelerate searches.[Fully supported][Utility:5]",
+        "duration_seconds": 8.47,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": "[Fully supported]",
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 782,
+          "is_complete_sentence": true,
+          "has_malformed_token": false,
+          "clean_text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Query Optimization: Cost Models, Statistics, and EXPLAIN Choosing an index or query plan \u2022 Scan and index selection \u2022 Sort orders and block size \u2022 Avoid Nested Loops and Merge Joins \u2022 Avoid selective filters and aggregation \u2022 Avoid subqueries and transitive closures \u2022 Avoid unlogical ORDER BY and DISTINCT \u2022 Avoid wildcards and range queries \u2022 Avoid correlated subqueries \u2022 Avoid repeated queries \u2022 Avoid SELECT * in stable schema \u2022 Avoid SELECT DISTINCT for large data sets \u2022 Avoid EXPLAIN (ANALYZE, VERBOSE:ON). It is not guaranteed to work as intended. GEQO builds an index of genetic sequences and uses it to accelerate searches."
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0251",
+      "category": "context_grounded_abstention",
+      "prompt": "What is the exact network packet transmission latency in microseconds for PostgreSQL streaming replication?",
+      "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Distributed Databases, NoSQL, Security, and Administration Choosing data models, scaling systems, and protecting database assets DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. Beyond a single relational database A database system is designed around a workload: the entities being represented, the operations performed, consistency requirements, data volume, availability target, and operational constraints. A relational DBMS is a strong default when information has well-defined relationships, transactions span multiple records, and constraints matter. Other data models can be useful when access patterns or data shapes differ substantially. A distributed database stores or processes data across multiple machines.</paragraph>[Relevant]The context explains the operational mechanics of streaming WAL records over TCP connections to standby replicas, but it does not provide exact network transmission latency measurements in microseconds, which depend on physical network infrastructure.[Partially supported][Utility:3]",
+      "base_model": {
+        "output": "I'm sorry, but I don't have that information.[Retrieval]<paragraph><paragraph><paragraph>\nI'm sorry, but I don't have that information.[No Retrieval]You could try searching for it on the internet, or contacting the PostgreSQL community for more information.[Utility:4]",
+        "duration_seconds": 1.9,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [
+            "[Utility:4]"
+          ],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 200,
+          "is_complete_sentence": true,
+          "has_malformed_token": false,
+          "clean_text": "I'm sorry, but I don't have that information. I'm sorry, but I don't have that information. You could try searching for it on the internet, or contacting the PostgreSQL community for more information."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory.</paragraph>[Relevant]The exact network packet transmission latency in microseconds for PostgreSQL streaming replication is 100 microseconds.",
+        "duration_seconds": 8.48,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 910,
+          "is_complete_sentence": true,
+          "has_malformed_token": false,
+          "clean_text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory. The exact network packet transmission latency in microseconds for PostgreSQL streaming replication is 100 microseconds."
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0198",
+      "category": "buffer_management",
+      "prompt": "What happens if all buffer pool frames are concurrently pinned?",
+      "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 3 3. Buffer pool and page lifecycle The buffer pool is a memory area managed by the DBMS to cache pages read from persistent storage. A page request first checks whether the page is already resident. If it is, the DBMS can avoid a storage read. If not, a free frame is used or a victim page is selected for eviction. A buffer frame typically tracks the page identity, pin/reference count, dirty status, and synchronization state. A page is pinned while a worker is actively using it; an unpinned page may be eligible for eviction. A dirty page has changed in memory and must eventually be written to storage.</paragraph>[Relevant]If all buffer pool frames are actively pinned by concurrent workers, the buffer replacement sweep cannot find any eligible victim frame. In coming requests block waiting on buffer condition variables until an active worker completes its operation and unpins a frame.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "If all buffer pool frames are concurrently pinned, it can lead to a performance issue.[Retrieval]<paragraph><paragraph><paragraph><paragraph>",
+        "duration_seconds": 0.88,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 86,
+          "is_complete_sentence": true,
+          "has_malformed_token": false,
+          "clean_text": "If all buffer pool frames are concurrently pinned, it can lead to a performance issue."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory.</paragraph>[Relevant]If all buffer pool frames are concurrently pinned, the database engine may become blocked or unable to allocate frames to other active",
+        "duration_seconds": 8.58,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 925,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory. If all buffer pool frames are concurrently pinned, the database engine may become blocked or unable to allocate frames to other active"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0028",
+      "category": "conceptual_explanations",
+      "prompt": "How does losslessness guarantee correct information reconstruction during schema decomposition?",
+      "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 3 3. Candidate keys, minimal covers, and anomalies To find candidate keys, compute attribute closures and identify minimal attribute sets whose closure includes all attributes. A minimal cover is an equivalent set of FDs with single attributes on right-hand sides, no extraneous attributes on left-hand sides, and no redundant dependencies. Minimal covers help reason about synthesis and decomposition algorithms. Common anomalies \u2022 Update anomaly: changing one fact requires updating repeated copies; missing one creates conflict. \u2022 Insertion anomaly: a fact cannot be inserted without an unrelated fact. \u2022 Deletion anomaly: deleting the last row containing one fact accidentally deletes another fact.</paragraph>[Relevant]Lossless-join decomposition guarantees that a natural join of decomposed relations yields exactly the original relation without generating spurious or erroneous tuples.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "Great question![Retrieval]<paragraph><paragraph><paragraph>",
+        "duration_seconds": 0.42,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 15,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "Great question!"
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>The model is trained on the original dataset and represents the original schema. At query time, the DBMS searches the catalog to find matching tables and indexes. If any columns belong to more than one table, the DBMS may choose a different name for the query result or add a column alias. This can change the meaning of queries and make them incompatible with the stored plan.</paragraph>[Relevant]Losslessness guarantees that the decomposed schema is identical to the original schema, ensuring that query results are identical across all decompositions.[Fully supported][Utility:5]<unk>[Utility:5]<unk>Losslessness guarantees that the decomposed schema is identical to the original schema, ensuring that query results are identical across all decompositions.[Fully supported][Utility:5]<unk>[Relevant]Losslessness is useful in many contexts, including data warehousing, where users may want to explore and analyze data across multiple tables and views.[Fully supported][Utility:5]<unk>[Utility:5]<unk>Losslessness is useful in many contexts, including data warehousing, where users may want to explore and analyze data across multiple",
+        "duration_seconds": 8.42,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": "[Fully supported]",
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 1005,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "The model is trained on the original dataset and represents the original schema. At query time, the DBMS searches the catalog to find matching tables and indexes. If any columns belong to more than one table, the DBMS may choose a different name for the query result or add a column alias. This can change the meaning of queries and make them incompatible with the stored plan. Losslessness guarantees that the decomposed schema is identical to the original schema, ensuring that query results are identical across all decompositions. <unk> <unk>Losslessness guarantees that the decomposed schema is identical to the original schema, ensuring that query results are identical across all decompositions. <unk> Losslessness is useful in many contexts, including data warehousing, where users may want to explore and analyze data across multiple tables and views. <unk> <unk>Losslessness is useful in many contexts, including data warehousing, where users may want to explore and analyze data across multiple"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0022",
+      "category": "conceptual_explanations",
+      "prompt": "Why do relational foreign keys permit NULL values unless explicitly declared NOT NULL?",
+      "ground_truth": "[Retrieval]<paragraph>The model is useful because relationships are represented through values and constraints rather than application-managed pointers. A student can refer to a department through dept_id; the DBMS can enforce that the referenced department exists.</paragraph>[Relevant]Relational foreign keys permit NULL values to represent optional relationships, such as an employee without a designated manager, indicating that the referential link is absent or unknown without violating integrity.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "That's a good question.[Retrieval]<paragraph><paragraph><paragraph><paragraph>\nRelational modeling is a type of database modeling where a relation is a set of tuples.[No Retrieval]A tuple is a set of values that are related to each other.[No Retrieval]A foreign key is a field in a table that refers to a primary key in another table.[No Retrieval]A NULL value in a foreign key field indicates that there is no matching record in the referenced table.[No Retrieval]This can happen when a new row is added to the referencing table and there is no corresponding row in the referenced table.[No Retrieval]In this case, the NULL value indicates that there is no match.[No Retrieval]However, there are some situations where NULL values are not allowed in a foreign key field.[No Retrieval]For example, if a foreign key field is part of a unique constraint, NULL values are not allowed because they would violate the uniqueness constraint.[No Retrieval]In summary, NULL values are allowed in a foreign key field unless there is a specific reason why they should not be allowed.[Utility:5]",
+        "duration_seconds": 6.44,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 912,
+          "is_complete_sentence": true,
+          "has_malformed_token": false,
+          "clean_text": "That's a good question. Relational modeling is a type of database modeling where a relation is a set of tuples. A tuple is a set of values that are related to each other. A foreign key is a field in a table that refers to a primary key in another table. A NULL value in a foreign key field indicates that there is no matching record in the referenced table. This can happen when a new row is added to the referencing table and there is no corresponding row in the referenced table. In this case, the NULL value indicates that there is no match. However, there are some situations where NULL values are not allowed in a foreign key field. For example, if a foreign key field is part of a unique constraint, NULL values are not allowed because they would violate the uniqueness constraint. In summary, NULL values are allowed in a foreign key field unless there is a specific reason why they should not be allowed."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Relational Algebra and Relational Calculus The formal foundations of relational querying DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The relational model A relational database stores data as relations, where relations are accessed via a set of relations (tables) and attributes. A attribute can contain a natural key, a unique identifier, or a composite key. A relation may contain multiple tuples. In relational algebra, relations are treated as sets, where tuples can be selected, projected, and filtered. Relational calculus is a non-relational expression. It is often useful to refer to a relation or to restrict the set of rows.</paragraph>[Relevant]Relational foreign keys enforce referential constraints, meaning that values in foreign key columns must reference",
+        "duration_seconds": 8.52,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 922,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Relational Algebra and Relational Calculus The formal foundations of relational querying DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The relational model A relational database stores data as relations, where relations are accessed via a set of relations (tables) and attributes. A attribute can contain a natural key, a unique identifier, or a composite key. A relation may contain multiple tuples. In relational algebra, relations are treated as sets, where tuples can be selected, projected, and filtered. Relational calculus is a non-relational expression. It is often useful to refer to a relation or to restrict the set of rows. Relational foreign keys enforce referential constraints, meaning that values in foreign key columns must reference"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0134",
+      "category": "transactions",
+      "prompt": "What operational hazards arise from long-running transactions in OLTP engines?",
+      "ground_truth": "[Retrieval]<paragraph>BEGIN; UPDATE accounts SET balance = balance-500 WHERE account_id = 1; UPDATE accounts SET balance = balance + 500 WHERE account_id = 2; COMMIT; If any step fails, the client should execute ROLLBACK rather than commit partial work. A savepoint lets a transaction roll back to a named point without discarding earlier successful statements: SAVEPOINT before_optional_step; -- perform optional work ROLLBACK TO SAVEPOINT before_optional_step; Autocommit clients may treat each statement as its own transaction unless an explicit transaction is opened. Verify the client's behavior. Transaction scope should match the business operation, not simply the number of lines in a program.</paragraph>[Relevant]Long-running transactions hold locks that block concurrent workloads, delay vacuuming of dead MVCC tuples leading to severe table bloat, prevent WAL log truncation, and risk transaction ID wraparound issues.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "1.2.[Retrieval]<paragraph><paragraph><paragraph><paragraph><paragraph>\n2.3.[Utility:5]",
+        "duration_seconds": 0.64,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 9,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "1.2. 2.3."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Transactions and ACID Properties Atomicity: all effects of a transaction are applied or none are. If a statement fails, it must not leave a half-completed business action. Isolation: concurrent transactions should behave according to the selected isolation guarantee. Isolation levels balance correctness, concurrency, and performance. The exact phenomena permitted depend on the DBMS and isolation implementation. Isolation levels balance correctness, concurrency, and performance. The exact phenomena permitted depend on the DBMS and isolation implementation.</paragraph>[Relevant]Long-running transactions can hold locks on tables for extended periods, blocking other transactions from reading or writing the same tables. This can lead to deadlocks, where two transactions wait indefinitely for each other to release locks, causing performance degradation and transaction failures.[Fully supported]",
+        "duration_seconds": 8.65,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": "[Fully supported]",
+          "utility_scores": [],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 1011,
+          "is_complete_sentence": true,
+          "has_malformed_token": false,
+          "clean_text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Transactions and ACID Properties Atomicity: all effects of a transaction are applied or none are. If a statement fails, it must not leave a half-completed business action. Isolation: concurrent transactions should behave according to the selected isolation guarantee. Isolation levels balance correctness, concurrency, and performance. The exact phenomena permitted depend on the DBMS and isolation implementation. Isolation levels balance correctness, concurrency, and performance. The exact phenomena permitted depend on the DBMS and isolation implementation. Long-running transactions can hold locks on tables for extended periods, blocking other transactions from reading or writing the same tables. This can lead to deadlocks, where two transactions wait indefinitely for each other to release locks, causing performance degradation and transaction failures."
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0104",
+      "category": "indexing",
+      "prompt": "Why are standard hash indexes incapable of supporting range and inequality queries?",
+      "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 3 3. Hash indexes and other index families A hash index applies a hash function to a key and maps it to a bucket. It is suited to equality lookups, but ordinary hash ordering does not support range scans such as price BETWEEN 100 AND 200. Collision handling and bucket growth are central design problems. PostgreSQL supports multiple index access methods: \u2022 B-tree: general-purpose equality, range, and ordered access. \u2022 Hash: equality comparisons. \u2022 GiST: extensible framework for a range of search strategies, including geometric and range-like operations. \u2022 SP-GiST: partitioned search structures for data that can be decomposed into non-overlapping partitions. \u2022 GIN: inverted indexes useful when one row contains multiple searchable keys, such as arrays or full-text tokens. \u2022 BRIN: block-range summaries useful for very large tables whose values correlate with physical row order.</paragraph>[Relevant]Hash functions scatter data pseudo-randomly across buckets, destroying relative key ordering. Consequently, while point lookups on equality (=) take O(1) time, range predicates (>, <, BETWEEN) require examining all buckets, making hash indexes unsuitable for range scans.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "2.3.[Utility:5]",
+        "duration_seconds": 0.34,
+        "parsed": {
+          "retrieval_decision": null,
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 4,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "2.3."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>The B-tree is a balanced binary tree data structure that supports range and range-intersect queries. The B-tree is a common index structure used in relational database systems. PostgreSQL heap pages use B-trees to enforce physical uniqueness constraints and support range queries. The B-tree is a common index structure used in relational database systems. PostgreSQL heap pages use B-trees to enforce physical uniqueness constraints and support range queries. B-trees maintain search and insertion order while preserving the sort order of indexed keys. They can compress repeated values effectively and are efficient for range queries when the table is heavily skewed. The B-tree is a common index structure used in relational database systems. PostgreSQL heap pages use B-trees to enforce physical uniqueness constraints and support range queries. B-trees maintain search and insertion order while preserving the sort order of indexed keys. They can compress repeated values effectively and are efficient for range queries when the table is heavily skewed.</paragraph>[Relevant]Standard hash indexes (e",
+        "duration_seconds": 8.58,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 1083,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "The B-tree is a balanced binary tree data structure that supports range and range-intersect queries. The B-tree is a common index structure used in relational database systems. PostgreSQL heap pages use B-trees to enforce physical uniqueness constraints and support range queries. The B-tree is a common index structure used in relational database systems. PostgreSQL heap pages use B-trees to enforce physical uniqueness constraints and support range queries. B-trees maintain search and insertion order while preserving the sort order of indexed keys. They can compress repeated values effectively and are efficient for range queries when the table is heavily skewed. The B-tree is a common index structure used in relational database systems. PostgreSQL heap pages use B-trees to enforce physical uniqueness constraints and support range queries. B-trees maintain search and insertion order while preserving the sort order of indexed keys. They can compress repeated values effectively and are efficient for range queries when the table is heavily skewed. Standard hash indexes (e"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0023",
+      "category": "conceptual_explanations",
+      "prompt": "How does the closed-world assumption apply to relational query answers?",
+      "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Relational Algebra and Relational Calculus The formal foundations of relational querying DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. Why formal query languages matter Relational algebra and relational calculus are formal ways to describe queries over relations. They help explain what SQL means, how query expressions can be transformed, and why an optimizer can choose a different execution order while preserving the answer. Algebra describes operators; calculus describes properties that qualifying results must satisfy. A relational algebra operator takes one or more relations and produces a relation. This closure property lets operators be composed into larger expressions.</paragraph>[Relevant]Under the closed-world assumption, any fact not explicitly recorded or derivable from current database state is assumed to be false, allowing relational operators like negation and difference to compute finite answers.[Fully supported][Utility:4]",
+      "base_model": {
+        "output": "Here's how:\n\n1.[Retrieval]<paragraph><paragraph><paragraph><paragraph><paragraph>\nRelational modeling is a type of database modeling where entities are represented as relations of tuples.\n2.[No Retrieval]The result is a set of tuples, each tuple representing a relation between two entities.\n3.[No Retrieval]The result is a set of tuples, each tuple representing a relation between two entities.[No Retrieval]In summary, the closed-world assumption states that we can only answer a query based on the information that is explicitly stated in the database.[No Retrieval]This means that if we want to know something that is not explicitly stated in the database, we cannot answer the query.[No Retrieval]This is why it is important to have accurate and up-to-date information in a database.[Utility:5]",
+        "duration_seconds": 4.86,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 656,
+          "is_complete_sentence": true,
+          "has_malformed_token": false,
+          "clean_text": "Here's how: 1. Relational modeling is a type of database modeling where entities are represented as relations of tuples. 2. The result is a set of tuples, each tuple representing a relation between two entities. 3. The result is a set of tuples, each tuple representing a relation between two entities. In summary, the closed-world assumption states that we can only answer a query based on the information that is explicitly stated in the database. This means that if we want to know something that is not explicitly stated in the database, we cannot answer the query. This is why it is important to have accurate and up-to-date information in a database."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>The closed-world assumption states that entities described by a relational model are mutually exclusive: an attribute value can take on only one of its defined values. The closed-world assumption states that entities described by a relational model are mutually exclusive: an attribute value can take on only one of its defined values.</paragraph>[Relevant]The closed-world assumption states that entities described by a relational model are mutually exclusive: an attribute value can take on only one of its defined values.[Fully supported][Utility:5]<unk>The closed-world assumption states that entities described by a relational model are mutually exclusive: an attribute value can take on only one of its defined values.[Utility:5]<unk>[Relevant]The closed-world assumption states that entities described by a relational model are mutually exclusive: an attribute value can take on only one of its defined values.[Fully supported][Utility:5]<unk>[Relevant]The closed-world assumption states that entities described by a relational model are mutually exclusive: an attribute value can take on only one of its defined values.[Fully supported][Utility:5]<unk>[Relevant]The closed-world assumption states that entities described by",
+        "duration_seconds": 8.44,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": "[Fully supported]",
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 1092,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "The closed-world assumption states that entities described by a relational model are mutually exclusive: an attribute value can take on only one of its defined values. The closed-world assumption states that entities described by a relational model are mutually exclusive: an attribute value can take on only one of its defined values. The closed-world assumption states that entities described by a relational model are mutually exclusive: an attribute value can take on only one of its defined values. <unk>The closed-world assumption states that entities described by a relational model are mutually exclusive: an attribute value can take on only one of its defined values. <unk> The closed-world assumption states that entities described by a relational model are mutually exclusive: an attribute value can take on only one of its defined values. <unk> The closed-world assumption states that entities described by a relational model are mutually exclusive: an attribute value can take on only one of its defined values. <unk> The closed-world assumption states that entities described by"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0217",
+      "category": "storage_architecture",
+      "prompt": "What is the purpose of the base/ directory in PostgreSQL data clusters?",
+      "ground_truth": "[Retrieval]<paragraph>A slotted-page layout uses a header and an array of slot entries to locate variable-length records within the page. The slot index may remain stable while the tuple bytes move within the page, depending on implementation. PostgreSQL heap pages use page headers and item identifiers to locate tuple versions; PostgreSQL's documented physical layout should be consulted for implementation-level details. Row store and column store \u2022 Row-oriented storage keeps attributes of a row together. It is often effective for OLTP workloads that retrieve or update a small number of complete rows. \u2022 Column-oriented storage groups values from the same attribute. It can reduce I/O for analytical queries that scan a few columns over many rows and can compress repeated values effectively.</paragraph>[Relevant]The base/ directory contains subdirectories named after database OIDs, housing the physical relation heap and index files belonging to each individual database in the cluster.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "Here are a few examples:\n\n1.[Retrieval]<paragraph><paragraph><paragraph><paragraph>\n2.[Utility:5]",
+        "duration_seconds": 0.77,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 30,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "Here are a few examples: 1. 2."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>The base/ directory stores the cluster-wide configuration files, including the main PostgreSQL configuration file (pg_base.conf), security-related files (pg_hba.conf and pg_authid), and system log files.[Utility:5]<unk>[Relevant]The base/ directory stores the cluster-wide configuration files, including the main PostgreSQL configuration file (pg_base.conf), security-related files (pg_hba.conf and pg_authid), and system log files.[Fully supported][Utility:5]<unk>[Utility:5]<unk>[Utility:5]<unk> The base/ directory is not a general-purpose directory for storing application data files.[Utility:5]<unk>[Relevant]Instead, it is used to store cluster-level configuration files and system log files.[Fully supported][Utility:5]<unk>[Utility:5]<unk>[Utility:5][Utility:5][Utility:5][Utility:5][Utility:5][Utility:5][Utility:5][Utility:5][Utility:5][Utility:5][Utility:5][Utility:5][Utility:5][Utility:5][Utility:5][Utility:5][Utility:5][Utility:5][Utility:5][Utility:5][Utility:5][Utility:5][Utility:5][Utility:5][Utility:5][Utility:5][Utility:5][Utility:5][Utility:5][Utility:5]",
+        "duration_seconds": 7.22,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": "[Fully supported]",
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 625,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "The base/ directory stores the cluster-wide configuration files, including the main PostgreSQL configuration file (pg_base.conf), security-related files (pg_hba.conf and pg_authid), and system log files. <unk> The base/ directory stores the cluster-wide configuration files, including the main PostgreSQL configuration file (pg_base.conf), security-related files (pg_hba.conf and pg_authid), and system log files. <unk> <unk> <unk> The base/ directory is not a general-purpose directory for storing application data files. <unk> Instead, it is used to store cluster-level configuration files and system log files. <unk> <unk>"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0247",
+      "category": "context_grounded_abstention",
+      "prompt": "What are the credit card numbers and passwords stored in the university database schema?",
+      "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 DBMS Fundamentals and Architecture From persistent data to database-server architecture DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. Why database systems exist A database is an organized collection of related data that represents some part of the real world. A database management system (DBMS) is the software that defines, stores, retrieves, updates, protects, and administers that data. The distinction matters: the database is the managed information; the DBMS is the engine and supporting software. PostgreSQL, MySQL, Oracle Database, and Microsoft SQL Server are examples of DBMS products. Consider a university. Students, departments, courses, instructors, and enrollments are related facts.</paragraph>[Irrelevant]The provided context describes educational database definitions and contains no private user records, credit card numbers, or passwords.[No support / Contradictory][Utility:1]",
+      "base_model": {
+        "output": "I'm sorry, but I don't have access to that information.[No Retrieval]I am a language model and do not have access to any database schemas or personal information.[No Retrieval]If you have any other questions, I would be happy to help you with them.[Utility:4]",
+        "duration_seconds": 1.84,
+        "parsed": {
+          "retrieval_decision": "[No Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [
+            "[Utility:4]"
+          ],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 222,
+          "is_complete_sentence": true,
+          "has_malformed_token": false,
+          "clean_text": "I'm sorry, but I don't have access to that information. I am a language model and do not have access to any database schemas or personal information. If you have any other questions, I would be happy to help you with them."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage model A file stores records and is managed by a storage manager. A page stores a logical page of database pages. A buffer is a memory area managed by the DBMS while a query is executing. A page read may return data from a page or memory, or require a page or disk drive trip. A page write may store data or overwrite a page record. A page size is typically 8 KB.</paragraph>[Relevant]The university database schema stores credit card numbers and passwords using strict access controls and strict encryption protocols to protect sensitive user information.[Fully supported][Utility:5]<unk>The exact implementation may vary",
+        "duration_seconds": 8.44,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": "[Fully supported]",
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 912,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage model A file stores records and is managed by a storage manager. A page stores a logical page of database pages. A buffer is a memory area managed by the DBMS while a query is executing. A page read may return data from a page or memory, or require a page or disk drive trip. A page write may store data or overwrite a page record. A page size is typically 8 KB. The university database schema stores credit card numbers and passwords using strict access controls and strict encryption protocols to protect sensitive user information. <unk>The exact implementation may vary"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0259",
+      "category": "context_grounded_abstention",
+      "prompt": "Explain why dirty reads are permitted under the SQL SERIALIZABLE isolation level.",
+      "ground_truth": "[Retrieval]<paragraph>Isolation: concurrent transactions should behave according to the selected isolation guarantee. Isolation levels balance correctness, concurrency, and performance. The exact phenomena permitted depend on the DBMS and isolation implementation. Durability: once a commit is acknowledged under the configured durability guarantees, the committed result should survive specified failures. Logging, flush policy, storage guarantees, replication, and configuration affect the practical guarantee. Property Core question Typical mechanism Atomicity All or nothing? Undo/abort and transaction state Consistency Are rules preserved? Constraints and application logic Isolation What can concurrent work observe? Locks, MVCC, validation Durability Does commit survive failure? WAL/logging and stable storage</paragraph>[Relevant]The premise is contradicted by SQL isolation level definitions. SERIALIZABLE is the strictest isolation level and strictly prohibits dirty reads, non-repeatable reads, phantom reads, and serialization anomalies.[No support / Contradictory][Utility:1]",
+      "base_model": {
+        "output": "2.[Retrieval]<paragraph><paragraph><paragraph><paragraph><paragraph><paragraph>\n\n3.[Utility:5]",
+        "duration_seconds": 0.57,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 5,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "2. 3."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>SQL statements are sent to a database through a client or application driver. Use a semicolon to terminate statements in psql scripts. Keywords are case-insensitive in ordinary SQL syntax, while quoted identifiers preserve case and can make object names awkward to reference.</paragraph>[Relevant]The isolation guarantee of SERIALIZABLE means that transactions should behave according to the selected isolation guarantee, such that concurrent transactions do not interleave or overwrite one another.[Fully supported][Utility:5]<unk>A transaction reads the database as if it were the only active transaction, so concurrent transactions do not interleave or overwrite one another.[Utility:5]<unk>The optimistic method relies on the DBMS to enforce the chosen isolation guarantee and may not work across configuration changes or when the configured isolation guarantee is not appropriate for a workload.[Utility:5]<unk>[Relevant]The pessimistic method locks the table or rows read until the transaction commits or aborts, preventing concurrent transactions from reading or overwriting the same data.[Fully supported][Utility:5]<unk>The optimistic method can work across configuration changes but may require",
+        "duration_seconds": 8.44,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": "[Fully supported]",
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 1100,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "SQL statements are sent to a database through a client or application driver. Use a semicolon to terminate statements in psql scripts. Keywords are case-insensitive in ordinary SQL syntax, while quoted identifiers preserve case and can make object names awkward to reference. The isolation guarantee of SERIALIZABLE means that transactions should behave according to the selected isolation guarantee, such that concurrent transactions do not interleave or overwrite one another. <unk>A transaction reads the database as if it were the only active transaction, so concurrent transactions do not interleave or overwrite one another. <unk>The optimistic method relies on the DBMS to enforce the chosen isolation guarantee and may not work across configuration changes or when the configured isolation guarantee is not appropriate for a workload. <unk> The pessimistic method locks the table or rows read until the transaction commits or aborts, preventing concurrent transactions from reading or overwriting the same data. <unk>The optimistic method can work across configuration changes but may require"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0069",
+      "category": "algorithms",
+      "prompt": "What is the purpose of Compensation Log Records (CLRs) in ARIES Undo processing?",
+      "ground_truth": "[Retrieval]<paragraph>Recovery vocabulary \u2022 Log record: describes a transaction event or data change needed for recovery. \u2022 Undo: remove the effect of an uncommitted change. \u2022 Redo: reapply a change that belongs in the recovered state. \u2022 Checkpoint: records recovery progress and limits how far back the engine must inspect during restart. \u2022 WAL: write-ahead logging, a rule that required log records reach durable storage before corresponding data pages are written.</paragraph>[Relevant]CLRs log compensating actions taken while rolling back uncommitted loser transactions. Each CLR contains an UndoNextLSN pointer bypassing already undone operations, guaranteeing that if another crash occurs during recovery, previously rolled-back operations are never repeated.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "2.[Retrieval]<paragraph><paragraph><paragraph><paragraph><paragraph>\n2.[Utility:5]",
+        "duration_seconds": 0.58,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 5,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "2. 2."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>The ARIES Recovery System is a recovery configuration product that recovers checkpointed transactions after a crash or restart. It is a component of the IBM Enterprise Storage and Recovery product line. Recovery is typically required after a power loss or operating-system crash. Recovery is not usually required after a crash of a non-persistent application. The goal is to restore the database to a consistent state where the application can resume execution. The exact configuration required depends on the recovery target, Redo or Undo, and the recovery time objective. Recovery is linked to business continuity and disaster recovery plans.</paragraph>[Relevant]The ARIES Undo process restores an uncommitted change to the database when an abort occurs after a data page was written but before its log record became durable. The Undo process scans the log records and replays them in reverse chronological order to undo the effect of the uncommitted change.[Fully supported][Utility:5]<unk>[Relevant]The CLR records describe the undo operation in enough detail that the undo engine",
+        "duration_seconds": 8.33,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": "[Fully supported]",
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 1028,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "The ARIES Recovery System is a recovery configuration product that recovers checkpointed transactions after a crash or restart. It is a component of the IBM Enterprise Storage and Recovery product line. Recovery is typically required after a power loss or operating-system crash. Recovery is not usually required after a crash of a non-persistent application. The goal is to restore the database to a consistent state where the application can resume execution. The exact configuration required depends on the recovery target, Redo or Undo, and the recovery time objective. Recovery is linked to business continuity and disaster recovery plans. The ARIES Undo process restores an uncommitted change to the database when an abort occurs after a data page was written but before its log record became durable. The Undo process scans the log records and replays them in reverse chronological order to undo the effect of the uncommitted change. <unk> The CLR records describe the undo operation in enough detail that the undo engine"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0146",
+      "category": "concurrency_control",
+      "prompt": "How does Serializable Snapshot Isolation (SSI) detect serialization anomalies in PostgreSQL?",
+      "ground_truth": "[Retrieval]<paragraph>Strict 2PL holds exclusive locks until commit or abort; this simplifies recovery and prevents other transactions from reading or overwriting uncommitted writes. Variants differ in which locks are retained. Deadlocks A deadlock occurs when transactions wait in a cycle. For example, T1 holds A and waits for B while T2 holds B and waits for A. A DBMS may detect the wait cycle and abort a victim; applications should be prepared to retry the complete transaction. Consistent lock ordering can reduce deadlock risk but cannot eliminate every cause.</paragraph>[Relevant]SSI introduces non-blocking SIREAD locks to track read-write conflict dependencies (rw-antidependencies) between concurrent transactions. When the engine detects two consecutive rw-antidependency edges forming a cycle in the dependency graph, it aborts one transaction with a serialization failure.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "2.[Retrieval]<paragraph><paragraph><paragraph><paragraph><paragraph><paragraph>\n2.[Utility:5]",
+        "duration_seconds": 0.62,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 5,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "2. 2."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory.</paragraph>[Relevant]PostgreSQL uses SSI to detect anomalies such as lost updates (where a transaction overwrites data written by",
+        "duration_seconds": 8.66,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 899,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory. PostgreSQL uses SSI to detect anomalies such as lost updates (where a transaction overwrites data written by"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0211",
+      "category": "storage_architecture",
+      "prompt": "How does Dictionary Encoding compress columnar attribute vectors?",
+      "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory.</paragraph>[Relevant]Dictionary encoding replaces recurring text string values with compact, fixed-size integer keys pointing into an internal dictionary of distinct values, allowing high-repetition columns (such as country codes or category names) to be stored in 1 or 2 bytes per row.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "Great question![Retrieval]<paragraph><paragraph><paragraph>",
+        "duration_seconds": 0.4,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 15,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "Great question!"
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory.</paragraph>[Relevant]The goal is to compress repeated attribute values across multiple columns while maintaining attribute semantics. The encoder scans the attribute table",
+        "duration_seconds": 8.26,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 941,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory. The goal is to compress repeated attribute values across multiple columns while maintaining attribute semantics. The encoder scans the attribute table"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0061",
+      "category": "algorithms",
+      "prompt": "How does the B-tree leaf node split algorithm maintain height balance during insertions?",
+      "ground_truth": "[Retrieval]<paragraph>Indexes are access paths, not a guarantee that every query will become faster. Measure with representative data and execution plans.</paragraph>[Relevant]When a leaf node overflows its capacity, the B-tree allocates a new leaf sibling, moves half the keys into the new node, and pushes the separator key up to the parent node. If the parent overflows, the split propagates upward recursively, only increasing total tree height if the root node itself splits.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "Here's how:\n\n1.[Retrieval]<paragraph><paragraph><paragraph><paragraph><paragraph>\n2.[Utility:5]",
+        "duration_seconds": 0.72,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 17,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "Here's how: 1. 2."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory.</paragraph>[Relevant]The B-tree leaf node split algorithm maintains height balance during insertions by redistributing disk page blocks among internal",
+        "duration_seconds": 8.43,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 920,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory. The B-tree leaf node split algorithm maintains height balance during insertions by redistributing disk page blocks among internal"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0044",
+      "category": "comparisons",
+      "prompt": "How does Third Normal Form (3NF) compare with Boyce-Codd Normal Form (BCNF)?",
+      "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 2 2. Functional dependencies and attribute closure A functional dependency (FD) X -> Y means that whenever two tuples agree on all attributes in X, they must also agree on all attributes in Y. X is the determinant; Y is functionally determined. FDs come from the semantics of the application, not merely from one sample of current rows. Example: in STUDENT(student_id, full_name, email, dept_id), student_id -> full_name, email, dept_id if student_id uniquely identifies a student. In ENROLLMENT(student_id, course_id, semester, grade), (student_id, course_id, semester) -> grade if that combination identifies one recorded grade. The closure X+ is the set of all attributes functionally determined by X under a given FD set.</paragraph>[Relevant]BCNF requires every determinant of a non-trivial functional dependency to be a superkey, whereas 3NF relaxes this requirement by also permitting the dependent attribute to be a prime attribute (part of any candidate key), preventing certain loss of dependency preservation.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "Third Normal Form (3NF) and Boyce-Codd Normal Form (BCNF) are two different approaches to database normalization.[Retrieval]<paragraph><paragraph><paragraph><paragraph>\n\nThird Normal Form (3NF) and Boyce-Codd Normal Form (BCNF) are two different approaches to database normalization.[No Retrieval]Here are some key differences between the two:\n\n1.[Continue to Use Evidence]3NF focuses on removing partial dependencies and transitive dependencies to ensure that each attribute is dependent only on the primary key of the related table.[Continue to Use Evidence]This means that each attribute in a table is dependent only on the primary key of the related table.[Continue to Use Evidence]This approach is suitable for tables with many-to-one relationships.\n\n1.[Continue to Use Evidence]BCNF focuses on removing transitive dependencies and partial dependencies to ensure that each attribute is dependent only on the primary key of the related table.[Continue to Use Evidence]This means that each attribute in a table is dependent only on the primary key of the related table.[Continue to Use Evidence]This approach is suitable for tables with many-to-many relationships.\n\n1.[No Retrieval]",
+        "duration_seconds": 7.08,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 1099,
+          "is_complete_sentence": true,
+          "has_malformed_token": false,
+          "clean_text": "Third Normal Form (3NF) and Boyce-Codd Normal Form (BCNF) are two different approaches to database normalization. Third Normal Form (3NF) and Boyce-Codd Normal Form (BCNF) are two different approaches to database normalization. Here are some key differences between the two: 1.[Continue to Use Evidence]3NF focuses on removing partial dependencies and transitive dependencies to ensure that each attribute is dependent only on the primary key of the related table.[Continue to Use Evidence]This means that each attribute in a table is dependent only on the primary key of the related table.[Continue to Use Evidence]This approach is suitable for tables with many-to-one relationships. 1.[Continue to Use Evidence]BCNF focuses on removing transitive dependencies and partial dependencies to ensure that each attribute is dependent only on the primary key of the related table.[Continue to Use Evidence]This means that each attribute in a table is dependent only on the primary key of the related table.[Continue to Use Evidence]This approach is suitable for tables with many-to-many relationships. 1."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>The model is normalized into third normal form (3NF), guaranteeing that no attribute is dependent on more than one superkey. A relation is in BCNF if and only if it is already in 3NF and no attribute is functionally dependent on another attribute. A relation is in BCNF if and only if it is already in 3NF and no attribute is functionally dependent on another attribute. A relation is in BCNF if and only if it is already in 3NF and no attribute is functionally dependent on another attribute. A relation is in BCNF if and only if it is already in 3NF and no attribute is functionally dependent on another attribute. A relation is in BCNF if and only if it is already in 3NF and no attribute is functionally dependent on another attribute. A relation is in BCNF if and only if it is already in 3NF and no attribute is functionally dependent on another attribute. A relation is in BCNF if and only if it is already in 3",
+        "duration_seconds": 8.52,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 918,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "The model is normalized into third normal form (3NF), guaranteeing that no attribute is dependent on more than one superkey. A relation is in BCNF if and only if it is already in 3NF and no attribute is functionally dependent on another attribute. A relation is in BCNF if and only if it is already in 3NF and no attribute is functionally dependent on another attribute. A relation is in BCNF if and only if it is already in 3NF and no attribute is functionally dependent on another attribute. A relation is in BCNF if and only if it is already in 3NF and no attribute is functionally dependent on another attribute. A relation is in BCNF if and only if it is already in 3NF and no attribute is functionally dependent on another attribute. A relation is in BCNF if and only if it is already in 3NF and no attribute is functionally dependent on another attribute. A relation is in BCNF if and only if it is already in 3"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0132",
+      "category": "transactions",
+      "prompt": "How does explicit transaction control with BEGIN, COMMIT, and ROLLBACK govern operational boundaries?",
+      "ground_truth": "[Retrieval]<paragraph>A transaction groups statements into one logical unit: BEGIN; UPDATE accounts SET balance = balance-500 WHERE account_id = 1; UPDATE accounts SET balance = balance + 500 WHERE account_id = 2; COMMIT; The example is a transfer only if both account updates execute successfully and the database constraints and transaction rules are appropriate. If a statement fails, the application should handle transaction state and roll back when necessary. Do not assume that sending several statements automatically makes them one atomic transaction in every client environment.</paragraph>[Relevant]BEGIN disables autocommit and opens a transactional scope, ensuring all subsequent SQL modifications succeed or fail together as a single atomic unit. COMMIT makes all changes permanently visible, while ROLLBACK discards all modifications upon error.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "Here's how:\n\n1.[Retrieval]<paragraph><paragraph><paragraph><paragraph><paragraph>\n2.[Utility:5]",
+        "duration_seconds": 0.79,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 17,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "Here's how: 1. 2."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Transaction states and SQL control Atomicity and isolation: the bank transfer and the read phase. Isolation and durability: concurrent transactions and the payment delay problem. Isolation and durability: concurrent transactions and the payment delay problem. Isolation and durability: concurrent transactions and the payment delay problem. Isolation and durability: concurrent transactions and the payment delay problem. Isolation and durability: concurrent transactions and the payment delay problem. Isolation and durability: concurrent transactions and the payment delay problem. Isolation and durability: concurrent transactions and the payment delay problem. Isolation and durability: concurrent transactions and the payment delay problem. Isolation and durability: concurrent transactions and the payment delay problem. Isolation and durability: concurrent transactions and the payment delay problem. Isolation and durability: concurrent transactions and",
+        "duration_seconds": 8.54,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 1109,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Transaction states and SQL control Atomicity and isolation: the bank transfer and the read phase. Isolation and durability: concurrent transactions and the payment delay problem. Isolation and durability: concurrent transactions and the payment delay problem. Isolation and durability: concurrent transactions and the payment delay problem. Isolation and durability: concurrent transactions and the payment delay problem. Isolation and durability: concurrent transactions and the payment delay problem. Isolation and durability: concurrent transactions and the payment delay problem. Isolation and durability: concurrent transactions and the payment delay problem. Isolation and durability: concurrent transactions and the payment delay problem. Isolation and durability: concurrent transactions and the payment delay problem. Isolation and durability: concurrent transactions and the payment delay problem. Isolation and durability: concurrent transactions and"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0016",
+      "category": "dbms_definitions",
+      "prompt": "What is a composite primary key?",
+      "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 2 2. Superkeys, candidate keys, and primary keys A superkey is a set of one or more attributes that uniquely identifies every tuple in a relation. A candidate key is a minimal superkey: removing any attribute from it would destroy uniqueness. A relation can have multiple candidate keys. One candidate key is selected as the primary key; the remaining candidate keys are alternate keys. A key may contain several attributes. In an ENROLLMENT relation, student_id alone is not unique because one student can take many courses. course_id alone is not unique because many students take a course. The combination (student_id, course_id, semester) can identify a particular enrollment record if the business rule forbids duplicate enrollment in the same course during a semester.</paragraph>[Relevant]A composite primary key is a primary key that consists of two or more attributes combined together to uniquely distinguish each row in a relation where no single attribute is sufficient.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "A composite primary key is a type of primary key that consists of two or more fields that are used to identify a record in a database.[Continue to Use Evidence]A composite primary key is different from a simple primary key, which is a single field that is used to identify a record.[Continue to Use Evidence]A composite primary key is more complex and can be used to identify a record more accurately.[Utility:5]",
+        "duration_seconds": 2.37,
+        "parsed": {
+          "retrieval_decision": null,
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 401,
+          "is_complete_sentence": true,
+          "has_malformed_token": false,
+          "clean_text": "A composite primary key is a type of primary key that consists of two or more fields that are used to identify a record in a database.[Continue to Use Evidence]A composite primary key is different from a simple primary key, which is a single field that is used to identify a record.[Continue to Use Evidence]A composite primary key is more complex and can be used to identify a record more accurately."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory.</paragraph>[Irrelevant]A composite primary key is a primary key composed of multiple attributes, rather than a single attribute.[Utility:5]<unk>The composite key is",
+        "duration_seconds": 8.55,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Irrelevant]",
+          "support_label": null,
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 922,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory. A composite primary key is a primary key composed of multiple attributes, rather than a single attribute. <unk>The composite key is"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0176",
+      "category": "recovery_and_logging",
+      "prompt": "What is the purpose of the end_of_recovery checkpoint record?",
+      "ground_truth": "[Retrieval]<paragraph>Recovery vocabulary \u2022 Log record: describes a transaction event or data change needed for recovery. \u2022 Undo: remove the effect of an uncommitted change. \u2022 Redo: reapply a change that belongs in the recovered state. \u2022 Checkpoint: records recovery progress and limits how far back the engine must inspect during restart. \u2022 WAL: write-ahead logging, a rule that required log records reach durable storage before corresponding data pages are written.</paragraph>[Relevant]Upon successfully completing the Redo and Undo phases of crash recovery, the DBMS flushes all restored dirty pages and writes an end_of_recovery checkpoint record, switching the database into normal read-write operation and establishing a clean timeline.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "2.[Retrieval]<paragraph><paragraph><paragraph><paragraph><paragraph>\nEnd of recovery checkpoint record\nThe end_of_recovery checkpoint record is a file in the NTFS file system that indicates the last time the system was in a consistent state.\n3.[Utility:5]",
+        "duration_seconds": 1.74,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 178,
+          "is_complete_sentence": true,
+          "has_malformed_token": false,
+          "clean_text": "2. End of recovery checkpoint record The end_of_recovery checkpoint record is a file in the NTFS file system that indicates the last time the system was in a consistent state. 3."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>The checkpointer writes a checkpoint record for each processed page. The checkpointer does not know how many pages were updated. It must estimate the total bytes modified and limit the checkpoint record size. A page is updated when its CRC or page header changes. A page is written when its data or free space is modified. The checkpointer does not know how many pages were written. It estimates the total bytes written and limits the checkpoint record size. The checkpointer records the checkpoint start and stop time. It estimates the total elapsed time and limits the checkpoint record size. The checkpointer records the number of pages read and written. It limits the checkpoint record size. The checkpointer records the page read and write status. It limits the checkpoint record size. The checkpointer records the page cleanup status. It limits the checkpoint record size. The checkpointer records recovery status. It limits the checkpoint record size. The checkpointer records the page allocation status. It limits the checkpoint record size. The checkpointer records the page replacement status. It",
+        "duration_seconds": 8.55,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 1106,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "The checkpointer writes a checkpoint record for each processed page. The checkpointer does not know how many pages were updated. It must estimate the total bytes modified and limit the checkpoint record size. A page is updated when its CRC or page header changes. A page is written when its data or free space is modified. The checkpointer does not know how many pages were written. It estimates the total bytes written and limits the checkpoint record size. The checkpointer records the checkpoint start and stop time. It estimates the total elapsed time and limits the checkpoint record size. The checkpointer records the number of pages read and written. It limits the checkpoint record size. The checkpointer records the page read and write status. It limits the checkpoint record size. The checkpointer records the page cleanup status. It limits the checkpoint record size. The checkpointer records recovery status. It limits the checkpoint record size. The checkpointer records the page allocation status. It limits the checkpoint record size. The checkpointer records the page replacement status. It"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0158",
+      "category": "concurrency_control",
+      "prompt": "How does predicate locking prevent phantom read anomalies?",
+      "ground_truth": "[Retrieval]<paragraph>A topological ordering of the graph gives an equivalent serial order. Example intuition If T1 writes account A before T2 reads A, the schedule requires T1 before T2 for that conflict. If another conflict requires T2 before T1, the graph contains a cycle, so the schedule is not conflict-serializable. The graph is a reasoning tool; production DBMSs typically enforce correctness through protocols rather than constructing a graph for every runtime schedule.</paragraph>[Relevant]Predicate locking locks all existing and future potential tuples satisfying a search predicate condition (e.g., WHERE age > 65), blocking any concurrent transaction from inserting, modifying, or deleting tuples that would satisfy the locked predicate.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "Predicate Locking:[Retrieval]<paragraph><paragraph><paragraph><paragraph>\nPredicate Locking: Predicate Locking is a technique used in database systems to prevent phantom read anomalies.[Utility:5]",
+        "duration_seconds": 1.29,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 130,
+          "is_complete_sentence": true,
+          "has_malformed_token": false,
+          "clean_text": "Predicate Locking: Predicate Locking: Predicate Locking is a technique used in database systems to prevent phantom read anomalies."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory.</paragraph>[Relevant]Predicate locking prevents phantom reads by locking the target table or index page in the Invisible or Shared state,",
+        "duration_seconds": 8.34,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 907,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory. Predicate locking prevents phantom reads by locking the target table or index page in the Invisible or Shared state,"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0052",
+      "category": "comparisons",
+      "prompt": "How does row-oriented storage layout compare with columnar storage layout for analytical workloads?",
+      "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory.</paragraph>[Relevant]Row-oriented storage stores complete records contiguously, optimizing OLTP single-row inserts and point lookups, whereas columnar storage stores attribute vectors contiguously, maximizing compression and minimizing disk I/O when analytical OLAP queries scan few columns across millions of rows.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "Here are a few key differences:\n\n1.[Retrieval]<paragraph><paragraph><paragraph><paragraph><paragraph>\n2.[Utility:5]",
+        "duration_seconds": 0.78,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 37,
+          "is_complete_sentence": true,
+          "has_malformed_token": false,
+          "clean_text": "Here are a few key differences: 1. 2."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory.</paragraph>[Relevant]Row-oriented storage layout stores attributes of a row contiguously, whereas columnar storage layout stores attributes of a column",
+        "duration_seconds": 8.38,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 921,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory. Row-oriented storage layout stores attributes of a row contiguously, whereas columnar storage layout stores attributes of a column"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0224",
+      "category": "scenario_based_reasoning",
+      "prompt": "An IoT application continuously appends timestamped sensor metrics to a billion-row table and executes range queries like `WHERE timestamp BETWEEN X AND Y`. Why is a BRIN index preferable to a B-tree index here?",
+      "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 2 2. B-tree and B+ tree intuition B-trees keep keys ordered while maintaining balanced height. Search, insertion, and deletion take time proportional to tree height, typically logarithmic in the number of indexed entries. High fan-out means each internal page can direct searches among many children, keeping the tree shallow. A B+ tree stores search keys in internal nodes and data references at the leaves; leaves are commonly linked to support ordered range scans. On insertion, a full node may split and propagate a separator upward. Deletion may redistribute entries or merge nodes to maintain occupancy constraints. The exact algorithms and page format depend on the DBMS.</paragraph>[Relevant]Because sensor data is naturally appended in chronological order, physical page storage directly mirrors timestamp order. A BRIN index stores only min/max ranges per block, occupying megabytes instead of tens of gigabytes like a B-tree while still skipping irrelevant disk blocks during range scans.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "Great question![Retrieval]<paragraph>[Irrelevant]IoT stands for Internet of Things, which is a network of physical devices connected to the internet.[No Retrieval]IoT applications often involve sensors collecting data from devices in the real world, such as temperature, humidity, or motion.[No Retrieval]These applications often involve large tables of sensor metrics, and range queries to find specific data points within a certain time range.[No Retrieval]In this case, a BRIN (Block Range Index) index would be preferable to a B-tree index for several reasons:\n\n1.[Continue to Use Evidence]BRIN indexes are optimized for range queries and can handle large tables more efficiently than B-tree indexes.\n2.[No Retrieval]BRIN indexes use a block-level approach to storage, which means that they can store data more efficiently and reduce the number of I/O operations needed to access the data.\n3.[No Retrieval]BRIN indexes are more flexible than B-tree indexes, as they can be customized to the specific needs of the application.\n4.[No Retrieval]BRIN indexes are more scalable than",
+        "duration_seconds": 6.85,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Irrelevant]",
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 969,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "Great question! IoT stands for Internet of Things, which is a network of physical devices connected to the internet. IoT applications often involve sensors collecting data from devices in the real world, such as temperature, humidity, or motion. These applications often involve large tables of sensor metrics, and range queries to find specific data points within a certain time range. In this case, a BRIN (Block Range Index) index would be preferable to a B-tree index for several reasons: 1.[Continue to Use Evidence]BRIN indexes are optimized for range queries and can handle large tables more efficiently than B-tree indexes. 2. BRIN indexes use a block-level approach to storage, which means that they can store data more efficiently and reduce the number of I/O operations needed to access the data. 3. BRIN indexes are more flexible than B-tree indexes, as they can be customized to the specific needs of the application. 4. BRIN indexes are more scalable than"
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory.</paragraph>[Relevant]An IoT application continuously appends timestamped sensor metrics to a billion-row table and executes range queries like `WHERE",
+        "duration_seconds": 8.38,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 919,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory. An IoT application continuously appends timestamped sensor metrics to a billion-row table and executes range queries like `WHERE"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0140",
+      "category": "transactions",
+      "prompt": "What does transaction isolation level SERIALIZABLE guarantee under the SQL standard?",
+      "ground_truth": "[No Retrieval]The SERIALIZABLE isolation level guarantees that any concurrent execution of transactions produces the exact same observable state and results as if the transactions were executed serially in some sequential order, completely preventing dirty reads, non-repeatable reads, phantom reads, and write skew.[Utility:5]",
+      "base_model": {
+        "output": "1.[Retrieval]<paragraph><paragraph><paragraph><paragraph><paragraph><paragraph>\n2.[No Retrieval]Consistency: Serializable guarantees that once a transaction is committed, all the changes made by that transaction are visible to all other transactions.\n3.[No Retrieval]Consistency: Serializable guarantees that once a transaction is committed, all the changes made by that transaction are visible to all other transactions.\n4.[No Retrieval]Consistency: Serializable guarantees that once a transaction is committed, all the changes made by that transaction are visible to all other transactions.\n5.Consistency:[No Retrieval]Serializable guarantees that once a transaction is committed, all the changes made by that transaction are visible to all other transactions.\n6.Consistency:[No Retrieval]Serializable guarantees that once a transaction is committed, all the changes made by that transaction are visible to all other transactions.\n7.Consistency:[No Retrieval]Serializable guarantees that once a transaction is committed, all the changes made by that transaction are visible to all other transactions.\n8.Consistency:[No Retrieval]Serializable guarantees that",
+        "duration_seconds": 6.72,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 991,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "1. 2. Consistency: Serializable guarantees that once a transaction is committed, all the changes made by that transaction are visible to all other transactions. 3. Consistency: Serializable guarantees that once a transaction is committed, all the changes made by that transaction are visible to all other transactions. 4. Consistency: Serializable guarantees that once a transaction is committed, all the changes made by that transaction are visible to all other transactions. 5.Consistency: Serializable guarantees that once a transaction is committed, all the changes made by that transaction are visible to all other transactions. 6.Consistency: Serializable guarantees that once a transaction is committed, all the changes made by that transaction are visible to all other transactions. 7.Consistency: Serializable guarantees that once a transaction is committed, all the changes made by that transaction are visible to all other transactions. 8.Consistency: Serializable guarantees that"
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Transaction Isolation and Locking Problems Locking and Locking Models The database is locked while a transaction reads a row; readers may observe a different result if the transaction performs a write or commits. Readers often benefit from a transaction's CAScade while writers benefit from its EXCLUSIVE. Exact phenomenon \u2022 Logging and write-ahead logging \u2022 Undo logging and redo logging \u2022 Row and page lifecycle \u2022 Storage and index structure \u2022 Replication and sharding \u2022 Security, authentication, and encryption \u2022 Configuration, administration, and operational management \u2022 Backup and recovery \u2022 Recovery and transaction state recovery \u2022 Logging, flush policy, and storage guarantees \u2022 Leader election and partitioning \u2022 Consistency and isolation \u2022 WAL and READ COMMITTED isolation \u2022 W",
+        "duration_seconds": 8.51,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 935,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Transaction Isolation and Locking Problems Locking and Locking Models The database is locked while a transaction reads a row; readers may observe a different result if the transaction performs a write or commits. Readers often benefit from a transaction's CAScade while writers benefit from its EXCLUSIVE. Exact phenomenon \u2022 Logging and write-ahead logging \u2022 Undo logging and redo logging \u2022 Row and page lifecycle \u2022 Storage and index structure \u2022 Replication and sharding \u2022 Security, authentication, and encryption \u2022 Configuration, administration, and operational management \u2022 Backup and recovery \u2022 Recovery and transaction state recovery \u2022 Logging, flush policy, and storage guarantees \u2022 Leader election and partitioning \u2022 Consistency and isolation \u2022 WAL and READ COMMITTED isolation \u2022 W"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0005",
+      "category": "dbms_definitions",
+      "prompt": "What defines a relational database schema versus a database instance?",
+      "ground_truth": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Relational Model, Keys, and Integrity Constraints Relations, tuples, domains, key theory, and correctness rules DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The relational model The relational model represents information through relations. A relation is conceptually a set of tuples over named attributes. In a table presentation, attributes appear as columns and tuples appear as rows. Each attribute has a domain that describes permitted values, such as integers, dates, Boolean values, or text identifiers. A relation schema describes the relation name and attributes, for example STUDENT(student_id, full_name, email, dept_id). A relation instance is the set of tuples currently stored.</paragraph>[Relevant]A database schema is the static, formal structural blueprint defining tables, attribute names, data types, and integrity constraints, whereas a database instance is the dynamic, current operational state of data populated in those tables at a specific point in time.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "Relational Database Schema:[Retrieval]<paragraph><paragraph><paragraph><paragraph>\nA relational database schema is a blueprint of a database that describes the structure of the data and the relationships between the data elements.[No Retrieval]A database instance is a physical representation of a database schema that is created when data is actually stored in a database.[Utility:5]",
+        "duration_seconds": 2.06,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 305,
+          "is_complete_sentence": true,
+          "has_malformed_token": false,
+          "clean_text": "Relational Database Schema: A relational database schema is a blueprint of a database that describes the structure of the data and the relationships between the data elements. A database instance is a physical representation of a database schema that is created when data is actually stored in a database."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Relational Algebra and Relational Querying Algorithms The relational model treats a relation as a set of tuples. A relation is a closed set of tuples, meaning no tuple can be added or deleted without changing the relation. A relation is a set of attributes and a relation schema describes which attributes belong to which relation. A relation schema is a formalization of the relational model. A relation schema is a formalization of the relational model. Relation schema \u2022 Attributes: the set of attributes that belong to the relation. \u2022 Domains: the allowed values for each attribute. \u2022 Cardinality: the maximum number of tuples that can belong to the relation. \u2022 Key: the attribute(s) that uniquely identify every tuple. \u2022 Unique: all attributes are unique, or none are. \u2022 Options",
+        "duration_seconds": 8.42,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 931,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Relational Algebra and Relational Querying Algorithms The relational model treats a relation as a set of tuples. A relation is a closed set of tuples, meaning no tuple can be added or deleted without changing the relation. A relation is a set of attributes and a relation schema describes which attributes belong to which relation. A relation schema is a formalization of the relational model. A relation schema is a formalization of the relational model. Relation schema \u2022 Attributes: the set of attributes that belong to the relation. \u2022 Domains: the allowed values for each attribute. \u2022 Cardinality: the maximum number of tuples that can belong to the relation. \u2022 Key: the attribute(s) that uniquely identify every tuple. \u2022 Unique: all attributes are unique, or none are. \u2022 Options"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0118",
+      "category": "indexing",
+      "prompt": "Why does dropping unused database indexes improve system write throughput?",
+      "ground_truth": "[Retrieval]<paragraph>An index-only scan may return needed values from the index when visibility information and query shape allow it. CREATE INDEX enrollments_student_semester_idx ON enrollments(student_id, semester); CREATE INDEX active_students_email_idx ON students(email) WHERE email IS NOT NULL; CREATE INDEX students_lower_email_idx ON students(LOWER(email)); These are examples, not universal prescriptions. Confirm that queries use the same expressions and predicates, and inspect actual plans. An index that is rarely used may be an avoidable write and storage cost.</paragraph>[Relevant]Unused indexes consume buffer pool cache space and require write maintenance on every insert, update, and delete. Dropping them eliminates wasted disk I/O, reduces WAL generation, and lowers transaction commit latency.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "Here are a few reasons:\n\n1.[Retrieval]<paragraph><paragraph><paragraph><paragraph><paragraph>\n2.3.[Utility:5]",
+        "duration_seconds": 0.84,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 31,
+          "is_complete_sentence": true,
+          "has_malformed_token": false,
+          "clean_text": "Here are a few reasons: 1. 2.3."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory.</paragraph>[Relevant]When an index is added to a table, the engine must scan the table and inspect every row to compute the index. If",
+        "duration_seconds": 8.51,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 903,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory. When an index is added to a table, the engine must scan the table and inspect every row to compute the index. If"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0178",
+      "category": "recovery_and_logging",
+      "prompt": "What constitutes an online (hot) physical base backup in PostgreSQL?",
+      "ground_truth": "[Retrieval]<paragraph>If a crash occurs after a data page was written but before its log record became durable, recovery might not know how to repair it. WAL separates the timing of data-page writes from the durability of transaction commits. A commit typically requires the relevant log records to become durable according to configured guarantees. Data pages can be written later. This allows group commit and background flushing while preserving recovery. Exact mechanics and durability settings are DBMS-specific.</paragraph>[Relevant]An online base backup (using pg_basebackup) copies raw filesystem data files while transactions continue modifying pages concurrently. The backup captures a starting checkpoint LSN and includes all subsequent WAL generated during the copy, allowing crash recovery replay to make the copied files consistent.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "2.[Retrieval]<paragraph><paragraph><paragraph><paragraph>",
+        "duration_seconds": 0.36,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 2,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "2."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory.</paragraph>[Relevant]A base backup stores only the base tables and indexes, whereas a hot base backup stores base tables, indexes, and online transaction",
+        "duration_seconds": 8.53,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 923,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "EVORAG | DBMS & SQL KNOWLEDGE BASE POSTGRESQL 18 REFERENCE BASELINE Educational retrieval corpus-original explanations with cited references Page 1 Database Storage, Pages, and Buffer Management How DBMSs organize records and manage memory-to-disk movement DBMS & SQL Knowledge Base | EvoRAG corpus | PostgreSQL 18 baseline 1. The storage problem A database may contain far more data than fits in main memory. Persistent storage is slower than RAM, so a DBMS must organize data to reduce expensive I/O and reuse memory effectively. Applications normally request logical rows and columns; the storage manager translates those requests into page reads and writes. A file is a logical collection of database pages. A page (or block) is a fixed-size unit transferred between storage and memory. A base backup stores only the base tables and indexes, whereas a hot base backup stores base tables, indexes, and online transaction"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0059",
+      "category": "comparisons",
+      "prompt": "How does a star schema compare with a snowflake schema in dimensional database design?",
+      "ground_truth": "[Retrieval]<paragraph>Relationship cardinality \u2022 One-to-one (1:1): each occurrence on either side is associated with at most one on the other side. \u2022 One-to-many (1:N): one department may have many students; each student belongs to at most one department under that rule. \u2022 Many-to-many (M:N): students enroll in many courses and courses have many students. Participation describes whether every entity occurrence must participate. Total participation is mandatory; partial participation is optional. Cardinality is about the maximum number of associations, while participation is about the minimum required number.</paragraph>[Relevant]A star schema connects a central fact table directly to completely denormalized single-table dimension tables, simplifying query joins, whereas a snowflake schema normalizes dimension hierarchies into sub-tables, reducing redundancy at the cost of requiring more joins in analytical queries.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "Here are a few key differences:\n\n1.[Retrieval]<paragraph><paragraph><paragraph><paragraph><paragraph>\n2.3.4.5.[Utility:5]",
+        "duration_seconds": 0.96,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 43,
+          "is_complete_sentence": true,
+          "has_malformed_token": false,
+          "clean_text": "Here are a few key differences: 1. 2.3.4.5."
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>The model is useful for OLAP queries that scan a few columns over many rows and return small fractions of the table. It can reduce I/O for analytical queries that scan a few columns over many rows and return small fractions of the table. The model is useful for OLAP queries that scan a few columns over many rows and return small fractions of the table. It can reduce I/P for analytical queries that scan a few columns over many rows and return small fractions of the table. The model is useful for OLAP queries that scan a few columns over many rows and return small fractions of the table. It can reduce I/O for analytical queries that scan a few columns over many rows and return small fractions of the table. The model is useful for OLAP queries that scan a few columns over many rows and return small fractions of the table. It can reduce I/O for analytical queries that scan a few columns over many rows and return small fractions of the table. The model is useful for O",
+        "duration_seconds": 8.61,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 977,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "The model is useful for OLAP queries that scan a few columns over many rows and return small fractions of the table. It can reduce I/O for analytical queries that scan a few columns over many rows and return small fractions of the table. The model is useful for OLAP queries that scan a few columns over many rows and return small fractions of the table. It can reduce I/P for analytical queries that scan a few columns over many rows and return small fractions of the table. The model is useful for OLAP queries that scan a few columns over many rows and return small fractions of the table. It can reduce I/O for analytical queries that scan a few columns over many rows and return small fractions of the table. The model is useful for OLAP queries that scan a few columns over many rows and return small fractions of the table. It can reduce I/O for analytical queries that scan a few columns over many rows and return small fractions of the table. The model is useful for O"
+        }
+      }
+    },
+    {
+      "example_id": "DBMS-QLORA-0064",
+      "category": "algorithms",
+      "prompt": "How does the standard two-pass External Merge Sort algorithm sort relations larger than memory?",
+      "ground_truth": "[Retrieval]<paragraph>Parsing checks syntax; analysis resolves names, types, and permissions; rewrite expands views and rules; the optimizer compares candidate plans; the executor runs physical operators. A query plan is commonly represented as a tree or graph of operators. Leaves access base tables or indexes. Intermediate operators filter, project, join, sort, and aggregate rows. A plan is a physical implementation of the logical result, not simply a copy of the SQL text. Operator model \u2022 Scan: produce tuples from a table or index. \u2022 Filter: keep tuples satisfying a predicate. \u2022 Projection: compute or retain selected columns. \u2022 Join: combine tuples from two inputs. \u2022 Sort: order tuples by one or more keys. \u2022 Aggregate: compute group summaries. \u2022 Materialize: store intermediate results when required by the plan.</paragraph>[Relevant]In pass 0, the algorithm loads buffer-sized chunks into memory, sorts them internally, and writes sorted runs to temporary disk files. In subsequent merge passes, it uses buffer frames to merge multiple sorted runs concurrently using a priority queue until a single sorted output run is formed.[Fully supported][Utility:5]",
+      "base_model": {
+        "output": "Great question![Retrieval]<paragraph><paragraph><paragraph>",
+        "duration_seconds": 0.43,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": null,
+          "support_label": null,
+          "utility_scores": [],
+          "paragraph_tags_balanced": false,
+          "substantive_text_length": 15,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "Great question!"
+        }
+      },
+      "fine_tuned_model": {
+        "output": "[Retrieval]<paragraph>The algorithm constructs a sorted relation in-place. In the first pass, it scans the relation and constructs an in-memory sorted array. In the second pass, it traverses the array and writes sorted relation values to a temporary disk file. The algorithm terminates when the entire relation is written to the disk.</paragraph>[Relevant]The External Merge Sort algorithm partitions the relation into smaller relations, sorts each relation in-memory, and then merges the sorted relations into the final sorted relation.[Fully supported][Utility:5]<unk>The algorithm constructs a sorted relation in-place. In the first pass, it scans the relation and constructs an in-memory sorted array. In the second pass, it traverses the array and writes sorted relation values to a temporary disk file. The algorithm terminates when the entire relation is written to the disk.[Utility:5]<unk>[Relevant]The External Merge Sort algorithm partitions the relation into smaller relations, sorts each relation in-memory, and then merges the sorted relations into the final sorted relation.[Fully supported][Utility:5]<unk>[Relevant]The algorithm constructs a sorted relation in",
+        "duration_seconds": 8.59,
+        "parsed": {
+          "retrieval_decision": "[Retrieval]",
+          "relevance_label": "[Relevant]",
+          "support_label": "[Fully supported]",
+          "utility_scores": [
+            "[Utility:5]"
+          ],
+          "paragraph_tags_balanced": true,
+          "substantive_text_length": 1052,
+          "is_complete_sentence": false,
+          "has_malformed_token": false,
+          "clean_text": "The algorithm constructs a sorted relation in-place. In the first pass, it scans the relation and constructs an in-memory sorted array. In the second pass, it traverses the array and writes sorted relation values to a temporary disk file. The algorithm terminates when the entire relation is written to the disk. The External Merge Sort algorithm partitions the relation into smaller relations, sorts each relation in-memory, and then merges the sorted relations into the final sorted relation. <unk>The algorithm constructs a sorted relation in-place. In the first pass, it scans the relation and constructs an in-memory sorted array. In the second pass, it traverses the array and writes sorted relation values to a temporary disk file. The algorithm terminates when the entire relation is written to the disk. <unk> The External Merge Sort algorithm partitions the relation into smaller relations, sorts each relation in-memory, and then merges the sorted relations into the final sorted relation. <unk> The algorithm constructs a sorted relation in"
+        }
+      }
+    }
+  ]
+}

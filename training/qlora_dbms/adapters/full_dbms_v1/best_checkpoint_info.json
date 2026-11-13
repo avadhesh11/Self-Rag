@@ -1,0 +1,6 @@
+{
+  "best_iteration": 545,
+  "best_val_loss": 0.8712510466575623,
+  "best_adapter_file": "/Users/devj/code/self-rag/self-rag-demo/training/qlora_dbms/adapters/full_dbms_v1/best_adapters.safetensors",
+  "best_adapter_sha256": "552c988cfb875e0a643cf20b85ec95e1b34f980d649b743333524c6ab80e358f"
+}

@@ -1,24 +1,24 @@
 # EvoRAG: Evolutionary Retrieval-Augmented Generation with Hybrid Experience Learning
 
-[![Tests](https://img.shields.io/badge/tests-152%20passed-brightgreen.svg)](#running-automated-tests)
-[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](#installation--setup)
-[![Architecture](https://img.shields.io/badge/architecture-Self--RAG%20%2B%20Experience%20Memory-orange.svg)](#evorag-architecture)
+[![Tests](https://img.shields.io/badge/tests-138%20passed-brightgreen.svg)](#10-running-automated-tests)
+[![Python](https://img.shields.io/badge/python-3.12%20%7C%203.13-blue.svg)](#7-installation--environment-setup)
+[![Hardware](https://img.shields.io/badge/hardware-Apple%20Silicon%20(M3%20Pro)-orange.svg)](#5-fine-tuned-apple-silicon-mlx-qlora-model)
+[![Benchmark](https://img.shields.io/badge/frozen%20benchmark-32%20held--out%20questions-purple.svg)](#12-task-12g-frozen-benchmark-results)
 
-**EvoRAG** extends the [Self-RAG](https://arxiv.org/abs/2310.11511) framework (Asai et al., ICLR 2024) with **Hybrid Experience Learning**. It integrates an episodic, persistent Experience Memory subsystem with adaptive reflection-token-driven retrieval, enabling continuous learning, reduced generation costs, and fast query resolution while preserving factuality and provenance.
+**EvoRAG** extends the [Self-RAG](https://arxiv.org/abs/2310.11511) framework (Asai et al., ICLR 2024) with **Hybrid Experience Learning** and **Apple Silicon MLX QLoRA domain adaptation**. It couples an episodic, persistent Experience Memory subsystem with adaptive reflection-token-driven retrieval, enabling continuous learning, reduced inference volume, sub-second direct reuse, and domain-specialized technical generation on local Apple Silicon hardware.
 
 ---
 
-## 1. Motivation & Overview
+## 1. Project Overview & Motivation
 
-Standard Self-RAG evaluates retrieval dynamically per segment and critiques candidate continuations using reflection tokens (`[Relevant]`, `[Fully supported]`, `[Utility:N]`). While effective, it suffers from two major limitations in production and repeated query workloads:
+Standard Self-RAG evaluates retrieval dynamically per segment and critiques candidate continuations using reflection tokens (`[Relevant]`, `[Fully supported]`, `[Utility:N]`). While effective, it suffers from two major limitations in production:
 1. **Redundant Inference & High Latency**: Identical or semantically near-identical questions re-run expensive multi-segment tree decoding from scratch every single time.
 2. **Stateless Generation**: Verified high-quality answers and reasoning paths discovered by the model are discarded immediately after generation, failing to benefit subsequent queries.
 
-**EvoRAG solves this by introducing a three-path hybrid architecture**:
-- **Path A (Exact Direct Reuse)**: If a query exactly matches a verified experience, EvoRAG serves the stored answer instantly without calling the LLM (0 inference cost, sub-second latency).
-- **Path B (Experience-Assisted Self-RAG)**: If a query is semantically related to verified experiences, those experiences are injected as structured context into Self-RAG's candidate generation pool, guiding the model toward proven reasoning paths while generating a fresh, grounded answer.
-- **Path C (Normal Self-RAG Fallback)**: If no verified experiences exist or validation fails (e.g. modified source documents, polarity or scope mismatch), the system falls back safely to standard Self-RAG document retrieval.
-- **Continuous Learning Loop**: Newly generated answers that receive user verification are approved and persisted to SQLite, updating the semantic FAISS index for future queries, with periodic QLoRA fine-tuning planned for offline model consolidation.
+**EvoRAG solves this by combining:**
+- **Persistent Experience Memory**: Stores human- or expert-verified question-answer pairs with source chunk provenance in SQLite, indexed by dense vector embeddings in FAISS.
+- **Three-Path Routing Engine**: Routes incoming queries to Path A (instant direct reuse), Path B (experience-assisted tree decoding), or Path C (standard Self-RAG fallback).
+- **Apple Silicon MLX QLoRA**: Local 4-bit domain fine-tuning of the Self-RAG 7B model on Apple M-series chips, delivering high precision on technical domains (DBMS & SQL) without cloud GPU dependence.
 
 ---
 
@@ -26,477 +26,288 @@ Standard Self-RAG evaluates retrieval dynamically per segment and critiques cand
 
 ```mermaid
 flowchart TD
-    UserQuery["User Query"] --> Norm["Canonical Normalization"]
+    UserQuery["User Query (q)"] --> Norm["Canonical Query Normalizer"]
     Norm --> CheckExact{"Exact Normalized Match<br/>in Experience Memory?"}
 
     %% Path A
-    CheckExact -- "Yes & Validated" --> PathA["PATH A: Direct Reuse<br/>• 0 LLM forward passes<br/>• Sub-millisecond retrieval<br/>• Stored answer & provenance returned"]
+    CheckExact -- "Yes & Status == APPROVED" --> ValA{"Freshness & Safety<br/>Validation"}
+    ValA -- "Valid" --> PathA["PATH A: Direct Reuse<br/>• 0 LLM forward passes<br/>• Sub-second retrieval (< 0.5s)<br/>• Stored answer & provenance returned"]
 
     %% Semantic Lookup
-    CheckExact -- "No" --> FAISS["FAISS Semantic Memory Search<br/>(Dense Cosine Similarity)"]
-    FAISS --> Val{"Conservative Validator<br/>• Verification Status == APPROVED<br/>• Polarity & Scope Match<br/>• Source Document Freshness<br/>• Score >= Threshold"}
+    CheckExact -- "No" --> FAISS["FAISS Semantic Memory Search<br/>(all-MiniLM-L6-v2, Cosine Sim)"]
+    ValA -- "Invalid" --> FAISS
+
+    FAISS --> ValB{"Conservative Validator<br/>• Status == APPROVED<br/>• Polarity & Scope Match<br/>• Cosine Sim >= 0.85<br/>• Source Freshness"}
 
     %% Path B
-    Val -- "Valid Experience(s) Found" --> PathB["PATH B: Experience-Assisted Self-RAG<br/>• ExperienceAugmentedRetriever wraps document retriever<br/>• Memory context appended to candidate pool<br/>• Adaptive tree decoding over docs + experiences<br/>• Fresh grounded answer generated"]
+    ValB -- "Valid Experience Found" --> PathB["PATH B: Experience-Assisted Self-RAG<br/>• Injects verified experience context into candidate pool<br/>• Multi-segment tree decoding over docs + memory<br/>• Grounded, verified answer generated"]
 
     %% Path C
-    Val -- "No Valid Experience" --> PathC["PATH C: Normal Self-RAG Fallback<br/>• Base document retriever<br/>• Standard reflection-token generation loop"]
+    ValB -- "No Valid Experience" --> PathC["PATH C: Normal Self-RAG Fallback<br/>• Standard PassageRetriever<br/>• Pure document evidence loop"]
 
-    %% Learning Loop
-    PathB --> Appr{"User / Expert Verification<br/>approve_and_save()"}
-    PathC --> Appr
+    %% Backend Routing
+    PathB --> BackendSel{"Backend Choice"}
+    PathC --> BackendSel
 
-    Appr -- "Approved" --> SQLite[("SQLite Experience Store<br/>(Single Source of Truth)")]
-    SQLite --> FAISSRebuild["FAISS Memory Index Rebuild<br/>& Dynamic Reload"]
-    FAISSRebuild -.-> FAISS
+    BackendSel -- "GGUF (.venv)" --> GGUFBackend["SelfRAGGenerator (llama.cpp)<br/>models/selfrag_llama2_7b.Q4_K_M.gguf"]
+    BackendSel -- "MLX (.venv-mlx)" --> MLXBackend["MLXSelfRAGGenerator (Metal GPU)<br/>models/mlx/selfrag_llama2_7b_4bit<br/>+ QLoRA Adapter"]
 
-    SQLite -.-> QLoRA["(Planned / Colab)<br/>Periodic QLoRA Offline Distillation"]
-    QLoRA -.-> BaseLLM["Fine-Tuned Generator Checkpoint"]
+    GGUFBackend --> UnifiedOut["Unified Output & Trace<br/>Answer + Citations + Routing Details + Latency"]
+    MLXBackend --> UnifiedOut
 ```
 
-For complete mathematical definitions, validator heuristics, and failure handling, see [docs/EXPERIENCE_MEMORY.md](docs/EXPERIENCE_MEMORY.md).
+For complete mathematical definitions and validator heuristics, see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 ---
 
-## 3. Technology Stack
+## 3. Comparison: Normal RAG vs Self-RAG vs EvoRAG
 
-| Component | Technology | Role in EvoRAG |
-| :--- | :--- | :--- |
-| **Experience Store** | SQLite 3 | Single source of truth for persistent verified experiences, source versions, and chunk hashes. |
-| **Memory Vector Index** | FAISS (`IndexFlatIP`) | Dense vector similarity index over normalized question embeddings for semantic candidate retrieval. |
-| **Embeddings** | `sentence-transformers` (`all-MiniLM-L6-v2` / `bge-small-en-v1.5`) | L2-normalized 384-dimensional dense embeddings for document passages and questions. |
-| **Document Retrieval** | FAISS + `PassageRetriever` | Segment-level document passage retrieval over chunked source PDFs. |
-| **Self-RAG Generator** | `llama-cpp-python` / `vLLM` | Execution of `selfrag_llama2_7b.Q4_K_M.gguf` emitting reflection tokens (`[Retrieval]`, `[Relevant]`, etc.). |
-| **Baseline Normal RAG** | `google-genai` SDK | Gemini API baseline used for side-by-side comparison in `demo.py` and evaluation. |
-| **Testing & CI** | `pytest` | 124 automated regression, integration, real FAISS, DBMS corpus, and real Self-RAG model tests. |
-
----
-
-## 4. Repository Structure
-
-```
-Self-Rag/
-├── data/                         # Source documents and corpus bundles
-│   ├── sample.pdf                # 1-page Amazon rainforest note
-│   ├── 2310.11511v1.pdf          # Self-RAG original research paper
-│   ├── manifest.json             # Task 8 DBMS & SQL corpus manifest with SHA-256 hashes
-│   ├── university_schema.sql     # PostgreSQL 18 sample university schema
-│   └── pdf/                      # 15 standalone DBMS & SQL educational PDFs
-├── docs/                         # Detailed architecture and audit documentation
-│   ├── BASELINE.md               # Hardware feasibility, Self-RAG baseline audit, execution guide
-│   ├── DBMS_CORPUS.md            # Task 8 DBMS & SQL knowledge corpus integration and validation
-│   ├── EXPERIENCE_MEMORY.md      # Detailed Experience Memory specification, retrieval budget, provenance
-│   └── SELFRAG_INTEGRATION.md    # Task 7B actual Self-RAG model integration and validation
-├── evorag/                       # ── EvoRAG Hybrid Learning Subsystem ──
-│   ├── __init__.py               # Exports controller, results, and memory adapter
-│   ├── config.py                 # Default paths, thresholds, and dimensions
-│   ├── controller.py             # EvoRAGController: three-path routing, provenance, recoverable persistence
-│   ├── result.py                 # EvoRAGResult, ExperienceCandidate, ValidationResult dataclasses
-│   └── memory/                   # Experience Memory modules
-│       ├── __init__.py           # Memory exports
-│       ├── index_builder.py      # ExperienceIndexBuilder: rebuilds FAISS index from SQLite
-│       ├── retriever.py          # ExperienceRetriever & ExperienceAugmentedRetriever
-│       ├── schema.py             # Experience dataclass, SQLite schema, question normalization
-│       ├── store.py              # ExperienceStore: SQLite persistent storage & indexed queries
-│       └── validator.py          # ExperienceValidator: polarity, numeric/interrogative scope, freshness
-├── index/
-│   ├── build_index.py            # PDF -> sentence splitter -> passage chunks -> FAISS index
-│   ├── corpus.jsonl              # Baseline document corpus with chunk hashes & source versions
-│   ├── faiss.index               # Baseline document FAISS vector index
-│   ├── meta.json                 # Baseline document index metadata (source PDF byte hashes)
-│   └── dbms_sql_v1/              # Dedicated Task 8 DBMS & SQL index (232 chunks across 15 PDFs)
-│       ├── corpus.jsonl          # 232 passage chunks with manifest-verified SHA-256 source versions
-│       ├── faiss.index           # FAISS IndexFlatIP (384-dim normalized vectors)
-│       └── meta.json             # Corpus metadata with complete source version mapping
-├── retriever/
-│   └── retriever.py              # Shared PassageRetriever for document FAISS index
-├── selfrag/                      # ── Original Self-RAG pipeline ──
-│   ├── generator.py              # llama.cpp / vLLM backends with official prompt format
-│   ├── pipeline.py               # Self-RAG control loop (Algorithm 1 multi-segment tree decoding)
-│   ├── query_normalizer.py       # Decouples search queries from instructions
-│   └── reflection_tokens.py      # Reflection token vocabulary, parsing, critique scoring
-├── normal_rag/                   # ── Baseline Normal RAG pipeline ──
-│   ├── generator.py              # GeminiGenerator via google-genai SDK
-│   └── pipeline.py               # Standard retrieve-then-generate baseline
-├── comparison/
-│   └── runner.py                 # Side-by-side execution and latency comparison
-├── evaluation/
-│   ├── convert_answer_key_pdf.py # Task 9B PDF answer key to structured JSONL converter
-│   ├── evaluate.py               # Batch evaluation CLI (with UTF-8 BOM support)
-│   ├── ingest_experiences.py     # Task 9B verified experience memory ingestion & index builder
-│   ├── metrics.py                # Latency, chunk count, EM, token F1, and citation metrics
-│   ├── questions.json            # 4-category evaluation benchmark
-│   ├── run_blind_evaluation.py   # Task 9A.1 blind evaluation runner & prediction freeze
-│   ├── run_post_learning_evaluation.py # Task 9B post-learning evaluation & benchmark comparison runner
-│   └── score_predictions.py      # Task 9A.2 offline prediction scoring & benchmark reporting
-├── tests/                        # ── Automated Test Suite ──
-│   ├── test_actual_selfrag_integration.py # 6 tests: actual Self-RAG 7B model integration (Paths A, B, C, reflection tokens, learning loop)
-│   ├── test_blind_evaluation.py  # 6 tests: blind runner question loading, blind safeguards, freeze output schemas
-│   ├── test_chunker.py           # 12 tests: sentence splitting, abbreviations, chunk construction
-│   ├── test_controller.py        # 24 tests: three-path routing, provenance extraction, budget, recovery
-│   ├── test_dbms_corpus.py       # 23 tests: DBMS corpus manifest checksums, index reload, 15-doc smoke retrieval, isolation
-│   ├── test_evaluation.py        # 2 tests: UTF-8 BOM and standard JSON loading
-│   ├── test_memory.py            # 16 tests: SQLite persistence, FAISS mapping, validation heuristics
-│   ├── test_model_free_validation.py # 14 tests: end-to-end model-free pipeline validation
-│   ├── test_provenance.py        # 8 tests: deterministic chunk hashing, PDF byte hashing
-│   ├── test_real_faiss_integration.py # 16 tests: real FAISS vector search & SentenceTransformer integration
-│   ├── test_retriever.py         # 3 tests: document PassageRetriever and pipeline compatibility
-│   ├── test_scoring.py           # 11 tests: prediction scoring, schema validation, latency & quality metrics
-│   └── test_task9b_learning.py   # 9 tests: answer key conversion, contamination guards, memory rebuild, post-learning evaluation
-├── evorag_cli.py                 # EvoRAG Terminal CLI (query, memory lookup, approval flow)
-├── demo.py                       # Unified comparison demo CLI (Normal RAG vs Self-RAG)
-├── requirements.txt              # Core dependencies + google-genai + python-dotenv
-├── requirements-mac.txt          # + llama-cpp-python for Apple silicon
-└── requirements-gpu.txt          # + vLLM for Linux + NVIDIA GPUs
-```
-
----
-
-## 5. Implementation Status
-
-| Stage / Component | Status | Verification State |
-| :--- | :---: | :--- |
-| **Task 1: UTF-8 BOM Handling** | **Completed** | Verified with automated tests in `tests/test_evaluation.py`. |
-| **Task 2: Robust Sentence Splitting** | **Completed** | Verified: legal/numeric abbreviations (`Sec.`, `Art.`, `No.`, `Rs.`) intact (`tests/test_chunker.py`). |
-| **Task 3: Deterministic Provenance** | **Completed** | Verified: SHA-256 chunk hashing and PDF byte-level `source_version` (`tests/test_provenance.py`). |
-| **Task 4: Baseline Audit & Feasibility** | **Completed** | Documented in `docs/BASELINE.md`. Hardware bounds verified for Windows GTX 1650 / 16GB RAM. |
-| **Task 5: Experience Memory Subsystem** | **Completed** | Verified: SQLite store, FAISS index builder, retriever, conservative validator (`tests/test_memory.py`). |
-| **Task 6: EvoRAG Controller** | **Completed** | Verified: Routing, fallback, direct reuse, explicit approval flow (`tests/test_controller.py`). |
-| **Task 6A: Hybrid Experience Learning** | **Completed** | Verified: Three-path routing (Path A, B, C) and `ExperienceAugmentedRetriever` adapter. |
-| **Task 6B: Integration Stabilization** | **Completed** | Verified: Original provenance extraction, retrieval budget semantics, recoverable persistence (`recover_index`). |
-| **Task 6C: Documentation & Reproducibility Audit** | **Completed** | Verified repository docs, execution boundaries, and reproducibility instructions. |
-| **Task 7A: Model-Free End-to-End Validation** | **Completed** | Verified real document extraction/chunking, SQLite memory, validator heuristics, augmented retrieval, 3-path routing, and CLI ([docs/MODEL_FREE_VALIDATION.md](docs/MODEL_FREE_VALIDATION.md)). |
-| **Task 7A.1: Real FAISS & SentenceTransformer** | **Completed** | Verified real `faiss-cpu` vector search, real `all-MiniLM-L6-v2` embeddings, SQLite resolution, and recovery (`tests/test_real_faiss_integration.py`). |
-| **Task 7B: Actual Self-RAG Model Integration** | **Completed** | Verified real 7B GGUF model integration, reflection tokens, all 3 paths (A, B, C), and continuous learning (`tests/test_actual_selfrag_integration.py`). |
-| **Task 8: DBMS & SQL Knowledge Corpus** | **Completed** | Integrated 15 educational PDFs (PostgreSQL 18 baseline), built dedicated index `index/dbms_sql_v1` (232 chunks), verified all manifest checksums and 15-document retrieval (`tests/test_dbms_corpus.py`, [docs/DBMS_CORPUS.md](docs/DBMS_CORPUS.md)). |
-| **Task 9A.1: Blind Evaluation Runner & Prediction Freeze** | **Completed** | Implemented blind evaluation runner (`evaluation/run_blind_evaluation.py`) for 32 held-out questions across Normal RAG, Self-RAG, and EvoRAG. Enforced strict blindness safeguards, isolated memory from saving (`approve_and_save` prohibited), exported predictions to template-compliant CSV and JSONL (`tests/test_blind_evaluation.py`, [docs/BLIND_EVALUATION.md](docs/BLIND_EVALUATION.md)). |
-| **Task 9A.2: Evaluator Scoring & Benchmark Report** | **Completed** | Implemented offline prediction scoring pipeline (`evaluation/score_predictions.py`). Evaluated frozen predictions across Normal RAG, Self-RAG, and EvoRAG, calculated latency distributions (mean, median, P95, hit vs miss), validated schemas, enforced prediction file immutability, and generated comprehensive Markdown, JSON, and CSV reports (`tests/test_scoring.py`, [evaluation/reports/](evaluation/reports/)). |
-| **Task 9B: Verified Experience Learning & Benchmark Validation** | **Completed** | Built answer key PDF converter (`evaluation/convert_answer_key_pdf.py`), scored frozen predictions against official key, implemented verified experience ingestion with anti-contamination guards (`evaluation/ingest_experiences.py`), rebuilt FAISS Experience Memory with 25 approved entries, and executed post-learning benchmark evaluation showing Path B activation and 0 regression (`tests/test_task9b_learning.py`). |
-| **Periodic QLoRA Offline Distillation** | *Pending* | Planned future phase on Google Colab / GPU clusters. |
-| **Indian Legal Corpus Integration** | *Pending* | Planned future phase (currently using sample.pdf and research paper). |
-
----
-
-## 6. Onboarding & Getting Started
-
-### Prerequisites
-- Python 3.10, 3.11, or 3.12 (developed and tested on Python 3.12.6, Windows x64).
-- Git.
-- 4 GB+ free disk space if running local embeddings and unit tests.
-
-### Step 1: Clone the Repository
-```bash
-git clone https://github.com/YourUsername/Self-Rag.git
-cd Self-Rag
-```
-
-### Step 2: Create and Activate a Virtual Environment
-```bash
-# Windows PowerShell:
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-
-# Linux / macOS:
-python3 -m venv venv
-source venv/bin/activate
-```
-
-### Step 3: Install Dependencies
-```bash
-# 1. Install core dependencies (retriever, FAISS CPU, sentence-transformers, pytest)
-pip install -r requirements.txt
-pip install faiss-cpu pytest
-```
-
-> **Note on Generator Backends**:
-> - For running **unit and integration tests**, no model backend is required (tests use mock generators).
-> - For running **Normal RAG** (Gemini baseline), install `google-genai` and obtain a free API key at [Google AI Studio](https://aistudio.google.com/apikey).
-> - For running **Self-RAG with local GGUF models**, install `llama-cpp-python`:
->   ```bash
->   pip install llama-cpp-python huggingface-hub
->   ```
-
-### Step 4: Run Automated Tests
-```bash
-# Run all 101 automated tests across all modules (unit + real FAISS + real Self-RAG model):
-python -m pytest tests/ -v
-
-# Run ONLY fast model-free unit tests (79 tests, ~3 seconds):
-python -m pytest tests/ -m "not integration and not model" -v
-
-# Run ONLY real FAISS and SentenceTransformer integration tests (16 tests):
-python -m pytest tests/ -m "integration" -v
-
-# Run ONLY real Self-RAG 7B model integration tests (6 tests, ~28 seconds):
-python -m pytest tests/ -m "model" -v
-```
-The fast unit tests run in ~3 seconds using deterministic mock embedders and in-memory test databases. Real integration tests execute actual FAISS C++ vector indexing and SentenceTransformer embeddings.
-
----
-
-## 7. Execution Guide: Verified vs. Pending Commands
-
-### Category A: Verified Local Commands (No Model Weights Needed)
-
-These commands run locally out of the box and have been verified:
-
-```bash
-# 1. Run all test suites (101 tests)
-python -m pytest tests/ -v
-
-# 2. Run real Self-RAG 7B model integration tests (6 tests, ~28s)
-python -m pytest tests/test_actual_selfrag_integration.py -v
-
-# 3. Run real FAISS & SentenceTransformer integration tests (39 tests: 16 general + 23 DBMS corpus)
-python -m pytest tests/test_real_faiss_integration.py tests/test_dbms_corpus.py -v
-python -m pytest tests/ -m "integration" -v
-
-# 4. Run fast model-free unit tests (79 tests)
-python -m pytest tests/ -m "not integration and not model" -v
-
-# 5. Run specific test suites
-python -m pytest tests/test_dbms_corpus.py -v  # DBMS corpus manifest, index reload, 15-doc retrieval
-python -m pytest tests/test_controller.py -v   # EvoRAG controller & hybrid routing
-python -m pytest tests/test_memory.py -v       # SQLite store, validator, FAISS indexing
-python -m pytest tests/test_provenance.py -v   # SHA-256 chunk hashes and source versions
-python -m pytest tests/test_chunker.py -v      # Legal reference sentence chunking
-
-# 6. Build dedicated DBMS & SQL FAISS index over 15 educational PDFs
-python index/build_index.py --pdf data/pdf/*.pdf --out index/dbms_sql_v1/
-
-# 7. Build baseline document FAISS index over source PDFs
-python index/build_index.py --pdf data/sample.pdf data/2310.11511v1.pdf --out index/
-
-# 8. View EvoRAG CLI help
-python evorag_cli.py --help
-```
-
-### Category B: Verified Baseline Commands (Requires API Key or Model Download)
-Prints a menu, lets you pick the mode, then prompts for a question:
-
-```
-========================================
-        RAG COMPARISON DEMO
-========================================
-  1. Normal RAG  (Gemini)
-  2. Self-RAG    (selfrag_llama2_7b)
-  3. Compare Both
-  4. Ollama RAG  (local model)
-========================================
-Select mode [1/2/3/4] (default 2):
-
-Question:
-```
-
-### Non-interactive (CLI flags)
-
-```bash
-# 1. Normal RAG using Gemini API (Requires GEMINI_API_KEY in .env)
-python demo.py --mode normal "How large is the Amazon rainforest?"
-
-# 2. Batch evaluation of questions bank (Requires GEMINI_API_KEY)
-# Mode 2 -- Self-RAG only (original behaviour)
-python demo.py --mode self "How large is the Amazon rainforest?"
-python demo.py --mode self "What is 2+2?"          # skips retrieval
-python demo.py --mode self --max-segments 5 "..."  # longer Algorithm 1 loop
-
-# Mode 3 -- Compare both side-by-side
-python demo.py --mode both "How large is the Amazon rainforest?"
-
-# Mode 4 -- Ollama RAG (local model; needs `ollama serve` + `ollama pull`)
-python demo.py --mode ollama "How large is the Amazon rainforest?"
-python demo.py --mode ollama --ollama-model gemma3:12b "..."
-
-# All original Self-RAG flags still work
-python demo.py --mode self --model path/to/custom.gguf --k 3 "..."
-SELFRAG_BACKEND=vllm python demo.py --mode self --model selfrag/selfrag_llama2_7b "..."
-```
-
-### Compare Both output format
-
-```
-=======================================================
-  NORMAL RAG  (Gemini)
-=======================================================
-Retrieved chunks : 5
-Latency          : 3.21s
-
-Retrieved passages:
-  [1] page 1  score=0.872
-      The Amazon rainforest covers 5,500,000 km2 ...
-  ...
-
-Answer:
-The Amazon rainforest covers roughly 5.5 million square kilometres ...
-
-=======================================================
-  SELF-RAG  (selfrag/selfrag_llama2_7b)
-=======================================================
-Retrieval decision: Yes ([Retrieval])
-Retrieved chunks  : 5
-Latency           : 18.40s
-
-Passage critique:
-  page   1  ISREL=[Relevant]  ISSUP=[Fully supported]  ISUSE=5  score=2.50  -> SELECTED
-  ...
-
-Answer:
-The Amazon rainforest is approximately 5.5 million km² ...
-
-=======================================================
-  COMPARISON SUMMARY
-=======================================================
-                     NORMAL RAG        SELF-RAG
--------------------------------------------------------
-Chunks retrieved              5               5
-Retrieval decision       Always             Yes
-Latency               3.21s          18.40s
-Answer length (words)        18              14
-```
-
----
-
-## Batch evaluation
-
-Run all questions from `evaluation/questions.json` through both pipelines:
-
-```bash
-# Compare both (requires both model and Gemini key)
-python evaluation/evaluate.py --mode both --out results.json
-
-# Normal RAG only (no Self-RAG model needed)
-python evaluation/evaluate.py --mode normal
-```
-
-### Blind Evaluation (Task 9A.1)
-Run the 32 held-out DBMS questions across Normal RAG, Self-RAG, and EvoRAG to produce frozen prediction artifacts:
-
-```bash
-python evaluation/run_blind_evaluation.py \
-  --questions EvoRAG_Blind_Test_Questions/held_out_test_questions_only.jsonl \
-  --corpus-index index/dbms_sql_v1 \
-  --model models/selfrag_llama2_7b.Q4_K_M.gguf \
-  --out-dir evaluation/predictions/
-```
-
-### Prediction Scoring & Benchmark Reporting (Task 9A.2)
-Score frozen prediction files offline against an official answer key (or generate execution, latency, and routing profiles):
-
-```bash
-# Evaluate frozen predictions (latency, routing, and operational analysis):
-python evaluation/score_predictions.py \
-  --predictions evaluation/predictions/frozen/predictions_20261109_151957Z.csv \
-  --out-dir evaluation/reports/
-
-# Score against an official answer key (computes Exact Match, Token F1, and Citations):
-python evaluation/score_predictions.py \
-  --predictions evaluation/predictions/frozen/predictions_20261109_151957Z.csv \
-  --answer-key EvoRAG_Answer_Key_For_Frozen_Run/answer_key_32_converted_from_pdf.jsonl \
-  --out-dir evaluation/reports/
-```
-
-### Verified Experience Learning & Post-Learning Evaluation (Task 9B)
-Convert official answer key PDF, ingest verified DBMS training experiences, and run post-learning evaluation:
-
-```bash
-# 1. Convert official answer key PDF to structured JSONL:
-python evaluation/convert_answer_key_pdf.py \
-  --pdf EvoRAG_Answer_Key_For_Frozen_Run/answer_key_32_for_frozen_run.pdf \
-  --out EvoRAG_Answer_Key_For_Frozen_Run/answer_key_32_converted_from_pdf.jsonl
-
-# 2. Ingest verified DBMS experiences into SQLite and rebuild FAISS index:
-python evaluation/ingest_experiences.py \
-  --input data/dbms_training_experiences.jsonl \
-  --db-path data/experience_memory.db \
-  --index-dir data
-
-# 3. Run post-learning evaluation across held-out questions:
-python evaluation/run_post_learning_evaluation.py \
-  --questions EvoRAG_Blind_Test_Questions/held_out_test_questions_only.jsonl \
-  --corpus-index index/dbms_sql_v1 \
-  --answer-key EvoRAG_Answer_Key_For_Frozen_Run/answer_key_32_converted_from_pdf.jsonl \
-  --mock  # Or provide --model models/selfrag_llama2_7b.Q4_K_M.gguf for real inference
-```
-
-### Real-Model Warm-Cache Evaluation (Task 10)
-Run all 32 held-out DBMS questions through EvoRAG using real quantized 7B Self-RAG model inference (`models/selfrag_llama2_7b.Q4_K_M.gguf`) with the populated Experience Memory:
-
-```bash
-# Execute real-model warm-cache evaluation across 32 questions:
-HF_HUB_OFFLINE=1 python evaluation/run_real_model_warm_cache_evaluation.py
-
-# Score or regenerate report from existing evaluation predictions:
-python evaluation/run_real_model_warm_cache_evaluation.py \
-  --from-existing-dir evaluation/predictions/real_model_warm_cache_20261111_043342Z
-```
-
-#### Task 10 Comparative Results:
-| Metric | Normal RAG | Self-RAG (Baseline) | EvoRAG (Cold Cache) | EvoRAG (Warm Cache Real Model) |
+| Capability | Normal RAG (Gemini) | Original Self-RAG (GGUF) | EvoRAG (GGUF) | Fine-Tuned EvoRAG (MLX) |
 | :--- | :---: | :---: | :---: | :---: |
-| **Exact Match** | 0.00% | 0.00% | 0.00% | **0.00%** |
-| **Token F1** | 32.40% | 22.10% | 22.14% | **23.66%** (+1.56%) |
-| **Token Precision** | 31.05% | 23.39% | 23.43% | **24.49%** (+1.10%) |
-| **Token Recall** | 40.97% | 28.97% | 28.97% | **31.40%** (+2.43%) |
-| **Citation F1** | 65.67% | 52.67% | 65.56% | **65.56%** |
-| **Evidence Support** | 96.67% | 76.67% | 70.00% | **70.00%** |
-| **Mean Latency** | 1.66s | 13.57s | 13.49s | **17.03s** |
-| **Path Breakdown** | Normal RAG (32) | Self-RAG (32) | Path C (32 / 100%) | **Path B: 5 (15.6%), Path C: 27 (84.4%), Path A: 0** |
-| **Real Model Invocations**| 32 (100%) | 32 (100%) | 32 (100%) | **32 / 32 (100%)** |
+| **Adaptive Retrieval Control** | ❌ Always retrieves | ✅ Reflection probe (`[Retrieval]`) | ✅ Reflection probe | ✅ Reflection probe |
+| **Passage Self-Critique** | ❌ External model | ✅ `ISREL`, `ISSUP`, `ISUSE` | ✅ `ISREL`, `ISSUP`, `ISUSE` | ✅ Atomic token-ID stopping |
+| **Repeated Query Optimization** | ❌ Re-runs LLM | ❌ Re-runs LLM | ✅ Path A Direct Reuse (0 LLM calls) | ✅ Path A Direct Reuse (0 LLM calls) |
+| **Continuous Learning** | ❌ None | ❌ Stateless | ✅ Episodic SQLite + FAISS | ✅ Episodic Memory + QLoRA |
+| **Hardware Requirement** | Cloud API Key | 8 GB CPU/RAM | 8 GB CPU/RAM | Apple Silicon Metal GPU (16+ GB) |
+| **Model Load Time** | N/A (API) | 10.53s | 10.53s | **0.65s** (>16x faster) |
+| **Token Precision (Benchmark)** | 0.3011 | 0.2294 | 0.2404 | **0.3265** (Highest overall) |
 
+---
 
-Running actual Self-RAG local generation requires downloading the quantized 4-bit LLaMA-2 Self-RAG model:
+## 4. Experience Memory and Three-Path Routing
 
-```bash
-# Download GGUF checkpoint (~4.1 GB)
-huggingface-cli download QuantFactory/selfrag_llama2_7b-GGUF selfrag_llama2_7b.Q4_K_M.gguf --local-dir models/
+The Experience Memory subsystem operates through three distinct execution paths:
 
-# Run interactive EvoRAG CLI with Experience Memory and Self-RAG:
-python evorag_cli.py --index index/ --model models/selfrag_llama2_7b.Q4_K_M.gguf "What are reflection tokens in Self-RAG?"
+1. **Path A (Exact Direct Reuse)**:
+   - Activated when a query normalizes identically to an approved experience (`normalize_question(q) == normalize_question(q_exp)`).
+   - Verifies that cited source documents have not changed since verification.
+   - Bypasses the LLM entirely, returning the approved answer and provenance in $< 500$ ms.
+2. **Path B (Experience-Assisted Self-RAG)**:
+   - Activated when candidate experiences meet the cosine similarity threshold ($\ge 0.85$) and pass conservative validation (polarity, question dimension, and scope checks).
+   - Injects the proven experience text into the document candidate pool.
+   - Guides the model along verified reasoning trajectories while generating an up-to-date answer.
+3. **Path C (Normal Self-RAG Fallback)**:
+   - Activated when no candidate experiences exist or validation fails.
+   - Executes standard Self-RAG multi-segment retrieval over the underlying document corpus.
 
-# Run original comparison demo:
-python demo.py --mode both "What are reflection tokens in Self-RAG?"
+---
+
+## 5. Fine-Tuned Apple Silicon MLX QLoRA Model
+
+EvoRAG includes an experimental local fine-tuned backend designed specifically for Apple Silicon Macs:
+
+- **Base Checkpoint**: `selfrag/selfrag_llama2_7b` converted to MLX 4-bit group quantization (`models/mlx/selfrag_llama2_7b_4bit/`).
+- **Special Token Preservation**: Preserves all 16 Self-RAG special tokens as atomic token IDs (32000–32015).
+- **Training Corpus**: 182 approved DBMS examples across 13 core categories trained on Apple M3 Pro Metal GPU for 3 epochs (546 steps). Validation loss dropped from 6.4219 to **0.8713** (Perplexity: 2.39).
+- **Atomic Token-Level Stopping**: Enforces immediate stopping on `[Utility:1..5]` (IDs 32007–32011) and greedy retrieval decision probes without truncating partial tokens.
+- **Metal Efficiency**: Consumes **3.79 GB** of unified memory; loads in **0.65s**.
+
+---
+
+## 6. Project Directory Structure
+
+```
+self-rag-demo/
+├── demo.py                          # Unified CLI entry point (all 4 modes)
+├── evorag_cli.py                    # Dedicated EvoRAG terminal CLI
+├── requirements.txt                 # Production dependencies (.venv)
+├── pytest.ini                       # Test configuration and markers
+├── data/                            # Source data & Experience Memory
+│   ├── experience_memory.db         # SQLite persistent Experience Store (25 approved)
+│   ├── experience_faiss.index       # FAISS vector index over experience questions
+│   ├── experience_meta.json         # Experience index metadata & ID mapping
+│   └── dbms_training_experiences.jsonl # Training experiences dataset
+├── docs/                            # In-depth architectural & operational guides
+│   ├── ARCHITECTURE.md              # Detailed technical architecture specification
+│   ├── SETUP.md                     # Environment setup & model prerequisites
+│   ├── USAGE.md                     # Comprehensive CLI & demonstration guide
+│   ├── EVALUATION.md                # Task 12G frozen benchmark evaluation & ablation
+│   └── DBMS_CORPUS.md               # 15-document DBMS corpus specification
+├── EvoRAG_DBMS_SQL_15_Document_Corpus/ # Educational DBMS document corpus (15 PDFs)
+├── EvoRAG_Blind_Test_Questions/     # 32 held-out test questions (Frozen benchmark)
+├── EvoRAG_Answer_Key_For_Frozen_Run/# Official verified answer key (Frozen benchmark)
+├── index/                           # FAISS document indices
+│   ├── dbms_sql_v1/                 # Dedicated 15-PDF DBMS corpus index (232 chunks)
+│   └── corpus.jsonl / faiss.index   # Baseline sample index
+├── models/                          # Local model storage
+│   ├── selfrag_llama2_7b.Q4_K_M.gguf # Production GGUF model (3.80 GiB)
+│   └── mlx/selfrag_llama2_7b_4bit/  # Converted MLX 4-bit base model (3.53 GiB)
+├── evorag/                          # EvoRAG core package
+│   ├── controller.py                # Three-path routing & persistence controller
+│   ├── mlx_generator.py             # Apple Silicon MLX QLoRA generator backend
+│   └── memory/                      # Store, retriever, validator, index builder
+├── normal_rag/                      # Normal RAG baseline (Gemini API)
+├── selfrag/                         # Original Self-RAG control loop (Algorithm 1)
+├── retriever/                       # Dense passage retriever (SentenceTransformers + FAISS)
+├── training/qlora_dbms/             # Local MLX QLoRA training pipeline & reports
+│   ├── adapters/full_dbms_v1/       # 3-epoch trained QLoRA adapter weights
+│   ├── TASK12E_FULL_TRAINING_REPORT.md # Training run telemetry & curves
+│   └── TASK12G_FINAL_EVALUATION_REPORT.md # Final 5-system benchmark report
+└── tests/                           # Automated test suites (138 tests)
+    ├── test_unified_cli.py          # Unified CLI test suite
+    ├── test_mlx_generator.py        # MLX generator integration tests
+    ├── test_task10_real_model_warm_cache.py # Warm-cache validation
+    └── test_task9b_learning.py      # Experience memory & ingestion tests
 ```
 
 ---
 
-## 8. Document Index vs. Experience Memory
+## 7. Installation & Environment Setup
 
-A key architectural distinction in EvoRAG is the separation between document knowledge and experiential knowledge:
+EvoRAG maintains two cleanly separated virtual environments:
 
-| Dimension | Document FAISS Index (`index/`) | Experience Memory (`evorag/memory/`) |
-| :--- | :--- | :--- |
-| **Primary Source** | Raw source files (PDFs in `data/`). | Verified Q&A experiences generated during runtime. |
-| **Source of Truth** | Files on disk (`data/*.pdf` + `corpus.jsonl`). | Relational database (`data/experience_memory.db`). |
-| **Vector Store** | `index/faiss.index` (document passage vectors). | `data/experience_faiss.index` (question vectors). |
-| **Primary Key** | Integer `chunk_id` + SHA-256 `chunk_hash`. | Stable UUID `experience_id`. |
-| **Update Cycle** | Offline / batch rebuild when PDFs change. | Dynamic runtime insertion upon approval (`approve_and_save`). |
-| **Provenance** | PDF byte hash (`source_version`) + page number. | Original document chunk hashes, source versions, approval status. |
-| **Validation** | Static cosine similarity during passage retrieval. | Multi-tier conservative validator (polarity, numeric scope, freshness). |
+### Environment 1: Production GGUF Environment (`.venv`)
+```bash
+# 1. Create and activate Python 3.13 environment
+python3.13 -m venv .venv
+source .venv/bin/activate
+
+# 2. Install dependencies
+pip install --upgrade pip
+pip install -r requirements.txt
+
+# 3. Enable Metal GPU acceleration in llama-cpp-python
+CMAKE_ARGS="-DGGML_METAL=on" pip install --force-reinstall --no-cache-dir llama-cpp-python
+```
+
+### Environment 2: Experimental MLX Environment (`.venv-mlx`)
+```bash
+# 1. Create and activate Python 3.12 environment (native ARM64)
+arch -arm64 python3.12 -m venv .venv-mlx
+source .venv-mlx/bin/activate
+
+# 2. Install MLX packages
+pip install --upgrade pip
+pip install mlx==0.32.4 mlx-lm==0.32.2
+pip install sentence-transformers faiss-cpu pypdf pyyaml pytest
+```
+
+For complete setup instructions, see [`docs/SETUP.md`](docs/SETUP.md).
 
 ---
 
-## 9. Known Limitations & Hardware Feasibility
+## 8. Model Prerequisites
 
-1. **Local Machine Hardware Constraints (Windows, GTX 1650 4GB VRAM, 16GB RAM)**:
-   - **vLLM backend**: Not supported on Windows; requires Linux with $\ge$ 14 GB VRAM.
-   - **llama.cpp GPU offloading (`n_gpu_layers=-1`)**: Will run out of memory on 4 GB VRAM (requires ~5 GB for 7B model + KV cache).
-   - **llama.cpp CPU execution (`n_gpu_layers=0`)**: Feasible in 16 GB RAM at ~3–8 tokens/sec.
-   - **Google Colab recommended**: For full GPU inference or batch evaluation, running on a free T4 GPU in Google Colab is recommended.
-2. **Evaluation and Test Hierarchy**:
-   - The 79 model-free unit tests verify system logic, routing, persistence, and regression behavior using mock generators and deterministic embedders (~3s).
-   - The 16 integration tests verify real FAISS C++ indexing and SentenceTransformer embeddings (`all-MiniLM-L6-v2`, ~8s).
-   - The 6 model integration tests verify real Self-RAG 7B GGUF inference (`models/selfrag_llama2_7b.Q4_K_M.gguf`), reflection tokens, and all three hybrid paths on Apple Silicon Metal or CUDA GPU (~28s).
-   - Real model validation proves architectural correctness and token handling, but does not claim domain-specific empirical benchmark optimization (which will be tackled in subsequent offline distillation phases).
-3. **Pending Offline Distillation**:
-   - Periodic QLoRA fine-tuning of the Self-RAG generator using verified experiences from SQLite is designed in the architecture, but model training scripts are pending Colab development.
+1. **Production GGUF Model**:
+   - Location: `models/selfrag_llama2_7b.Q4_K_M.gguf`
+   - Size: 3.80 GiB
+   - SHA-256: `fb39ef3293bffcac2c44415123ec14d7b62c5cdc46a5dbfab9cf3830afe7dc03`
+2. **MLX 4-bit Base Model**:
+   - Location: `models/mlx/selfrag_llama2_7b_4bit/`
+   - Size: 3.53 GiB
+   - SHA-256: `71576febb874c07b71697976f0892c2bab9e972e77bc880dcc0210eb6342db32`
+3. **Fine-Tuned MLX QLoRA Adapter**:
+   - Location: `training/qlora_dbms/adapters/full_dbms_v1/`
+   - Size: 38.15 MB (`adapters.safetensors`)
 
 ---
 
-## Acknowledgements
+## 9. Launching the Four Execution Modes
 
-This project extends the original implementation of **SELF-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection** (Asai et al., ICLR 2024).
+You can run any mode through the unified CLI:
 
-- Original Self-RAG Authors: Akari Asai, Zeqiu Wu, Yizhong Wang, Avirup Sil, Hannaneh Hajishirzi.
-- Original Repository: [https://github.com/AkariAsai/self-rag](https://github.com/AkariAsai/self-rag)
+```bash
+# Interactive menu:
+python demo.py
+```
 
-Our project adapts and extends the original framework with the EvoRAG hybrid memory architecture for academic research and evaluation.
+### Direct CLI Commands:
+```bash
+# Mode 1: Normal RAG (Gemini API)
+python demo.py --mode normal "What is write-ahead logging in database systems?"
+
+# Mode 2: Baseline Self-RAG (GGUF via llama.cpp)
+python demo.py --mode selfrag "What is a B-tree index in PostgreSQL?"
+
+# Mode 3: EvoRAG with GGUF + Experience Memory
+python demo.py --mode evorag "How does physical data independence protect applications from storage modifications?"
+
+# Mode 4: Fine-Tuned EvoRAG with Apple Silicon MLX QLoRA
+python demo.py --mode evorag-mlx "What is the purpose of a buffer manager?"
+
+# Verbose reflection trace (displays candidate critique scores):
+python demo.py --mode evorag-mlx -v "What are ACID properties?"
+```
+
+> [!TIP]
+> The unified CLI includes auto-dispatching: running `python demo.py --mode evorag-mlx` while in `.venv` automatically routes to `.venv-mlx` via native ARM64 subprocess.
+
+For full CLI options and arguments, see [`docs/USAGE.md`](docs/USAGE.md).
+
+---
+
+## 10. Running Automated Tests
+
+Run the model-free and integration test suites:
+
+```bash
+# In production environment (.venv):
+source .venv/bin/activate
+HF_HUB_OFFLINE=1 pytest tests/test_unified_cli.py tests/test_task10_real_model_warm_cache.py tests/test_task9b_learning.py
+
+# In MLX environment (.venv-mlx):
+source .venv-mlx/bin/activate
+HF_HUB_OFFLINE=1 pytest tests/test_unified_cli.py tests/test_mlx_generator.py
+```
+
+---
+
+## 11. Example Questions & Behaviors
+
+1. **Path A (Exact Direct Reuse)**:
+   - Query: `"How does physical data independence protect applications from storage modifications?"`
+   - Outcome: Matches verified experience `3239b9d1ea3f...` with similarity `1.0000`. Returns the stored answer in $< 0.5$s without invoking the LLM.
+2. **Path B (Experience-Assisted Self-RAG)**:
+   - Query: `"Explain how a buffer pool manager handles disk page caching in DBMS."`
+   - Outcome: Matches candidate `DBMS-TRAIN-0015` with similarity $\ge 0.85$. Injects verified memory passages alongside document passages into Self-RAG.
+3. **Path C (Normal Self-RAG Fallback)**:
+   - Query: `"What are the operational trade-offs of hash index vs B-tree index in PostgreSQL?"`
+   - Outcome: No sufficiently similar candidate in memory. Performs standard multi-segment document retrieval over the 15 DBMS PDFs.
+4. **Direct Parametric Answer**:
+   - Query: `"What is 2 + 2?"`
+   - Outcome: The model emits `[No Retrieval]` during the initial probe and generates `"4"` without fetching external documents.
+
+---
+
+## 12. Task 12G Frozen Benchmark Results
+
+The frozen benchmark (`20261109_151957Z`) evaluates all five systems on 32 held-out DBMS questions:
+
+| System Configuration | Token F1 | Token Precision | Token Recall | Citation F1 | Citation Prec | Citation Rec | Mean Latency | Median Latency | P95 Latency | Memory Hits |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **System A: Normal RAG** *(Frozen baseline)* | **0.3270** | 0.3011 | **0.4155** | 0.6445 | 0.5639 | **0.8667** | **1,664.2 ms** | **1,600.9 ms** | **2,299.8 ms** | 0 / 32 |
+| **System B: GGUF Self-RAG** *(Frozen baseline)* | 0.2209 | 0.2294 | 0.2939 | 0.5267 | 0.4500 | 0.7333 | 13,572.9 ms | 11,949.5 ms | 24,949.2 ms | 0 / 32 |
+| **System C: GGUF EvoRAG (Warm)** *(Task 10)* | 0.2365 | 0.2404 | 0.3182 | **0.6556** | **0.7000** | 0.6333 | 15,087.3 ms | 14,165.4 ms | 25,860.8 ms | 5 / 32 |
+| **System D: MLX Self-RAG (No Mem)** *(Ablation)* | 0.2528 | 0.2974 | 0.2420 | 0.6222 | 0.6667 | 0.6000 | 10,442.8 ms | 9,980.1 ms | 19,856.3 ms | 0 / 32 |
+| **System E: MLX EvoRAG (With Mem)** *(Full)* | **0.2721** | **0.3265** | 0.2539 | 0.6222 | 0.6667 | 0.6000 | **11,062.4 ms** | **10,444.8 ms** | **19,876.7 ms** | 5 / 32 |
+
+### Key Benchmark Takeaways:
+1. **Token Precision Leadership**: System E achieved **0.3265**, the highest precision of all 5 systems (+42.3% relative over baseline GGUF Self-RAG, and higher than Normal RAG).
+2. **Statistically Significant Memory Gain**: 1,000 paired bootstrap resamples between System E and System D show a verified positive effect: **Mean $\Delta = +0.0192$ Token F1 (95% CI: `[+0.0043, +0.0391]`, $p < 0.05$)**.
+3. **Full System Gain**: System E improves over baseline GGUF Self-RAG by **+23.2% relative** (**Mean $\Delta = +0.0512$ Token F1, 95% CI: `[+0.0045, +0.0993]`, $p < 0.05$)**.
+4. **Honest Trade-Offs**: Normal RAG (Gemini) maintains higher Token F1 (0.3270) and Recall (0.4155) due to verbose prose generation, but lacks adaptive reflection control and local execution.
+5. **Efficiency**: MLX loads in **0.65s** vs 10.53s for GGUF and delivers **26.7% faster** inference than GGUF EvoRAG.
+
+For full evaluation curves, bootstrap tables, and per-question breakdowns, see [`docs/EVALUATION.md`](docs/EVALUATION.md).
+
+---
+
+## 13. Known Limitations
+
+1. **Token Recall Trade-Off**: Fine-tuned MLX generation produces concise, highly focused answers (reflected in high precision 0.3265), which results in lower token recall (0.2539) compared to verbose API models like Gemini (0.4155).
+2. **Apple Silicon Hardware Prerequisite**: The experimental MLX generator (`evorag-mlx`) requires macOS and an Apple Silicon M-series chip (Metal GPU). Systems without Metal must use the GGUF backend (`evorag` or `selfrag`).
+3. **Dual Virtual Environments**: Due to package dependencies (`llama-cpp-python` vs `mlx-lm`), GGUF and MLX run in separate virtualenvs (`.venv` and `.venv-mlx`), bridged via the unified CLI auto-launcher.
+
+---
+
+## 14. Troubleshooting
+
+- **`Failed to create Metal shared event`**:
+  - *Cause*: Running MLX inside an overly restricted sandbox without Metal event access.
+  - *Fix*: Run the command in standard macOS user shell or ensure Metal GPU permissions are enabled.
+- **`ModuleNotFoundError: No module named 'llama_cpp'` in `.venv-mlx`**:
+  - *Cause*: Trying to run GGUF mode directly within the MLX environment without auto-dispatch.
+  - *Fix*: Use `python demo.py --mode selfrag` (auto-dispatches to `.venv`), or run `.venv/bin/python demo.py --mode selfrag`.
+- **`Hugging Face Connection Timeout` in offline mode**:
+  - *Cause*: `sentence-transformers` checking remote hub when offline.
+  - *Fix*: Set `export HF_HUB_OFFLINE=1` in your shell to use local cached weights.

@@ -1,0 +1,42 @@
+{
+  "package": "EvoRAG Task 9A - Answer Key for Frozen Prediction Run",
+  "prediction_archive": "predictions.zip (user uploaded)",
+  "run_id": "20261109_151957Z",
+  "blind_evaluation_mode": true,
+  "answer_key_loaded_during_inference": false,
+  "question_count": 32,
+  "systems": {
+    "normal_rag": 32,
+    "self_rag": 32,
+    "evorag": 32
+  },
+  "prediction_rows": 96,
+  "validation": {
+    "all_prediction_question_ids_match_answer_key": true,
+    "all_prediction_question_text_matches_blind_question_file": true,
+    "all_three_systems_have_32_outputs": true,
+    "prediction_rows_with_errors": 0
+  },
+  "files": {
+    "answer_key_32_for_frozen_run.csv": {
+      "bytes": 34177,
+      "sha256": "881bec9843d1974c8789e3c7753459d459975e7eee6b65142fac24f9a73e163c"
+    },
+    "answer_key_32_readable.md": {
+      "bytes": 44617,
+      "sha256": "a63923b1467ac2a47dde3e784ae62a0014e14fea070dc622e5b6ebe8f9339fec"
+    },
+    "human_scoring_sheet_96_outputs.csv": {
+      "bytes": 78112,
+      "sha256": "490bd399daf93b2f81c8eb4a6895aa073128d710a2a8a1322d0bc8226161b592"
+    },
+    "answer_key_32_for_frozen_run.pdf": {
+      "bytes": 103655,
+      "sha256": "257594ad3514ad99b29fe219442ff413f685554f7b248716e3b0d0611aeb7230"
+    },
+    "answer_key_32_for_frozen_run.jsonl": {
+      "bytes": 72476,
+      "sha256": "f4f646dcc6a55fab2a7e6759a77304875ffe113e9b2fa0880c25769f1699fc0e"
+    }
+  }
+}

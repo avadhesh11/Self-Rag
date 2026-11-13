@@ -11,9 +11,11 @@ logic lives in normal_rag/pipeline.py.
 import os
 import time
 
-from dotenv import load_dotenv
-
-load_dotenv()  # loads .env from the project root (or any parent)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 # Default Gemini model to use. Can be overridden via GEMINI_MODEL env var.
 # Valid values: "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro", etc.

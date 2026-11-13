@@ -1,0 +1,321 @@
+{
+  "task": "EvoRAG Task 12B",
+  "timestamp": "2026-11-12 05:18:50Z",
+  "environment": {
+    "os": "macOS-15.5-arm64-i386-64bit",
+    "arch": "arm64",
+    "python_version": "3.12.16",
+    "mlx_version": "0.32.4",
+    "mlx_lm_version": "0.32.2",
+    "torch_version": "2.15.0",
+    "metal_available": true,
+    "initial_free_disk_gib": 25.38,
+    "remaining_free_disk_gib": 9.65
+  },
+  "original_checkpoint": {
+    "repo_id": "selfrag/selfrag_llama2_7b",
+    "snapshot_path": "/Users/devj/.cache/huggingface/hub/models--selfrag--selfrag_llama2_7b/snapshots/190261383b0779ff66d2f95a73c7ad267d94b820",
+    "download_duration_seconds": 0.33,
+    "total_snapshot_size_bytes": 13477725181,
+    "total_snapshot_size_gib": 12.552,
+    "files": {
+      ".gitattributes": {
+        "size_bytes": 1519,
+        "size_mb": 0.0,
+        "size_gb": 0.0
+      },
+      "README.md": {
+        "size_bytes": 4355,
+        "size_mb": 0.0,
+        "size_gb": 0.0
+      },
+      "added_tokens.json": {
+        "size_bytes": 433,
+        "size_mb": 0.0,
+        "size_gb": 0.0
+      },
+      "config.json": {
+        "size_bytes": 635,
+        "size_mb": 0.0,
+        "size_gb": 0.0
+      },
+      "generation_config.json": {
+        "size_bytes": 188,
+        "size_mb": 0.0,
+        "size_gb": 0.0
+      },
+      "pytorch_model-00001-of-00002.bin": {
+        "size_bytes": 9976751194,
+        "size_mb": 9514.57,
+        "size_gb": 9.292
+      },
+      "pytorch_model-00002-of-00002.bin": {
+        "size_bytes": 3500441859,
+        "size_mb": 3338.28,
+        "size_gb": 3.26
+      },
+      "pytorch_model.bin.index.json": {
+        "size_bytes": 23950,
+        "size_mb": 0.02,
+        "size_gb": 0.0
+      },
+      "special_tokens_map.json": {
+        "size_bytes": 470,
+        "size_mb": 0.0,
+        "size_gb": 0.0
+      },
+      "tokenizer.model": {
+        "size_bytes": 499723,
+        "size_mb": 0.48,
+        "size_gb": 0.0
+      },
+      "tokenizer_config.json": {
+        "size_bytes": 855,
+        "size_mb": 0.0,
+        "size_gb": 0.0
+      }
+    }
+  },
+  "converted_model": {
+    "target_dir": "models/mlx/selfrag_llama2_7b_4bit",
+    "quantization": {
+      "bits": 4,
+      "group_size": 64,
+      "mode": "affine"
+    },
+    "conversion_duration_seconds": 9.96,
+    "total_mlx_size_bytes": 3795076067,
+    "total_mlx_size_gib": 3.534,
+    "files": {
+      "README.md": {
+        "size_bytes": 81,
+        "size_mb": 0.0,
+        "size_gb": 0.0,
+        "sha256": "748c964f9b7e5f2c3770ce013bbc0153be7c54311d9692c343b6188eefe77ac6"
+      },
+      "added_tokens.json": {
+        "size_bytes": 433,
+        "size_mb": 0.0,
+        "size_gb": 0.0,
+        "sha256": "dcb083dc232eb79aa0eac5e2a5f2013dcfda0980561ca313ce191ad69fbbf954"
+      },
+      "config.json": {
+        "size_bytes": 840,
+        "size_mb": 0.0,
+        "size_gb": 0.0,
+        "sha256": "507e82e584b5de251e61931b2f0366a5ce7fee2740fdbe5a847a1c83b0719786"
+      },
+      "generation_config.json": {
+        "size_bytes": 188,
+        "size_mb": 0.0,
+        "size_gb": 0.0,
+        "sha256": "7b81a582ca675c32477c0d4fc8272b3265c4f314fe24ec79a16b20e33740471d"
+      },
+      "model.safetensors": {
+        "size_bytes": 3790899952,
+        "size_mb": 3615.28,
+        "size_gb": 3.531,
+        "sha256": "71576febb874c07b71697976f0892c2bab9e972e77bc880dcc0210eb6342db32"
+      },
+      "model.safetensors.index.json": {
+        "size_bytes": 52421,
+        "size_mb": 0.05,
+        "size_gb": 0.0,
+        "sha256": "ee0fdfa5ee588eb335ce173ff9e73a872730c4c73b51d7ea438c61dc7cf3fa7d"
+      },
+      "tokenizer.json": {
+        "size_bytes": 3621908,
+        "size_mb": 3.45,
+        "size_gb": 0.003,
+        "sha256": "4fd74e1351d34487da5b9772233bd50c8b68640574ff7740c2af06c0ef33b465"
+      },
+      "tokenizer.model": {
+        "size_bytes": 499723,
+        "size_mb": 0.48,
+        "size_gb": 0.0,
+        "sha256": "9e556afd44213b6bd1be2b850ebbbd98f5481437a8021afaf58ee7fb1818d347"
+      },
+      "tokenizer_config.json": {
+        "size_bytes": 521,
+        "size_mb": 0.0,
+        "size_gb": 0.0,
+        "sha256": "ab335265f25ca825dc251140a6942bcf74ba166c074885e26c58082bc3986550"
+      }
+    }
+  },
+  "tokenizer_audit": {
+    "vocab_size": 32016,
+    "expected_vocab_size": 32016,
+    "all_tokens_passed": true,
+    "reflection_tokens": {
+      "32000": {
+        "expected": "[No Retrieval]",
+        "decoded": "[No Retrieval]",
+        "encoded_ids": [
+          32000
+        ],
+        "decode_match": true,
+        "encode_match": true,
+        "passed": true
+      },
+      "32001": {
+        "expected": "[Retrieval]",
+        "decoded": "[Retrieval]",
+        "encoded_ids": [
+          32001
+        ],
+        "decode_match": true,
+        "encode_match": true,
+        "passed": true
+      },
+      "32002": {
+        "expected": "[Continue to Use Evidence]",
+        "decoded": "[Continue to Use Evidence]",
+        "encoded_ids": [
+          32002
+        ],
+        "decode_match": true,
+        "encode_match": true,
+        "passed": true
+      },
+      "32003": {
+        "expected": "[Irrelevant]",
+        "decoded": "[Irrelevant]",
+        "encoded_ids": [
+          32003
+        ],
+        "decode_match": true,
+        "encode_match": true,
+        "passed": true
+      },
+      "32004": {
+        "expected": "[Relevant]",
+        "decoded": "[Relevant]",
+        "encoded_ids": [
+          32004
+        ],
+        "decode_match": true,
+        "encode_match": true,
+        "passed": true
+      },
+      "32005": {
+        "expected": "<paragraph>",
+        "decoded": "<paragraph>",
+        "encoded_ids": [
+          32005
+        ],
+        "decode_match": true,
+        "encode_match": true,
+        "passed": true
+      },
+      "32006": {
+        "expected": "</paragraph>",
+        "decoded": "</paragraph>",
+        "encoded_ids": [
+          32006
+        ],
+        "decode_match": true,
+        "encode_match": true,
+        "passed": true
+      },
+      "32007": {
+        "expected": "[Utility:1]",
+        "decoded": "[Utility:1]",
+        "encoded_ids": [
+          32007
+        ],
+        "decode_match": true,
+        "encode_match": true,
+        "passed": true
+      },
+      "32008": {
+        "expected": "[Utility:2]",
+        "decoded": "[Utility:2]",
+        "encoded_ids": [
+          32008
+        ],
+        "decode_match": true,
+        "encode_match": true,
+        "passed": true
+      },
+      "32009": {
+        "expected": "[Utility:3]",
+        "decoded": "[Utility:3]",
+        "encoded_ids": [
+          32009
+        ],
+        "decode_match": true,
+        "encode_match": true,
+        "passed": true
+      },
+      "32010": {
+        "expected": "[Utility:4]",
+        "decoded": "[Utility:4]",
+        "encoded_ids": [
+          32010
+        ],
+        "decode_match": true,
+        "encode_match": true,
+        "passed": true
+      },
+      "32011": {
+        "expected": "[Utility:5]",
+        "decoded": "[Utility:5]",
+        "encoded_ids": [
+          32011
+        ],
+        "decode_match": true,
+        "encode_match": true,
+        "passed": true
+      },
+      "32012": {
+        "expected": "[Fully supported]",
+        "decoded": "[Fully supported]",
+        "encoded_ids": [
+          32012
+        ],
+        "decode_match": true,
+        "encode_match": true,
+        "passed": true
+      },
+      "32013": {
+        "expected": "[Partially supported]",
+        "decoded": "[Partially supported]",
+        "encoded_ids": [
+          32013
+        ],
+        "decode_match": true,
+        "encode_match": true,
+        "passed": true
+      },
+      "32014": {
+        "expected": "[No support / Contradictory]",
+        "decoded": "[No support / Contradictory]",
+        "encoded_ids": [
+          32014
+        ],
+        "decode_match": true,
+        "encode_match": true,
+        "passed": true
+      },
+      "32015": {
+        "expected": "<pad>",
+        "decoded": "<pad>",
+        "encoded_ids": [
+          32015
+        ],
+        "decode_match": true,
+        "encode_match": true,
+        "passed": true
+      }
+    }
+  },
+  "model_inference_test": {
+    "load_duration_seconds": 0.48,
+    "memory_after_load_mb": 3615.26,
+    "peak_inference_memory_mb": 3912.95,
+    "inference_duration_seconds": 1.9,
+    "test_prompt": "### Instruction:\nWhat is the primary function of the Write-Ahead Logging (WAL) protocol in a relational database management system?\n\n### Response:\n",
+    "generated_output": "2.[Retrieval]<paragraph><paragraph><paragraph><paragraph><paragraph>\n3.[Utility:5]"
+  }
+}

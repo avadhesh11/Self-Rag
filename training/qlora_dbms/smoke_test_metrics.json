@@ -1,0 +1,161 @@
+{
+  "task": "EvoRAG Task 12D Smoke Test",
+  "timestamp": "2026-11-12 09:44:21Z",
+  "environment": {
+    "platform": "macOS-15.5-arm64-i386-64bit",
+    "arch": "arm64",
+    "python_version": "3.12.16",
+    "mlx_version": "0.32.4",
+    "mlx_lm_version": "0.32.2",
+    "metal_available": true,
+    "initial_free_disk_gib": 10.36,
+    "final_free_disk_gib": 10.28
+  },
+  "base_model": {
+    "model_path": "models/mlx/selfrag_llama2_7b_4bit",
+    "sha256": "71576febb874c07b71697976f0892c2bab9e972e77bc880dcc0210eb6342db32",
+    "immutability_verified": true,
+    "load_duration_seconds": 1.19,
+    "memory_after_load_gb": 3.79
+  },
+  "lora_configuration": {
+    "num_layers": 16,
+    "rank": 8,
+    "scale": 16.0,
+    "dropout": 0.0,
+    "batch_size": 1,
+    "learning_rate": 1e-05,
+    "max_seq_length": 1024,
+    "mask_prompt": true,
+    "trainable_parameter_tensors": 224,
+    "sample_parameter_name": "model.layers.16.self_attn.q_proj.lora_a",
+    "weight_delta_l2_norm": 0.04359971
+  },
+  "training_execution": {
+    "iterations": 10,
+    "duration_seconds": 23.97,
+    "peak_memory_gb": 6.06,
+    "initial_train_loss": 3.8861,
+    "final_train_loss": 3.4496,
+    "train_reports": [
+      {
+        "iteration": 1,
+        "train_loss": 3.8860983848571777,
+        "learning_rate": 9.999999747378752e-06,
+        "iterations_per_second": 0.3120021899776992,
+        "tokens_per_second": 31.512221187747617,
+        "trained_tokens": 101,
+        "peak_memory": 4.83876694
+      },
+      {
+        "iteration": 2,
+        "train_loss": 2.9932382106781006,
+        "learning_rate": 9.999999747378752e-06,
+        "iterations_per_second": 1.0366810142239198,
+        "tokens_per_second": 114.03491156463117,
+        "trained_tokens": 211,
+        "peak_memory": 5.080771344
+      },
+      {
+        "iteration": 3,
+        "train_loss": 7.0904622077941895,
+        "learning_rate": 9.999999747378752e-06,
+        "iterations_per_second": 0.8443319888333443,
+        "tokens_per_second": 185.75303754333575,
+        "trained_tokens": 431,
+        "peak_memory": 5.701226318
+      },
+      {
+        "iteration": 4,
+        "train_loss": 3.3151438236236572,
+        "learning_rate": 9.999999747378752e-06,
+        "iterations_per_second": 2.0655536166466772,
+        "tokens_per_second": 148.71986039856077,
+        "trained_tokens": 503,
+        "peak_memory": 5.701226318
+      },
+      {
+        "iteration": 5,
+        "train_loss": 3.8475120067596436,
+        "learning_rate": 9.999999747378752e-06,
+        "iterations_per_second": 0.9813628960931908,
+        "tokens_per_second": 169.775781024122,
+        "trained_tokens": 676,
+        "peak_memory": 5.701226318
+      },
+      {
+        "iteration": 6,
+        "train_loss": 6.451210975646973,
+        "learning_rate": 9.999999747378752e-06,
+        "iterations_per_second": 0.6831980089429337,
+        "tokens_per_second": 189.92904648613558,
+        "trained_tokens": 954,
+        "peak_memory": 6.056527416
+      },
+      {
+        "iteration": 7,
+        "train_loss": 6.192573070526123,
+        "learning_rate": 9.999999747378752e-06,
+        "iterations_per_second": 0.7670970097347127,
+        "tokens_per_second": 189.47296140447403,
+        "trained_tokens": 1201,
+        "peak_memory": 6.056527416
+      },
+      {
+        "iteration": 8,
+        "train_loss": 2.6299448013305664,
+        "learning_rate": 9.999999747378752e-06,
+        "iterations_per_second": 1.0122071337589391,
+        "tokens_per_second": 196.36818394923418,
+        "trained_tokens": 1395,
+        "peak_memory": 6.056527416
+      },
+      {
+        "iteration": 9,
+        "train_loss": 3.392153024673462,
+        "learning_rate": 9.999999747378752e-06,
+        "iterations_per_second": 2.3699785338787525,
+        "tokens_per_second": 123.23888376169512,
+        "trained_tokens": 1447,
+        "peak_memory": 6.056527416
+      },
+      {
+        "iteration": 10,
+        "train_loss": 3.4496097564697266,
+        "learning_rate": 9.999999747378752e-06,
+        "iterations_per_second": 0.871601544047784,
+        "tokens_per_second": 195.23874586670362,
+        "trained_tokens": 1671,
+        "peak_memory": 6.056527416
+      }
+    ],
+    "val_reports": [
+      {
+        "iteration": 0,
+        "val_loss": 6.0683913230896,
+        "val_time": 3.5013169161975384
+      },
+      {
+        "iteration": 4,
+        "val_loss": 6.375253200531006,
+        "val_time": 4.321194916963577
+      },
+      {
+        "iteration": 9,
+        "val_loss": 2.9797275066375732,
+        "val_time": 3.6973677910864353
+      }
+    ]
+  },
+  "adapter_artifacts": {
+    "adapter_directory": "training/qlora_dbms/adapters/smoke_test",
+    "adapter_file": "training/qlora_dbms/adapters/smoke_test/adapters.safetensors",
+    "adapter_size_mb": 38.15,
+    "adapter_sha256": "01b3220cfd8b4edfb5ff9160cb076431a10467d9e74f792abcd120e762009e57"
+  },
+  "post_training_inference": {
+    "prompt": "### Instruction:\nExplain the write-ahead logging (WAL) protocol in database management systems.\n\n### Response:\n",
+    "generated_output": "WAL is a protocol that allows database systems to write data to disk in a way that allows for quick recovery in the event of a crash or other failure.[Retrieval]<paragraph>[Relevant]WAL is a protocol that allows database systems to write data to disk in a way that allows for quick recovery in the event of a crash or other failure.[No support / Contradictory][Utility:5]",
+    "duration_seconds": 2.86
+  }
+}

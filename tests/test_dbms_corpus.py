@@ -31,8 +31,14 @@ from retriever.retriever import PassageRetriever
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 MANIFEST_PATH = PROJECT_ROOT / "data" / "manifest.json"
+if not MANIFEST_PATH.exists():
+    MANIFEST_PATH = PROJECT_ROOT / "EvoRAG_DBMS_SQL_15_Document_Corpus" / "manifest.json"
 PDF_DIR = PROJECT_ROOT / "data" / "pdf"
+if not PDF_DIR.exists():
+    PDF_DIR = PROJECT_ROOT / "EvoRAG_DBMS_SQL_15_Document_Corpus" / "pdf"
 SCHEMA_PATH = PROJECT_ROOT / "data" / "university_schema.sql"
+if not SCHEMA_PATH.exists():
+    SCHEMA_PATH = PROJECT_ROOT / "EvoRAG_DBMS_SQL_15_Document_Corpus" / "university_schema.sql"
 DBMS_INDEX_DIR = PROJECT_ROOT / "index" / "dbms_sql_v1"
 
 pytestmark = pytest.mark.integration
